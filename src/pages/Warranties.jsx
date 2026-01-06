@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Document } from '@/api/entities';
 import { Project } from '@/api/entities';
-import { format, differenceInDays, parseISO } from 'date-fns';
+import { format, differenceInDays, parseISO, isValid } from 'date-fns';
 import { ShieldCheck, AlertTriangle, XCircle, FileText } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,7 +9,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const WarrantyCard = ({ doc, projectName }) => {
   const today = new Date();
-  const endDate = parseISO(doc.warranty_end_date);
+
+  // Bezpieczne parsowanie daty
+  const endDate = doc?.warranty_end_date ? parseISO(doc.warranty_end_date) : null;
+  const hasValidEndDate = endDate && isValid(endDate);
+
+  if (!hasValidEndDate) return null;
+
   const daysLeft = differenceInDays(endDate, today);
 
   let status = {
@@ -34,7 +40,10 @@ const WarrantyCard = ({ doc, projectName }) => {
       icon: <AlertTriangle className="w-4 h-4" />,
     };
   }
-  
+
+  const purchaseDate = doc?.date ? parseISO(doc.date) : null;
+  const hasValidPurchaseDate = purchaseDate && isValid(purchaseDate);
+
   return (
     <motion.div
       layout
@@ -53,19 +62,25 @@ const WarrantyCard = ({ doc, projectName }) => {
           <span>{status.label}</span>
         </div>
       </div>
+
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-gray-500">Project:</span>
           <span className="font-medium text-black">{projectName || 'N/A'}</span>
         </div>
+
         <div className="flex justify-between">
           <span className="text-gray-500">Purchase Date:</span>
-          <span className="font-medium text-black">{doc.date ? format(parseISO(doc.date), 'PP') : 'N/A'}</span>
+          <span className="font-medium text-black">
+            {hasValidPurchaseDate ? format(purchaseDate, 'PP') : 'N/A'}
+          </span>
         </div>
+
         <div className="flex justify-between">
           <span className="text-gray-500">Warranty Ends:</span>
           <span className={`font-medium ${status.color}`}>{format(endDate, 'PP')}</span>
         </div>
+
         <div className="flex justify-between">
           <span className="text-gray-500">Time Left:</span>
           <span className={`font-medium ${status.color}`}>
@@ -73,9 +88,17 @@ const WarrantyCard = ({ doc, projectName }) => {
           </span>
         </div>
       </div>
-      <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600 text-xs font-medium mt-4 inline-flex items-center gap-1">
-        View Document <FileText className="w-3 h-3"/>
-      </a>
+
+      {doc.file_url ? (
+        <a
+          href={doc.file_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:text-blue-600 text-xs font-medium mt-4 inline-flex items-center gap-1"
+        >
+          View Document <FileText className="w-3 h-3" />
+        </a>
+      ) : null}
     </motion.div>
   );
 };
@@ -90,21 +113,36 @@ export default function WarrantiesPage() {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [docsData, projectsData] = await Promise.all([
-          Document.filter({ warranty_end_date: { $ne: null } }),
-          Project.list()
+        // Dokumenty: jeśli jest filter -> używamy, jeśli nie -> list
+        const docsPromise =
+          typeof Document.filter === "function"
+            ? Document.filter({ warranty_end_date: { $ne: null } })
+            : Document.list();
+
+        const [docsRaw, projectsRaw] = await Promise.all([
+          docsPromise,
+          Project.list(),
         ]);
-        setWarranties(docsData);
-        setProjects(projectsData);
+
+        const docs = Array.isArray(docsRaw) ? docsRaw : [];
+        const projs = Array.isArray(projectsRaw) ? projectsRaw : [];
+
+        // Na wszelki wypadek zostawiamy tylko te z datą gwarancji
+        setWarranties(docs.filter(d => d && d.warranty_end_date));
+        setProjects(projs);
       } catch (error) {
         console.error("Error loading warranties:", error);
+        setWarranties([]);
+        setProjects([]);
       }
       setIsLoading(false);
     };
+
     loadData();
   }, []);
-  
+
   const getProjectName = (projectId) => {
+    if (!projectId) return undefined;
     return projects.find(p => p.id === projectId)?.name;
   };
 
@@ -126,6 +164,7 @@ export default function WarrantiesPage() {
               Track all your product warranties in one place.
             </p>
           </div>
+
           <div>
             <Select value={sortOrder} onValueChange={setSortOrder}>
               <SelectTrigger className="w-[180px] apple-blur">

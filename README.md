@@ -1,20 +1,48 @@
-# Base44 App
+# KENGO — MVP
 
+MVP aplikacji, która pomaga ogarnąć chaos wokół budowy / remontu.
 
-This app was created automatically by Base44.
-It's a Vite+React app that communicates with the Base44 API.
+Na tym etapie skupiamy się na roli **organizera**: dokumenty, projekty, podstawowe widoki i proste “zarządzanie porządkiem”.
+Bez porad eksperckich i bez “magicznych” kosztorysów.
 
-## Running the app
+## Cel MVP
 
-```bash
+1) Jedno miejsce na projekty i dokumenty (zamiast maili, folderów i Excela)
+2) Szybkie znalezienie rzeczy, gdy są potrzebne (umowa, faktura, gwarancja, zdjęcie)
+3) Minimum funkcji, które realnie da się używać regularnie
+
+## Co działa w tej wersji (obecny zakres)
+
+- Dashboard (podgląd najważniejszych rzeczy)
+- Projects (lista / tworzenie / widok projektu — zależnie od stanu implementacji)
+- Documents (widoki dokumentów — zależnie od stanu implementacji)
+- Warranties (manager gwarancji na podstawie dokumentów z datą końca gwarancji)
+
+> Uwaga: lokalnie używamy mocków API (DEV), żeby odpalić apkę bez zewnętrznego backendu.
+
+## Wymagania
+
+- Node.js (najlepiej aktualne LTS)
+- npm (instaluje się razem z Node)
+
+## Uruchomienie lokalnie (DEV)
+
+W terminalu, w folderze repo:
+
 npm install
 npm run dev
-```
 
-## Building the app
+Po starcie wejdź w przeglądarce na:
+http://localhost:5173/
 
-```bash
-npm run build
-```
+## Backend (stan na dziś)
 
-For more information and support, please contact Base44 support at app@base44.com.
+W trybie DEV (localhost) aplikacja działa na lokalnych mockach API (plik: `src/api/apiClient.js`).
+
+Backend produkcyjny nie jest jeszcze podpięty.
+
+## Najbliższe kroki
+
+- Opisać krótko ekrany + modele danych (MVP docs)
+- Domknąć kod i dokończyć odpinanie od starego dostawcy backendu
+- Testy (manualne + automatyczne)

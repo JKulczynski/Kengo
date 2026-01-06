@@ -1,13 +1,8 @@
-import { base44 } from './base44Client';
+import { api } from "./apiClient";
 
+export const Project = api.entities.Project;
+export const Document = api.entities.Document;
+export const ProjectMember = api.entities.ProjectMember;
 
-export const Project = base44.entities.Project;
-
-export const Document = base44.entities.Document;
-
-export const ProjectMember = base44.entities.ProjectMember;
-
-
-
-// auth sdk:
-export const User = base44.auth;
+// auth
+export const User = api.auth;
