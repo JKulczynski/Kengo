@@ -1,45 +1,15 @@
 // src/api/apiClient.js
 // Lokalny klient API dla MVP.
 // DEV: mocki (żeby działało bez backendu).
-// PROD: na razie też może działać na mockach, jeśli ustawimy VITE_USE_MOCK_API=true na Vercel.
-
-function safeParse(json, fallback) {
-  try {
-    return JSON.parse(json);
-  } catch {
-    return fallback;
-  }
-}
+// PROD: też może działać na mockach, jeśli ustawisz VITE_USE_MOCK_API=true (np. na Vercel).
 
 function makeEntityMock(entityName) {
-  const storageKey = `kengo_mock_${entityName}`;
-
-  // Trzymamy w localStorage (żeby po odświeżeniu nie znikało).
-  const loadStore = () => {
-    if (typeof window === "undefined") return [];
-    const raw = window.localStorage.getItem(storageKey);
-    return raw ? safeParse(raw, []) : [];
-  };
-
-  const saveStore = (data) => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(storageKey, JSON.stringify(data));
-  };
-
-  let store = loadStore();
-
-  const newId = () => {
-    const c = globalThis.crypto;
-    if (c && typeof c.randomUUID === "function") return c.randomUUID();
-    return `mock-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  };
+  const store = [];
 
   return {
     list: async () => store,
-
     get: async (id) => store.find((x) => x.id === id) ?? null,
 
-    // Prosty filter na MVP (np. warranty_end_date != null)
     filter: async (query = {}) => {
       const hasWarrantyFilter =
         query?.warranty_end_date &&
@@ -58,49 +28,40 @@ function makeEntityMock(entityName) {
 
     create: async (data) => {
       const item = {
-        id: newId(),
+        id: crypto?.randomUUID ? crypto.randomUUID() : `mock-${Date.now()}`,
         ...data,
         __mock: true,
         entityName,
       };
-      store = [...store, item];
-      saveStore(store);
+      store.push(item);
       return item;
     },
 
     update: async (id, data) => {
       const idx = store.findIndex((x) => x.id === id);
-
       if (idx === -1) {
         const item = { id, ...data, __mock: true, entityName };
-        store = [...store, item];
-        saveStore(store);
+        store.push(item);
         return item;
       }
-
-      const updated = { ...store[idx], ...data, __mock: true, entityName };
-      store = store.map((x, i) => (i === idx ? updated : x));
-      saveStore(store);
-      return updated;
+      store[idx] = { ...store[idx], ...data, __mock: true, entityName };
+      return store[idx];
     },
 
     delete: async (id) => {
-      store = store.filter((x) => x.id !== id);
-      saveStore(store);
+      const idx = store.findIndex((x) => x.id === id);
+      if (idx !== -1) store.splice(idx, 1);
       return { ok: true, __mock: true, entityName };
     },
   };
 }
 
+const useMockApi =
+  import.meta.env.DEV || String(import.meta.env.VITE_USE_MOCK_API) === "true";
+
 let api;
 
-// To jest klucz: na Vercel (prod) też możemy odpalić mocki sterowane env var.
-const USE_MOCK_API =
-  import.meta.env.DEV ||
-  import.meta.env.VITE_USE_MOCK_API === "true" ||
-  import.meta.env.VITE_USE_MOCK_API === "1";
-
-if (USE_MOCK_API) {
+if (useMockApi) {
   api = {
     entities: {
       Project: makeEntityMock("Project"),
@@ -119,7 +80,7 @@ if (USE_MOCK_API) {
         InvokeLLM: async () => ({
           ok: true,
           __mock: true,
-          message: "LLM not configured yet",
+          message: "LLM not configured",
         }),
         SendEmail: async () => ({ ok: true, __mock: true }),
         UploadFile: async () => ({ ok: true, __mock: true }),
@@ -133,11 +94,42 @@ if (USE_MOCK_API) {
     __mock: true,
   };
 } else {
-  // Docelowo: tu podepniemy prawdziwy backend (np. własne API).
-  // Na razie nie blokujemy deploya mockami tylko wtedy, kiedy USE_MOCK_API nie jest ustawione.
-  throw new Error(
-    "Backend produkcyjny nie jest jeszcze podpięty. Ustaw VITE_USE_MOCK_API=true, żeby odpalić wersję demo."
-  );
+  // Tu docelowo podepniesz prawdziwy backend.
+  // Na teraz: zamiast wywalać białą stronę, lepiej pokazać sensowny błąd dopiero przy próbie użycia API.
+  api = {
+    entities: {
+      Project: {
+        list: async () => {
+          throw new Error("API not configured (Project.list).");
+        },
+      },
+      Document: {
+        list: async () => {
+          throw new Error("API not configured (Document.list).");
+        },
+        filter: async () => {
+          throw new Error("API not configured (Document.filter).");
+        },
+      },
+      ProjectMember: {
+        list: async () => {
+          throw new Error("API not configured (ProjectMember.list).");
+        },
+      },
+    },
+    auth: {
+      me: async () => {
+        throw new Error("API not configured (auth.me).");
+      },
+      login: async () => {
+        throw new Error("API not configured (auth.login).");
+      },
+      logout: async () => {
+        throw new Error("API not configured (auth.logout).");
+      },
+    },
+    integrations: { Core: {} },
+  };
 }
 
 export { api };
