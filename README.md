@@ -48,4 +48,4 @@ Backend produkcyjny nie jest jeszcze podpięty.
 - Testy (manualne + automatyczne)
 
 
-"wymuszenie przebudowy z nowymi zmiennymi"
+"wymuszenie przebudowy z nowymi zmiennymi1"
