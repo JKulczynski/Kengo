@@ -46,3 +46,6 @@ Backend produkcyjny nie jest jeszcze podpięty.
 - Opisać krótko ekrany + modele danych (MVP docs)
 - Domknąć kod i dokończyć odpinanie od starego dostawcy backendu
 - Testy (manualne + automatyczne)
+
+
+"wymuszenie przebudowy z nowymi zmiennymi"
