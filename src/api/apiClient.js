@@ -1,6 +1,7 @@
 // src/api/apiClient.js
 // Lokalny klient API dla MVP.
-// Na dziś: domyślnie używamy mocków także na Vercelu, dopóki nie podepniemy backendu.
+// DEV: mocki (żeby działało bez backendu).
+// PROD: na razie też może działać na mockach, jeśli ustawimy VITE_USE_MOCK_API=true
 
 function makeEntityMock(entityName) {
   const store = [];
@@ -26,12 +27,12 @@ function makeEntityMock(entityName) {
     },
 
     create: async (data) => {
-      const id =
-        typeof crypto !== "undefined" && crypto?.randomUUID
-          ? crypto.randomUUID()
-          : `mock-${Date.now()}`;
-
-      const item = { id, ...data, __mock: true, entityName };
+      const item = {
+        id: crypto?.randomUUID ? crypto.randomUUID() : `mock-${Date.now()}`,
+        ...data,
+        __mock: true,
+        entityName,
+      };
       store.push(item);
       return item;
     },
@@ -55,14 +56,13 @@ function makeEntityMock(entityName) {
   };
 }
 
-// Jeżeli kiedyś podepniemy backend, ustawimy VITE_API_BASE_URL.
-// Dopóki go nie ma -> mocki działają wszędzie (DEV i PROD).
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-const useMock = !apiBaseUrl;
+// najważniejsze: w produkcji też możemy włączyć mocki zmienną env z Vercela
+const useMockApi =
+  import.meta.env.DEV || String(import.meta.env.VITE_USE_MOCK_API) === "true";
 
 let api;
 
-if (useMock) {
+if (useMockApi) {
   api = {
     entities: {
       Project: makeEntityMock("Project"),
@@ -78,11 +78,7 @@ if (useMock) {
 
     integrations: {
       Core: {
-        InvokeLLM: async () => ({
-          ok: true,
-          __mock: true,
-          message: "LLM not configured in mock mode",
-        }),
+        InvokeLLM: async () => ({ ok: true, __mock: true, message: "LLM not configured" }),
         SendEmail: async () => ({ ok: true, __mock: true }),
         UploadFile: async () => ({ ok: true, __mock: true }),
         GenerateImage: async () => ({ ok: true, __mock: true }),
@@ -95,9 +91,23 @@ if (useMock) {
     __mock: true,
   };
 } else {
-  // Tu docelowo podepniemy prawdziwy backend.
-  // Na razie nie implementujemy, bo nie mamy serwera.
-  throw new Error("Backend configured but client is not implemented yet.");
+  // Docelowo: tu podepniemy prawdziwy backend.
+  // Na razie nie wywalamy apki w produkcji — to ma być demo/klikane.
+  console.warn("Real backend not configured. Set VITE_USE_MOCK_API=true to use mocks.");
+  api = {
+    entities: {
+      Project: makeEntityMock("Project"),
+      Document: makeEntityMock("Document"),
+      ProjectMember: makeEntityMock("ProjectMember"),
+    },
+    auth: {
+      me: async () => ({ id: "prod-user", email: "prod@unknown", __mock: true }),
+      login: async () => ({ ok: true, __mock: true }),
+      logout: async () => ({ ok: true, __mock: true }),
+    },
+    integrations: { Core: {} },
+    __mock: true,
+  };
 }
 
 export { api };
