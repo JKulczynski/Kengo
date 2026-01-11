@@ -1,15 +1,17 @@
 // src/api/apiClient.js
 // Lokalny klient API dla MVP.
 // DEV: mocki (żeby działało bez backendu).
-// PROD: też może działać na mockach, jeśli ustawisz VITE_USE_MOCK_API=true (np. na Vercel).
+// PROD: domyślnie oczekuje backendu, ALE można wymusić mocki envem VITE_USE_MOCK_API=true.
 
 function makeEntityMock(entityName) {
+  // Trzymamy w pamięci “bazę” dla DEV/Mock, żeby listy nie były zawsze puste.
   const store = [];
 
   return {
     list: async () => store,
     get: async (id) => store.find((x) => x.id === id) ?? null,
 
+    // Prosty filter – wystarczy na MVP (np. warranty_end_date != null)
     filter: async (query = {}) => {
       const hasWarrantyFilter =
         query?.warranty_end_date &&
@@ -27,12 +29,12 @@ function makeEntityMock(entityName) {
     },
 
     create: async (data) => {
-      const item = {
-        id: crypto?.randomUUID ? crypto.randomUUID() : `mock-${Date.now()}`,
-        ...data,
-        __mock: true,
-        entityName,
-      };
+      const id =
+        typeof crypto !== "undefined" && crypto?.randomUUID
+          ? crypto.randomUUID()
+          : `mock-${Date.now()}`;
+
+      const item = { id, ...data, __mock: true, entityName };
       store.push(item);
       return item;
     },
@@ -56,12 +58,14 @@ function makeEntityMock(entityName) {
   };
 }
 
-const useMockApi =
-  import.meta.env.DEV || String(import.meta.env.VITE_USE_MOCK_API) === "true";
+const useMock =
+  import.meta.env.DEV ||
+  String(import.meta.env.VITE_USE_MOCK_API || "").toLowerCase() === "true" ||
+  String(import.meta.env.VITE_USE_MOCK_API || "") === "1";
 
 let api;
 
-if (useMockApi) {
+if (useMock) {
   api = {
     entities: {
       Project: makeEntityMock("Project"),
@@ -75,12 +79,13 @@ if (useMockApi) {
       logout: async () => ({ ok: true, __mock: true }),
     },
 
+    // Minimalny stub na integracje – żeby nic nie wywalało jeśli gdzieś jest import.
     integrations: {
       Core: {
         InvokeLLM: async () => ({
           ok: true,
           __mock: true,
-          message: "LLM not configured",
+          message: "LLM not configured in mock mode",
         }),
         SendEmail: async () => ({ ok: true, __mock: true }),
         UploadFile: async () => ({ ok: true, __mock: true }),
@@ -94,42 +99,8 @@ if (useMockApi) {
     __mock: true,
   };
 } else {
-  // Tu docelowo podepniesz prawdziwy backend.
-  // Na teraz: zamiast wywalać białą stronę, lepiej pokazać sensowny błąd dopiero przy próbie użycia API.
-  api = {
-    entities: {
-      Project: {
-        list: async () => {
-          throw new Error("API not configured (Project.list).");
-        },
-      },
-      Document: {
-        list: async () => {
-          throw new Error("API not configured (Document.list).");
-        },
-        filter: async () => {
-          throw new Error("API not configured (Document.filter).");
-        },
-      },
-      ProjectMember: {
-        list: async () => {
-          throw new Error("API not configured (ProjectMember.list).");
-        },
-      },
-    },
-    auth: {
-      me: async () => {
-        throw new Error("API not configured (auth.me).");
-      },
-      login: async () => {
-        throw new Error("API not configured (auth.login).");
-      },
-      logout: async () => {
-        throw new Error("API not configured (auth.logout).");
-      },
-    },
-    integrations: { Core: {} },
-  };
+  // Tu docelowo podpinamy prawdziwy backend (np. własny API).
+  throw new Error("PROD backend not configured yet.");
 }
 
 export { api };
