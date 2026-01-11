@@ -1,17 +1,14 @@
 // src/api/apiClient.js
 // Lokalny klient API dla MVP.
-// DEV: mocki (żeby działało bez backendu).
-// PROD: domyślnie oczekuje backendu, ALE można wymusić mocki envem VITE_USE_MOCK_API=true.
+// Na dziś: domyślnie używamy mocków także na Vercelu, dopóki nie podepniemy backendu.
 
 function makeEntityMock(entityName) {
-  // Trzymamy w pamięci “bazę” dla DEV/Mock, żeby listy nie były zawsze puste.
   const store = [];
 
   return {
     list: async () => store,
     get: async (id) => store.find((x) => x.id === id) ?? null,
 
-    // Prosty filter – wystarczy na MVP (np. warranty_end_date != null)
     filter: async (query = {}) => {
       const hasWarrantyFilter =
         query?.warranty_end_date &&
@@ -58,10 +55,10 @@ function makeEntityMock(entityName) {
   };
 }
 
-const useMock =
-  import.meta.env.DEV ||
-  String(import.meta.env.VITE_USE_MOCK_API || "").toLowerCase() === "true" ||
-  String(import.meta.env.VITE_USE_MOCK_API || "") === "1";
+// Jeżeli kiedyś podepniemy backend, ustawimy VITE_API_BASE_URL.
+// Dopóki go nie ma -> mocki działają wszędzie (DEV i PROD).
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const useMock = !apiBaseUrl;
 
 let api;
 
@@ -79,7 +76,6 @@ if (useMock) {
       logout: async () => ({ ok: true, __mock: true }),
     },
 
-    // Minimalny stub na integracje – żeby nic nie wywalało jeśli gdzieś jest import.
     integrations: {
       Core: {
         InvokeLLM: async () => ({
@@ -99,8 +95,9 @@ if (useMock) {
     __mock: true,
   };
 } else {
-  // Tu docelowo podpinamy prawdziwy backend (np. własny API).
-  throw new Error("PROD backend not configured yet.");
+  // Tu docelowo podepniemy prawdziwy backend.
+  // Na razie nie implementujemy, bo nie mamy serwera.
+  throw new Error("Backend configured but client is not implemented yet.");
 }
 
 export { api };
