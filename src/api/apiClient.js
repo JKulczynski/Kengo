@@ -1,18 +1,45 @@
 // src/api/apiClient.js
 // Lokalny klient API dla MVP.
-// Na ten etap: używamy mocków zarówno lokalnie, jak i na hostingu (Vercel),
-// żeby każdy mógł odpalić apkę bez backendu.
-// Docelowo: podpinamy prawdziwy backend i wyłączamy mocki.
+// DEV: mocki (żeby działało bez backendu).
+// PROD: na razie też może działać na mockach, jeśli ustawimy VITE_USE_MOCK_API=true na Vercel.
+
+function safeParse(json, fallback) {
+  try {
+    return JSON.parse(json);
+  } catch {
+    return fallback;
+  }
+}
 
 function makeEntityMock(entityName) {
-  // Prosty „magazynek w pamięci” na potrzeby DEV/DEMO.
-  const store = [];
+  const storageKey = `kengo_mock_${entityName}`;
+
+  // Trzymamy w localStorage (żeby po odświeżeniu nie znikało).
+  const loadStore = () => {
+    if (typeof window === "undefined") return [];
+    const raw = window.localStorage.getItem(storageKey);
+    return raw ? safeParse(raw, []) : [];
+  };
+
+  const saveStore = (data) => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(storageKey, JSON.stringify(data));
+  };
+
+  let store = loadStore();
+
+  const newId = () => {
+    const c = globalThis.crypto;
+    if (c && typeof c.randomUUID === "function") return c.randomUUID();
+    return `mock-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  };
 
   return {
     list: async () => store,
+
     get: async (id) => store.find((x) => x.id === id) ?? null,
 
-    // Minimalny filter na MVP (np. warranty_end_date != null)
+    // Prosty filter na MVP (np. warranty_end_date != null)
     filter: async (query = {}) => {
       const hasWarrantyFilter =
         query?.warranty_end_date &&
@@ -30,13 +57,14 @@ function makeEntityMock(entityName) {
     },
 
     create: async (data) => {
-      const id =
-        (typeof crypto !== "undefined" && crypto.randomUUID)
-          ? crypto.randomUUID()
-          : `mock-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
-      const item = { id, ...data, __mock: true, entityName };
-      store.push(item);
+      const item = {
+        id: newId(),
+        ...data,
+        __mock: true,
+        entityName,
+      };
+      store = [...store, item];
+      saveStore(store);
       return item;
     },
 
@@ -45,51 +73,71 @@ function makeEntityMock(entityName) {
 
       if (idx === -1) {
         const item = { id, ...data, __mock: true, entityName };
-        store.push(item);
+        store = [...store, item];
+        saveStore(store);
         return item;
       }
 
-      store[idx] = { ...store[idx], ...data, __mock: true, entityName };
-      return store[idx];
+      const updated = { ...store[idx], ...data, __mock: true, entityName };
+      store = store.map((x, i) => (i === idx ? updated : x));
+      saveStore(store);
+      return updated;
     },
 
     delete: async (id) => {
-      const idx = store.findIndex((x) => x.id === id);
-      if (idx !== -1) store.splice(idx, 1);
+      store = store.filter((x) => x.id !== id);
+      saveStore(store);
       return { ok: true, __mock: true, entityName };
     },
   };
 }
 
-// Na tym etapie ZAWSZE używamy mocków (także na Vercel).
-// Dzięki temu link działa dla innych osób bez Twojego komputera.
-const api = {
-  entities: {
-    Project: makeEntityMock("Project"),
-    Document: makeEntityMock("Document"),
-    ProjectMember: makeEntityMock("ProjectMember"),
-  },
+let api;
 
-  auth: {
-    me: async () => ({ id: "demo-user", email: "demo@kengo", __mock: true }),
-    login: async () => ({ ok: true, __mock: true }),
-    logout: async () => ({ ok: true, __mock: true }),
-  },
+// To jest klucz: na Vercel (prod) też możemy odpalić mocki sterowane env var.
+const USE_MOCK_API =
+  import.meta.env.DEV ||
+  import.meta.env.VITE_USE_MOCK_API === "true" ||
+  import.meta.env.VITE_USE_MOCK_API === "1";
 
-  // Minimalne stuby integracji – żeby nic nie wywalało jeśli gdzieś jest import.
-  integrations: {
-    Core: {
-      InvokeLLM: async () => ({ ok: true, __mock: true, message: "LLM not configured" }),
-      SendEmail: async () => ({ ok: true, __mock: true }),
-      UploadFile: async () => ({ ok: true, __mock: true }),
-      GenerateImage: async () => ({ ok: true, __mock: true }),
-      ExtractDataFromUploadedFile: async () => ({ ok: true, __mock: true }),
-      CreateFileSignedUrl: async () => ({ ok: true, __mock: true }),
-      UploadPrivateFile: async () => ({ ok: true, __mock: true }),
+if (USE_MOCK_API) {
+  api = {
+    entities: {
+      Project: makeEntityMock("Project"),
+      Document: makeEntityMock("Document"),
+      ProjectMember: makeEntityMock("ProjectMember"),
     },
-  },
 
-  __mock: true,
-};
+    auth: {
+      me: async () => ({ id: "dev-user", email: "dev@local", __mock: true }),
+      login: async () => ({ ok: true, __mock: true }),
+      logout: async () => ({ ok: true, __mock: true }),
+    },
+
+    integrations: {
+      Core: {
+        InvokeLLM: async () => ({
+          ok: true,
+          __mock: true,
+          message: "LLM not configured yet",
+        }),
+        SendEmail: async () => ({ ok: true, __mock: true }),
+        UploadFile: async () => ({ ok: true, __mock: true }),
+        GenerateImage: async () => ({ ok: true, __mock: true }),
+        ExtractDataFromUploadedFile: async () => ({ ok: true, __mock: true }),
+        CreateFileSignedUrl: async () => ({ ok: true, __mock: true }),
+        UploadPrivateFile: async () => ({ ok: true, __mock: true }),
+      },
+    },
+
+    __mock: true,
+  };
+} else {
+  // Docelowo: tu podepniemy prawdziwy backend (np. własne API).
+  // Na razie nie blokujemy deploya mockami tylko wtedy, kiedy USE_MOCK_API nie jest ustawione.
+  throw new Error(
+    "Backend produkcyjny nie jest jeszcze podpięty. Ustaw VITE_USE_MOCK_API=true, żeby odpalić wersję demo."
+  );
+}
 
 export { api };
