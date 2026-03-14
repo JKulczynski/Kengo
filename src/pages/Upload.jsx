@@ -1,12 +1,13 @@
 import React, { useState, useCallback, useRef } from "react";
 import { Document } from "@/api/entities";
-import { Project } from "@/api/entities"; 
+import { Project } from "@/api/entities";
 import { ExtractDataFromUploadedFile, UploadFile, InvokeLLM } from "@/api/integrations";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { toast } from "sonner";
 
 import FileUploadZone from "../components/upload/FileUploadZone";
 import ProcessingQueue from "../components/upload/ProcessingQueue";
@@ -55,7 +56,7 @@ export default function UploadPage() {
     );
 
     if (droppedFiles.length === 0) {
-      setError("Please upload PDF or image files only");
+      setError("Wgraj pliki PDF lub obrazy");
       return;
     }
 
@@ -68,7 +69,7 @@ export default function UploadPage() {
     );
 
     if (selectedFiles.length === 0) {
-      setError("Please upload PDF or image files only");
+      setError("Wgraj pliki PDF lub obrazy");
       return;
     }
 
@@ -139,7 +140,7 @@ export default function UploadPage() {
       });
       
     } catch (error) {
-      setError(`Error processing ${file.name}: ${error.message}`);
+      setError(`Błąd przetwarzania ${file.name}: ${error.message}`);
       removeFile(index);
     }
 
@@ -159,12 +160,12 @@ export default function UploadPage() {
         removeFile(fileIndex);
       }
       setCurrentPreview(null);
-      
+      toast.success("Dokument został zapisany");
       if (files.length <= 1) {
         navigate(createPageUrl("Dashboard"));
       }
     } catch (error) {
-      setError("Error saving document. Please try again.");
+      setError("Błąd zapisu dokumentu. Spróbuj ponownie.");
     }
     setIsProcessing(false);
   };
@@ -191,8 +192,8 @@ export default function UploadPage() {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-3xl font-semibold text-black tracking-tight">Upload</h1>
-            <p className="text-gray-500 mt-1">Add documents to your renovation projects</p>
+            <h1 className="text-3xl font-semibold text-black tracking-tight">Dodaj dokument</h1>
+            <p className="text-gray-500 mt-1">Dodaj dokumenty do swoich projektów remontowych</p>
           </div>
         </div>
 

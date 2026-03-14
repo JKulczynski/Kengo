@@ -34,6 +34,7 @@ export default function Notes() {
   const [notes, setNotes] = useState([]);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showVoice, setShowVoice] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -45,6 +46,7 @@ export default function Notes() {
 
   const loadData = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const [notesData, projectsData] = await Promise.all([
         Note.list(),
@@ -55,6 +57,7 @@ export default function Notes() {
       setProjects(projectsData);
     } catch (err) {
       console.error("Błąd ładowania notatek:", err);
+      setError("Nie udało się załadować notatek.");
     }
     setIsLoading(false);
   };
@@ -123,6 +126,15 @@ export default function Notes() {
             Nowa notatka
           </Button>
         </div>
+
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
+            <p className="text-red-600 text-sm">{error}</p>
+            <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
+              Spróbuj ponownie
+            </Button>
+          </div>
+        )}
 
         {/* Notes list */}
         {isLoading ? (

@@ -4,6 +4,7 @@ import { ProjectMember } from '@/api/entities';
 import { Project } from '@/api/entities';
 import { User } from '@/api/entities';
 import { SendEmail } from '@/api/integrations';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -151,7 +152,7 @@ export default function TeamPage() {
       );
       
       if (existingMember) {
-        alert("Ten użytkownik już jest członkiem tego projektu.");
+        toast.error("Ten użytkownik już jest członkiem tego projektu.");
         return;
       }
 
@@ -177,12 +178,13 @@ export default function TeamPage() {
       setInviteEmail('');
       setInviteRole('viewer');
       setInviteProject('');
-      
+
+      toast.success("Zaproszenie zostało wysłane.");
       await loadData();
-      
+
     } catch (error) {
       console.error("Error sending invitation:", error);
-      alert("Wystąpił błąd podczas wysyłania zaproszenia.");
+      toast.error("Wystąpił błąd podczas wysyłania zaproszenia.");
     }
     setIsInviting(false);
   };
@@ -190,9 +192,11 @@ export default function TeamPage() {
   const removeMember = async (memberId) => {
     try {
       await ProjectMember.delete(memberId);
+      toast.success("Członek zespołu został usunięty.");
       await loadData();
     } catch (error) {
       console.error("Error removing member:", error);
+      toast.error("Błąd usuwania członka zespołu.");
     }
   };
 
@@ -256,10 +260,10 @@ export default function TeamPage() {
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl font-semibold text-black tracking-tight mb-3">
-            Team Management
+            Zarządzanie zespołem
           </h1>
           <p className="text-lg text-gray-500">
-            Manage team members and collaborate on your renovation projects
+            Zarządzaj członkami zespołu i współpracuj nad projektami remontowymi
           </p>
         </div>
 
@@ -267,11 +271,11 @@ export default function TeamPage() {
           <TabsList className="apple-blur">
             <TabsTrigger value="members" className="flex items-center gap-2 text-black">
               <Users className="w-4 h-4" />
-              Team Members ({members.length})
+              Członkowie ({members.length})
             </TabsTrigger>
             <TabsTrigger value="invite" className="flex items-center gap-2 text-black">
               <UserPlus className="w-4 h-4" />
-              Invite Member
+              Zaproś
             </TabsTrigger>
           </TabsList>
 
@@ -283,7 +287,7 @@ export default function TeamPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
-                      placeholder="Search by email..."
+                      placeholder="Szukaj po e-mailu..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10"
@@ -292,10 +296,10 @@ export default function TeamPage() {
                   
                   <Select value={selectedProject} onValueChange={setSelectedProject}>
                     <SelectTrigger>
-                      <SelectValue placeholder="All Projects" />
+                      <SelectValue placeholder="Wszystkie projekty" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Projects</SelectItem>
+                      <SelectItem value="all">Wszystkie projekty</SelectItem>
                       {projects.map(project => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.name}
@@ -306,23 +310,23 @@ export default function TeamPage() {
 
                   <Select value={roleFilter} onValueChange={setRoleFilter}>
                     <SelectTrigger>
-                      <SelectValue placeholder="All Roles" />
+                      <SelectValue placeholder="Wszystkie role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Roles</SelectItem>
-                      <SelectItem value="owner">Owner</SelectItem>
-                      <SelectItem value="editor">Editor</SelectItem>
-                      <SelectItem value="viewer">Viewer</SelectItem>
+                      <SelectItem value="all">Wszystkie role</SelectItem>
+                      <SelectItem value="owner">Właściciel</SelectItem>
+                      <SelectItem value="editor">Edytor</SelectItem>
+                      <SelectItem value="viewer">Przeglądający</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="flex justify-between items-center mt-4">
                   <p className="text-sm text-gray-500">
-                    {filteredMembers.length} of {members.length} members
+                    {filteredMembers.length} z {members.length} członków
                   </p>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => {
                       setSearchQuery('');
@@ -330,7 +334,7 @@ export default function TeamPage() {
                       setRoleFilter('all');
                     }}
                   >
-                    Clear Filters
+                    Wyczyść filtry
                   </Button>
                 </div>
               </CardContent>
@@ -368,7 +372,7 @@ export default function TeamPage() {
                                 {getProjectName(member.project_id)}
                               </p>
                               <p className="text-xs text-gray-400">
-                                Invited by {member.invited_by}
+                                Zaproszony przez {member.invited_by}
                               </p>
                             </div>
                           </div>
@@ -380,8 +384,8 @@ export default function TeamPage() {
                             </Badge>
                             
                             <Badge className={statusColors[member.status]}>
-                              {member.status === 'active' ? 'Active' : 
-                               member.status === 'pending' ? 'Pending' : 'Inactive'}
+                              {member.status === 'active' ? 'Aktywny' :
+                               member.status === 'pending' ? 'Oczekuje' : 'Nieaktywny'}
                             </Badge>
                             
                             {canManageMember(member) && member.user_email !== currentUser?.email && (
@@ -393,19 +397,19 @@ export default function TeamPage() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="apple-blur">
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Remove Team Member</AlertDialogTitle>
+                                    <AlertDialogTitle>Usuń członka zespołu</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Are you sure you want to remove {member.user_email} from {getProjectName(member.project_id)}? 
-                                      They will lose access to all project documents.
+                                      Czy na pewno chcesz usunąć {member.user_email} z projektu {getProjectName(member.project_id)}?
+                                      Osoba ta straci dostęp do wszystkich dokumentów projektu.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction 
+                                    <AlertDialogCancel>Anuluj</AlertDialogCancel>
+                                    <AlertDialogAction
                                       onClick={() => removeMember(member.id)}
                                       className="bg-red-500 hover:bg-red-600"
                                     >
-                                      Remove
+                                      Usuń
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -423,12 +427,12 @@ export default function TeamPage() {
                 <CardContent className="text-center py-12">
                   <Users className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                   <h3 className="text-lg font-medium text-black mb-2">
-                    No team members found
+                    Brak członków zespołu
                   </h3>
                   <p className="text-gray-500">
-                    {members.length === 0 
-                      ? "Start collaborating by inviting team members to your projects"
-                      : "Try adjusting your search or filter criteria"
+                    {members.length === 0
+                      ? "Zaproś członków zespołu, aby zacząć współpracę"
+                      : "Brak wyników dla wybranych filtrów. Wyczyść filtry."
                     }
                   </p>
                 </CardContent>
@@ -441,26 +445,26 @@ export default function TeamPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserPlus className="w-5 h-5" />
-                  Invite New Team Member
+                  Zaproś nowego członka zespołu
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label htmlFor="invite-email">Email Address</Label>
+                  <Label htmlFor="invite-email">Adres e-mail</Label>
                   <Input
                     id="invite-email"
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder="colleague@example.com"
+                    placeholder="kolega@przyklad.pl"
                   />
                 </div>
 
                 <div>
-                  <Label>Project</Label>
+                  <Label>Projekt</Label>
                   <Select value={inviteProject} onValueChange={setInviteProject}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a project" />
+                      <SelectValue placeholder="Wybierz projekt" />
                     </SelectTrigger>
                     <SelectContent>
                       {projects.map(project => (
@@ -473,15 +477,15 @@ export default function TeamPage() {
                 </div>
 
                 <div>
-                  <Label>Role</Label>
+                  <Label>Rola</Label>
                   <Select value={inviteRole} onValueChange={setInviteRole}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="viewer">Viewer - Can view projects and documents</SelectItem>
-                      <SelectItem value="editor">Editor - Can edit projects and documents</SelectItem>
-                      <SelectItem value="owner">Owner - Full project control</SelectItem>
+                      <SelectItem value="viewer">Przeglądający – może przeglądać projekty i dokumenty</SelectItem>
+                      <SelectItem value="editor">Edytor – może edytować projekty i dokumenty</SelectItem>
+                      <SelectItem value="owner">Właściciel – pełna kontrola nad projektem</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -492,11 +496,11 @@ export default function TeamPage() {
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white"
                 >
                   {isInviting ? (
-                    <>Sending Invitation...</>
+                    <>Wysyłam zaproszenie...</>
                   ) : (
                     <>
                       <Mail className="w-4 h-4 mr-2" />
-                      Send Invitation
+                      Wyślij zaproszenie
                     </>
                   )}
                 </Button>

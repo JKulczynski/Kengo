@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+import { pl } from "date-fns/locale";
 
 const typeIcons = {
   invoice: Receipt,
@@ -28,7 +29,7 @@ export default function RecentDocuments({ documents, isLoading }) {
     return (
       <div className="apple-blur rounded-2xl p-6 apple-shadow">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-medium text-black">Documents</h3>
+          <h3 className="font-medium text-black">Dokumenty</h3>
         </div>
         <div className="space-y-4">
           {Array(5).fill(0).map((_, i) => (
@@ -48,7 +49,7 @@ export default function RecentDocuments({ documents, isLoading }) {
   return (
     <div className="apple-blur rounded-2xl p-6 apple-shadow">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="font-medium text-black">Documents</h3>
+        <h3 className="font-medium text-black">Dokumenty</h3>
         <Link 
           to={createPageUrl("Documents")}
           className="text-gray-500 hover:text-black transition-colors"
@@ -60,7 +61,7 @@ export default function RecentDocuments({ documents, isLoading }) {
       {documents.length === 0 ? (
         <div className="text-center py-12">
           <FileText className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">No documents yet</p>
+          <p className="text-gray-500 text-sm">Brak dokumentów</p>
         </div>
       ) : (
         <Link to={createPageUrl("Documents")}>
@@ -85,7 +86,7 @@ export default function RecentDocuments({ documents, isLoading }) {
                         </span>
                       )}
                       <span className="text-xs text-gray-500">
-                        {format(new Date(doc.created_date), 'MMM d')}
+                        {format(new Date(doc.created_date), 'd MMM', { locale: pl })}
                       </span>
                     </div>
                   </div>

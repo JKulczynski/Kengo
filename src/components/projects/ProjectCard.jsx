@@ -19,10 +19,10 @@ import {
 import { motion } from "framer-motion";
 
 const statusConfig = {
-  planning: { icon: Clock, color: "bg-blue-50 text-blue-600", label: "Planning" },
-  in_progress: { icon: PlayCircle, color: "bg-orange-50 text-orange-600", label: "In Progress" },
-  on_hold: { icon: PauseCircle, color: "bg-gray-100 text-gray-600", label: "On Hold" },
-  completed: { icon: CheckCircle, color: "bg-green-50 text-green-600", label: "Completed" }
+  planning: { icon: Clock, color: "bg-blue-50 text-blue-600", label: "Planowanie" },
+  in_progress: { icon: PlayCircle, color: "bg-orange-50 text-orange-600", label: "W trakcie" },
+  on_hold: { icon: PauseCircle, color: "bg-gray-100 text-gray-600", label: "Wstrzymany" },
+  completed: { icon: CheckCircle, color: "bg-green-50 text-green-600", label: "Ukończony" }
 };
 
 const typeColors = {
@@ -49,7 +49,7 @@ const BudgetTracker = ({ budget, actualCost }) => {
   return (
     <div className="mt-4">
       <div className="flex justify-between items-center mb-1">
-        <span className="text-xs text-gray-500">Budget</span>
+        <span className="text-xs text-gray-500">Budżet</span>
         <span className={`text-xs font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-black'}`}>
           ${cost.toLocaleString()} / ${budget.toLocaleString()}
         </span>
@@ -79,10 +79,10 @@ const GridView = ({ project, onEdit, onDelete }) => (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="apple-blur">
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(project); }}>
-              <Edit className="w-4 h-4 mr-2" /> Edit
+              <Edit className="w-4 h-4 mr-2" /> Edytuj
             </DropdownMenuItem>
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(project); }} className="text-red-500">
-              <Trash2 className="w-4 h-4 mr-2" /> Delete
+              <Trash2 className="w-4 h-4 mr-2" /> Usuń
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -91,7 +91,7 @@ const GridView = ({ project, onEdit, onDelete }) => (
       <p className="text-sm text-gray-500 capitalize mb-4">{project.type.replace(/_/g, ' ')}</p>
       
       <div className="flex justify-between items-center mb-2">
-        <span className="text-xs text-gray-500">Progress</span>
+        <span className="text-xs text-gray-500">Postęp</span>
         <span className="text-xs font-medium text-black">{project.progress_percentage || 0}%</span>
       </div>
       <div className="w-full bg-gray-100 rounded-full h-1.5">
@@ -130,7 +130,7 @@ const ListView = ({ project, onEdit, onDelete }) => {
       <div className="hidden md:flex items-center gap-6">
         <div className="w-32">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs text-gray-500">Progress</span>
+            <span className="text-xs text-gray-500">Postęp</span>
             <span className="text-xs font-medium text-black">{project.progress_percentage || 0}%</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5">
@@ -141,7 +141,7 @@ const ListView = ({ project, onEdit, onDelete }) => {
         {budget > 0 && (
           <div className="w-32">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-gray-500">Budget</span>
+              <span className="text-xs text-gray-500">Budżet</span>
               <span className={`text-xs font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-black'}`}>
                 {budgetUsage.toFixed(0)}%
               </span>
@@ -166,8 +166,8 @@ const ListView = ({ project, onEdit, onDelete }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="apple-blur">
-          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(project); }}><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
-          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(project); }} className="text-red-500"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(project); }}><Edit className="w-4 h-4 mr-2" /> Edytuj</DropdownMenuItem>
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(project); }} className="text-red-500"><Trash2 className="w-4 h-4 mr-2" /> Usuń</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -192,7 +192,7 @@ export default function ProjectCard({ project, onEdit, onDelete, viewMode }) {
     >
       {viewMode === 'grid' 
         ? <GridView project={project} onEdit={onEdit} onDelete={onDelete} />
-        : <ListView project={project} onEdit={onDelete} onDelete={onDelete} />
+        : <ListView project={project} onEdit={onEdit} onDelete={onDelete} />
       }
     </motion.div>
   );

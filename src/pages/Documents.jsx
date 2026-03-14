@@ -58,6 +58,7 @@ export default function DocumentsPage() {
   const [documents, setDocuments] = useState([]);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -100,6 +101,7 @@ export default function DocumentsPage() {
 
   const loadData = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const [documentsData, projectsData] = await Promise.all([
         Document.list('-created_date'),
@@ -109,6 +111,7 @@ export default function DocumentsPage() {
       setProjects(projectsData);
     } catch (error) {
       console.error("Error loading documents:", error);
+      setError("Nie udało się załadować dokumentów.");
     }
     setIsLoading(false);
   };
@@ -145,16 +148,16 @@ export default function DocumentsPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
             <div>
               <h1 className="text-4xl font-semibold text-black tracking-tight">
-                All Documents
+                Wszystkie dokumenty
               </h1>
               <p className="text-lg text-gray-500 font-normal mt-2">
-                Browse and manage all your renovation documents
+                Przeglądaj i zarządzaj dokumentami remontowymi
               </p>
             </div>
             <Link to={createPageUrl("Upload")}>
               <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium">
                 <Upload className="w-4 h-4 mr-2" />
-                Add Document
+                Dodaj dokument
               </Button>
             </Link>
           </div>
@@ -165,53 +168,53 @@ export default function DocumentsPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  placeholder="Search documents..."
+                  placeholder="Szukaj dokumentów..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
-              
+
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Types" />
+                  <SelectValue placeholder="Wszystkie typy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="invoice">Invoice</SelectItem>
-                  <SelectItem value="receipt">Receipt</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="permit">Permit</SelectItem>
-                  <SelectItem value="warranty">Warranty</SelectItem>
-                  <SelectItem value="photo">Photo</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="all">Wszystkie typy</SelectItem>
+                  <SelectItem value="invoice">Faktura</SelectItem>
+                  <SelectItem value="receipt">Paragon</SelectItem>
+                  <SelectItem value="contract">Umowa</SelectItem>
+                  <SelectItem value="permit">Pozwolenie</SelectItem>
+                  <SelectItem value="warranty">Gwarancja</SelectItem>
+                  <SelectItem value="photo">Zdjęcie</SelectItem>
+                  <SelectItem value="other">Inne</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Categories" />
+                  <SelectValue placeholder="Wszystkie kategorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="materials">Materials</SelectItem>
-                  <SelectItem value="labor">Labor</SelectItem>
-                  <SelectItem value="permits">Permits</SelectItem>
-                  <SelectItem value="appliances">Appliances</SelectItem>
-                  <SelectItem value="fixtures">Fixtures</SelectItem>
-                  <SelectItem value="tools">Tools</SelectItem>
-                  <SelectItem value="utilities">Utilities</SelectItem>
-                  <SelectItem value="insurance">Insurance</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="all">Wszystkie kategorie</SelectItem>
+                  <SelectItem value="materials">Materiały</SelectItem>
+                  <SelectItem value="labor">Robocizna</SelectItem>
+                  <SelectItem value="permits">Pozwolenia</SelectItem>
+                  <SelectItem value="appliances">Sprzęt AGD</SelectItem>
+                  <SelectItem value="fixtures">Armatura</SelectItem>
+                  <SelectItem value="tools">Narzędzia</SelectItem>
+                  <SelectItem value="utilities">Media</SelectItem>
+                  <SelectItem value="insurance">Ubezpieczenie</SelectItem>
+                  <SelectItem value="other">Inne</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={projectFilter} onValueChange={setProjectFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Projects" />
+                  <SelectValue placeholder="Wszystkie projekty" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Projects</SelectItem>
+                  <SelectItem value="all">Wszystkie projekty</SelectItem>
                   {projects.map(project => (
                     <SelectItem key={project.id} value={project.id}>
                       {project.name}
@@ -223,13 +226,22 @@ export default function DocumentsPage() {
             
             <div className="flex justify-between items-center">
               <p className="text-sm text-gray-500">
-                {filteredDocuments.length} of {documents.length} documents
+                {filteredDocuments.length} z {documents.length} dokumentów
               </p>
               <Button variant="outline" onClick={clearFilters} size="sm">
-                Clear Filters
+                Wyczyść filtry
               </Button>
             </div>
           </div>
+
+          {error && (
+            <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
+              <p className="text-red-600 text-sm">{error}</p>
+              <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
+                Spróbuj ponownie
+              </Button>
+            </div>
+          )}
 
           {/* Documents List */}
           {isLoading ? (
@@ -277,13 +289,13 @@ export default function DocumentsPage() {
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
                             {doc.vendor && (
                               <div>
-                                <span className="block text-xs text-gray-500">Vendor</span>
+                                <span className="block text-xs text-gray-500">Dostawca</span>
                                 <span className="font-medium text-black">{doc.vendor}</span>
                               </div>
                             )}
                             {doc.amount && (
                               <div>
-                                <span className="block text-xs text-gray-500">Amount</span>
+                                <span className="block text-xs text-gray-500">Kwota</span>
                                 <span className="font-medium text-green-600">
                                   ${doc.amount.toLocaleString()}
                                 </span>
@@ -291,14 +303,14 @@ export default function DocumentsPage() {
                             )}
                             {doc.date && (
                               <div>
-                                <span className="block text-xs text-gray-500">Date</span>
+                                <span className="block text-xs text-gray-500">Data</span>
                                 <span className="font-medium text-black">
                                   {format(new Date(doc.date), 'MMM d, yyyy')}
                                 </span>
                               </div>
                             )}
                             <div>
-                              <span className="block text-xs text-gray-500">Added</span>
+                              <span className="block text-xs text-gray-500">Dodano</span>
                               <span className="font-medium text-black">
                                 {format(new Date(doc.created_date), 'MMM d, yyyy')}
                               </span>
@@ -321,7 +333,7 @@ export default function DocumentsPage() {
                           className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         >
                           <ExternalLink className="w-4 h-4" />
-                          View
+                          Otwórz
                         </a>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -347,19 +359,25 @@ export default function DocumentsPage() {
                 <FileText className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-medium text-black mb-2">
-                No documents found
+                {documents.length === 0 ? "Brak dokumentów" : "Brak wyników"}
               </h3>
               <p className="text-gray-500 mb-6">
-                {documents.length === 0 
-                  ? "Upload your first document to get started" 
-                  : "Try adjusting your search or filter criteria"}
+                {documents.length === 0
+                  ? "Wgraj pierwszy dokument, aby zacząć."
+                  : "Brak wyników dla wybranych filtrów. Wyczyść filtry."}
               </p>
-              <Link to={createPageUrl("Upload")}>
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Document
+              {documents.length === 0 ? (
+                <Link to={createPageUrl("Upload")}>
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Dodaj dokument
+                  </Button>
+                </Link>
+              ) : (
+                <Button variant="outline" onClick={clearFilters}>
+                  Wyczyść filtry
                 </Button>
-              </Link>
+              )}
             </div>
           )}
         </div>

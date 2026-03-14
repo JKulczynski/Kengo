@@ -11,10 +11,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 const statusConfig = {
-  planning: { color: "bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400", label: "Planning" },
-  in_progress: { color: "bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400", label: "In Progress" },
-  on_hold: { color: "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400", label: "On Hold" },
-  completed: { color: "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400", label: "Completed" }
+  planning: { color: "bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400", label: "Planowanie" },
+  in_progress: { color: "bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400", label: "W trakcie" },
+  on_hold: { color: "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400", label: "Wstrzymany" },
+  completed: { color: "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400", label: "Ukończony" }
 };
 
 export default function ActiveProjects({ projects, documents, isLoading, onProjectUpdate }) {
@@ -22,7 +22,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
     return (
       <div className="apple-blur rounded-2xl p-8 apple-shadow">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xl font-semibold text-black">Projects</h2>
+          <h2 className="text-xl font-semibold text-black">Projekty</h2>
         </div>
         <div className="space-y-6">
           {Array(3).fill(0).map((_, i) => (
@@ -40,7 +40,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
   return (
     <div className="apple-blur rounded-2xl p-6 md:p-8 apple-shadow">
       <div className="flex justify-between items-center mb-6 md:mb-8">
-        <h2 className="text-xl font-semibold text-black tracking-tight">Projects</h2>
+        <h2 className="text-xl font-semibold text-black tracking-tight">Projekty</h2>
         <Link to={createPageUrl("Projects")}>
           <Button variant="ghost" size="sm" className="text-gray-500 hover:text-black">
             <ArrowUpRight className="w-4 h-4" />
@@ -53,11 +53,11 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
           <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
             <Plus className="w-6 h-6 text-gray-400" />
           </div>
-          <h3 className="font-medium text-black mb-2">No projects yet</h3>
-          <p className="text-gray-500 text-sm mb-6">Start your first renovation project</p>
+          <h3 className="font-medium text-black mb-2">Brak projektów</h3>
+          <p className="text-gray-500 text-sm mb-6">Zacznij swój pierwszy projekt remontowy</p>
           <Link to={createPageUrl("Projects")}>
             <Button className="bg-black text-white hover:bg-gray-800">
-              Create Project
+              Utwórz projekt
             </Button>
           </Link>
         </div>
@@ -73,9 +73,9 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
             if (budgetUsage > 100) budgetColor = 'bg-red-500';
 
             return (
-              <Link 
-                key={project.id} 
-                to={createPageUrl(`Projects`)}
+              <Link
+                key={project.id}
+                to={`${createPageUrl('Projects')}?id=${project.id}`}
                 className="block group hover:bg-gray-50 rounded-lg p-4 -m-4 transition-colors cursor-pointer"
               >
                 <div>
@@ -114,7 +114,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                     <div>
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-xs text-gray-500">
-                          Budget: ${actualCost.toLocaleString()} / ${project.budget.toLocaleString()}
+                          Budżet: ${actualCost.toLocaleString()} / ${project.budget.toLocaleString()}
                         </span>
                         <span className={`text-xs font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-gray-700'}`}>
                           {budgetUsage.toFixed(0)}%

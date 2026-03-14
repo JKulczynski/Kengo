@@ -42,47 +42,47 @@ const getInitials = (name) => {
 
 const navigationItems = [
   {
-    title: "Dashboard",
+    title: "Pulpit",
     url: createPageUrl("Dashboard"),
     icon: Home,
   },
   {
-    title: "Projects",
+    title: "Projekty",
     url: createPageUrl("Projects"),
     icon: FolderOpen,
   },
   {
-    title: "Documents",
+    title: "Dokumenty",
     url: createPageUrl("Documents"),
     icon: FileText,
   },
   {
-    title: "Warranties",
+    title: "Gwarancje",
     url: createPageUrl("Warranties"),
     icon: ShieldCheck,
   },
   {
-    title: "Upload",
+    title: "Dodaj dokument",
     url: createPageUrl("Upload"),
     icon: Upload,
   },
   {
-    title: "Search",
+    title: "Szukaj",
     url: createPageUrl("Search"),
     icon: Search,
   },
   {
-    title: "Notes",
+    title: "Notatki",
     url: "/notes",
     icon: StickyNote,
   },
   {
-    title: "Team",
+    title: "Zespół",
     url: createPageUrl("Team"),
     icon: Users,
   },
   {
-    title: "Profile",
+    title: "Profil",
     url: createPageUrl("Profile"),
     icon: UserIcon,
   }
@@ -165,7 +165,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
               <div>
                 <h2 className="font-semibold text-black text-base">RenovateAI</h2>
-                <p className="text-xs text-gray-500 font-normal">Smart Home Assistant</p>
+                <p className="text-xs text-gray-500 font-normal">Asystent remontu</p>
               </div>
             </div>
           </SidebarHeader>
@@ -197,9 +197,9 @@ export default function Layout({ children, currentPageName }) {
 
             <SidebarGroup className="mt-auto p-4">
               <div className="p-4 rounded-lg bg-blue-500/10 text-center">
-                  <h4 className="font-semibold text-blue-800">Upgrade to Pro</h4>
-                  <p className="text-xs text-blue-600 mt-1 mb-3">Unlock team collaboration, reporting, and more.</p>
-                  <button className="text-xs font-bold text-white bg-blue-500 rounded-full px-4 py-1.5 hover:bg-blue-600">Learn More</button>
+                  <h4 className="font-semibold text-blue-800">Przejdź na Pro</h4>
+                  <p className="text-xs text-blue-600 mt-1 mb-3">Odblokuj współpracę zespołową, raporty i więcej.</p>
+                  <button className="text-xs font-bold text-white bg-blue-500 rounded-full px-4 py-1.5 hover:bg-blue-600">Dowiedz się więcej</button>
               </div>
             </SidebarGroup>
           </SidebarContent>
@@ -225,7 +225,7 @@ export default function Layout({ children, currentPageName }) {
                   </div>
                 </>
               ) : (
-                <p className="text-sm text-gray-500">Not logged in</p>
+                <p className="text-sm text-gray-500">Nie zalogowano</p>
               )}
             </Link>
           </SidebarFooter>

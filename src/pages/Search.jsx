@@ -30,7 +30,7 @@ export default function SearchPage() {
         setDocuments(documentsData);
       } catch (err) {
         console.error("Error loading data for search:", err);
-        setError("Could not load project and document data.");
+        setError("Nie udało się załadować danych projektów i dokumentów.");
       }
     };
     loadData();
@@ -92,7 +92,7 @@ export default function SearchPage() {
 
     } catch (err) {
         console.error("AI Search Error:", err);
-        setError("The AI search failed. Please try a different query.");
+        setError("Wyszukiwanie AI nie powiodło się. Spróbuj innego zapytania.");
     } finally {
         setIsLoading(false);
     }
@@ -102,9 +102,9 @@ export default function SearchPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-semibold text-black tracking-tight">Search</h1>
+          <h1 className="text-4xl font-semibold text-black tracking-tight">Szukaj</h1>
           <p className="text-lg text-gray-500 mt-2">
-            Find any project or document instantly.
+            Znajdź dowolny projekt lub dokument błyskawicznie.
           </p>
         </header>
 

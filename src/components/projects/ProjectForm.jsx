@@ -50,23 +50,23 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
       <DialogContent className="apple-blur sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold tracking-tight">
-            {project ? 'Edit Project' : 'Create New Project'}
+            {project ? 'Edytuj projekt' : 'Utwórz nowy projekt'}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div>
-            <Label htmlFor="name">Project Name</Label>
-            <Input id="name" value={formData.name} onChange={e => handleChange('name', e.target.value)} placeholder="e.g., Master Bathroom Remodel" required />
+            <Label htmlFor="name">Nazwa projektu</Label>
+            <Input id="name" value={formData.name} onChange={e => handleChange('name', e.target.value)} placeholder="np. Remont łazienki" required />
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" value={formData.description} onChange={e => handleChange('description', e.target.value)} placeholder="A brief description of the project" />
+            <Label htmlFor="description">Opis</Label>
+            <Textarea id="description" value={formData.description} onChange={e => handleChange('description', e.target.value)} placeholder="Krótki opis projektu" />
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Type</Label>
+              <Label>Typ</Label>
               <Select value={formData.type} onValueChange={value => handleChange('type', value)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent className="apple-blur">
@@ -86,17 +86,17 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
           </div>
 
           <div>
-            <Label htmlFor="budget">Budget ($)</Label>
+            <Label htmlFor="budget">Budżet (PLN)</Label>
             <Input id="budget" type="number" value={formData.budget} onChange={e => handleChange('budget', parseFloat(e.target.value) || 0)} placeholder="25000" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="start_date">Start Date</Label>
+              <Label htmlFor="start_date">Data rozpoczęcia</Label>
               <Input id="start_date" type="date" value={formData.start_date || ''} onChange={e => handleChange('start_date', e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="target_completion">Target Completion</Label>
+              <Label htmlFor="target_completion">Planowane zakończenie</Label>
               <Input id="target_completion" type="date" value={formData.target_completion || ''} onChange={e => handleChange('target_completion', e.target.value)} />
             </div>
           </div>
@@ -113,9 +113,9 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
 
           <DialogFooter className="pt-4">
             <DialogClose asChild>
-              <Button type="button" variant="outline" className="border-gray-200 dark:border-gray-700">Cancel</Button>
+              <Button type="button" variant="outline" className="border-gray-200 dark:border-gray-700">Anuluj</Button>
             </DialogClose>
-            <Button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white">{project ? 'Save Changes' : 'Create Project'}</Button>
+            <Button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white">{project ? 'Zapisz zmiany' : 'Utwórz projekt'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

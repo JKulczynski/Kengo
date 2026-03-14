@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Document } from '@/api/entities';
 import { Project } from '@/api/entities';
+import { Button } from '@/components/ui/button';
 import { format, differenceInDays, parseISO, isValid } from 'date-fns';
 import { ShieldCheck, AlertTriangle, XCircle, FileText } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,7 +20,7 @@ const WarrantyCard = ({ doc, projectName }) => {
   const daysLeft = differenceInDays(endDate, today);
 
   let status = {
-    label: 'Active',
+    label: 'Aktywna',
     color: 'text-green-600',
     bgColor: 'bg-green-50',
     icon: <ShieldCheck className="w-4 h-4" />,
@@ -27,14 +28,14 @@ const WarrantyCard = ({ doc, projectName }) => {
 
   if (daysLeft <= 0) {
     status = {
-      label: 'Expired',
+      label: 'Wygasła',
       color: 'text-red-600',
       bgColor: 'bg-red-50',
       icon: <XCircle className="w-4 h-4" />,
     };
   } else if (daysLeft <= 30) {
     status = {
-      label: 'Expiring Soon',
+      label: 'Wygasa wkrótce',
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       icon: <AlertTriangle className="w-4 h-4" />,
@@ -65,26 +66,26 @@ const WarrantyCard = ({ doc, projectName }) => {
 
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-500">Project:</span>
-          <span className="font-medium text-black">{projectName || 'N/A'}</span>
+          <span className="text-gray-500">Projekt:</span>
+          <span className="font-medium text-black">{projectName || 'Brak'}</span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Purchase Date:</span>
+          <span className="text-gray-500">Data zakupu:</span>
           <span className="font-medium text-black">
-            {hasValidPurchaseDate ? format(purchaseDate, 'PP') : 'N/A'}
+            {hasValidPurchaseDate ? format(purchaseDate, 'dd.MM.yyyy') : 'Brak'}
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Warranty Ends:</span>
-          <span className={`font-medium ${status.color}`}>{format(endDate, 'PP')}</span>
+          <span className="text-gray-500">Gwarancja do:</span>
+          <span className={`font-medium ${status.color}`}>{format(endDate, 'dd.MM.yyyy')}</span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Time Left:</span>
+          <span className="text-gray-500">Pozostało:</span>
           <span className={`font-medium ${status.color}`}>
-            {daysLeft > 0 ? `${daysLeft} days` : 'Expired'}
+            {daysLeft > 0 ? `${daysLeft} dni` : 'Wygasła'}
           </span>
         </div>
       </div>
@@ -96,7 +97,7 @@ const WarrantyCard = ({ doc, projectName }) => {
           rel="noopener noreferrer"
           className="text-blue-500 hover:text-blue-600 text-xs font-medium mt-4 inline-flex items-center gap-1"
         >
-          View Document <FileText className="w-3 h-3" />
+          Zobacz dokument <FileText className="w-3 h-3" />
         </a>
       ) : null}
     </motion.div>
@@ -108,10 +109,12 @@ export default function WarrantiesPage() {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState('asc');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         // Dokumenty: jeśli jest filter -> używamy, jeśli nie -> list
         const docsPromise =
@@ -134,6 +137,7 @@ export default function WarrantiesPage() {
         console.error("Error loading warranties:", error);
         setWarranties([]);
         setProjects([]);
+        setError("Nie udało się załadować gwarancji.");
       }
       setIsLoading(false);
     };
@@ -158,10 +162,10 @@ export default function WarrantiesPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
           <div>
             <h1 className="text-4xl font-semibold text-black tracking-tight">
-              Warranty Manager
+              Menedżer gwarancji
             </h1>
             <p className="text-lg text-gray-500 font-normal mt-2">
-              Track all your product warranties in one place.
+              Śledź wszystkie gwarancje produktów w jednym miejscu.
             </p>
           </div>
 
@@ -171,12 +175,21 @@ export default function WarrantiesPage() {
                 <SelectValue placeholder="Sort by..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="asc">Expires Soonest</SelectItem>
-                <SelectItem value="desc">Expires Latest</SelectItem>
+                <SelectItem value="asc">Wygasa najwcześniej</SelectItem>
+                <SelectItem value="desc">Wygasa najpóźniej</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
+
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
+            <p className="text-red-600 text-sm">{error}</p>
+            <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="ml-4 text-sm">
+              Spróbuj ponownie
+            </Button>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -196,10 +209,10 @@ export default function WarrantiesPage() {
               <ShieldCheck className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-xl font-medium text-black mb-2">
-              No warranties found
+              Brak gwarancji
             </h3>
             <p className="text-gray-500">
-              When you upload a document, add a warranty end date to track it here.
+              Podczas dodawania dokumentu wpisz datę końca gwarancji, aby śledzić ją tutaj.
             </p>
           </div>
         )}

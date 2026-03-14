@@ -18,10 +18,10 @@ import ProjectCard from "../components/projects/ProjectCard";
 import DeleteConfirmationDialog from "../components/projects/DeleteConfirmationDialog";
 
 const statusConfig = {
-  planning: { color: "bg-blue-50 text-blue-600", label: "Planning" },
-  in_progress: { color: "bg-orange-50 text-orange-600", label: "In Progress" },
-  on_hold: { color: "bg-gray-50 text-gray-600", label: "On Hold" },
-  completed: { color: "bg-green-50 text-green-600", label: "Completed" }
+  planning: { color: "bg-blue-50 text-blue-600", label: "Planowanie" },
+  in_progress: { color: "bg-orange-50 text-orange-600", label: "W trakcie" },
+  on_hold: { color: "bg-gray-50 text-gray-600", label: "Wstrzymany" },
+  completed: { color: "bg-green-50 text-green-600", label: "Ukończony" }
 };
 
 const typeIcons = {
@@ -45,6 +45,7 @@ export default function ProjectsPage() {
   const [members, setMembers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [projectToDelete, setProjectToDelete] = useState(null);
@@ -61,6 +62,7 @@ export default function ProjectsPage() {
 
   const loadData = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const [projectsData, documentsData, membersData, user] = await Promise.all([
           Project.list('-updated_date'),
@@ -74,6 +76,7 @@ export default function ProjectsPage() {
       setCurrentUser(user);
     } catch (error) {
       console.error("Error loading data:", error);
+      setError("Nie udało się załadować projektów.");
     }
     setIsLoading(false);
   };
@@ -174,9 +177,9 @@ export default function ProjectsPage() {
                     <Calendar className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Start Date</p>
+                    <p className="text-xs text-gray-500">Data rozpoczęcia</p>
                     <p className="font-medium text-black">
-                      {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'MMM d, yyyy') : 'Not set'}
+                      {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
                     </p>
                   </div>
                 </div>
@@ -190,7 +193,7 @@ export default function ProjectsPage() {
                     <DollarSign className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Budget</p>
+                    <p className="text-xs text-gray-500">Budżet</p>
                     <p className="font-medium text-black">
                       ${actualCost.toLocaleString()} / ${selectedProject.budget?.toLocaleString() || '0'}
                     </p>
@@ -206,8 +209,8 @@ export default function ProjectsPage() {
                     <Users className="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Team</p>
-                    <p className="font-medium text-black">{selectedProjectMembers.length + 1} members</p>
+                    <p className="text-xs text-gray-500">Zespół</p>
+                    <p className="font-medium text-black">{selectedProjectMembers.length + 1} członków</p>
                   </div>
                 </div>
               </CardContent>
@@ -220,7 +223,7 @@ export default function ProjectsPage() {
                     <FileText className="w-5 h-5 text-orange-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Documents</p>
+                    <p className="text-xs text-gray-500">Dokumenty</p>
                     <p className="font-medium text-black">{selectedProjectDocs.length}</p>
                   </div>
                 </div>
@@ -234,7 +237,7 @@ export default function ProjectsPage() {
             <Card className="apple-blur apple-shadow">
               <CardContent className="p-6">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium text-black">Project Progress</h3>
+                  <h3 className="font-medium text-black">Postęp projektu</h3>
                   <span className="text-sm font-medium text-black">
                     {selectedProject.progress_percentage || 0}%
                   </span>
@@ -253,7 +256,7 @@ export default function ProjectsPage() {
               <Card className="apple-blur apple-shadow">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-medium text-black">Budget Usage</h3>
+                    <h3 className="font-medium text-black">Wykorzystanie budżetu</h3>
                     <span className={`text-sm font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-black'}`}>
                       {budgetUsage.toFixed(1)}%
                     </span>
@@ -276,23 +279,23 @@ export default function ProjectsPage() {
           <Tabs defaultValue="documents" className="space-y-6">
             <TabsList className="apple-blur">
               <TabsTrigger value="documents" className="text-black data-[state=active]:text-black data-[state=active]:bg-white">
-                Documents ({selectedProjectDocs.length})
+                Dokumenty ({selectedProjectDocs.length})
               </TabsTrigger>
               <TabsTrigger value="team" className="text-black data-[state=active]:text-black data-[state=active]:bg-white">
-                Team ({selectedProjectMembers.length + 1})
+                Zespół ({selectedProjectMembers.length + 1})
               </TabsTrigger>
               <TabsTrigger value="overview" className="text-black data-[state=active]:text-black data-[state=active]:bg-white">
-                Overview
+                Przegląd
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="documents">
               <Card className="apple-blur apple-shadow">
                 <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="text-black">Project Documents</CardTitle>
+                  <CardTitle className="text-black">Dokumenty projektu</CardTitle>
                   <Link to={createPageUrl("Upload")}>
                     <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
-                      Add Document
+                      Dodaj dokument
                     </Button>
                   </Link>
                 </CardHeader>
@@ -329,11 +332,11 @@ export default function ProjectsPage() {
                   ) : (
                     <div className="text-center py-12">
                       <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="font-medium text-black mb-2">No documents yet</h3>
-                      <p className="text-gray-500 mb-4">Upload your first document to get started</p>
+                      <h3 className="font-medium text-black mb-2">Brak dokumentów</h3>
+                      <p className="text-gray-500 mb-4">Wgraj pierwszy dokument, aby zacząć</p>
                       <Link to={createPageUrl("Upload")}>
                         <Button className="bg-blue-500 hover:bg-blue-600 text-white">
-                          Add Document
+                          Dodaj dokument
                         </Button>
                       </Link>
                     </div>
@@ -345,7 +348,7 @@ export default function ProjectsPage() {
             <TabsContent value="team">
               <Card className="apple-blur apple-shadow">
                 <CardHeader>
-                  <CardTitle className="text-black">Team Members</CardTitle>
+                  <CardTitle className="text-black">Członkowie zespołu</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -358,9 +361,9 @@ export default function ProjectsPage() {
                         <h4 className="font-medium text-black">
                           {selectedProject.created_by === currentUser?.email ? 'You' : selectedProject.created_by}
                         </h4>
-                        <p className="text-sm text-gray-500">Project Owner</p>
+                        <p className="text-sm text-gray-500">Właściciel projektu</p>
                       </div>
-                      <Badge className="bg-purple-50 text-purple-600 border-0">Owner</Badge>
+                      <Badge className="bg-purple-50 text-purple-600 border-0">Właściciel</Badge>
                     </div>
 
                     {/* Team Members */}
@@ -380,7 +383,7 @@ export default function ProjectsPage() {
                               {member.user_email === currentUser?.email ? 'You' : member.user_email}
                             </h4>
                             <p className="text-sm text-gray-500">
-                              Invited by {member.invited_by}
+                              Zaproszony przez {member.invited_by}
                             </p>
                           </div>
                           <Badge className={`border-0 ${
@@ -399,49 +402,49 @@ export default function ProjectsPage() {
             <TabsContent value="overview">
               <Card className="apple-blur apple-shadow">
                 <CardHeader>
-                  <CardTitle className="text-black">Project Overview</CardTitle>
+                  <CardTitle className="text-black">Przegląd projektu</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
                     {selectedProject.description && (
                       <div>
-                        <h4 className="font-medium text-black mb-2">Description</h4>
+                        <h4 className="font-medium text-black mb-2">Opis</h4>
                         <p className="text-gray-600">{selectedProject.description}</p>
                       </div>
                     )}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <h4 className="font-medium text-black mb-2">Project Details</h4>
+                        <h4 className="font-medium text-black mb-2">Szczegóły projektu</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Type:</span>
+                            <span className="text-gray-500">Typ:</span>
                             <span className="text-black capitalize">{selectedProject.type?.replace(/_/g, ' ')}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">Status:</span>
-                            <span className="text-black capitalize">{selectedProject.status?.replace(/_/g, ' ')}</span>
+                            <span className="text-black">{statusConfig[selectedProject.status]?.label || selectedProject.status}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Progress:</span>
+                            <span className="text-gray-500">Postęp:</span>
                             <span className="text-black">{selectedProject.progress_percentage || 0}%</span>
                           </div>
                         </div>
                       </div>
                       
                       <div>
-                        <h4 className="font-medium text-black mb-2">Timeline</h4>
+                        <h4 className="font-medium text-black mb-2">Harmonogram</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Start Date:</span>
+                            <span className="text-gray-500">Data rozpoczęcia:</span>
                             <span className="text-black">
-                              {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'MMM d, yyyy') : 'Not set'}
+                              {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Target Completion:</span>
+                            <span className="text-gray-500">Planowane zakończenie:</span>
                             <span className="text-black">
-                              {selectedProject.target_completion ? format(new Date(selectedProject.target_completion), 'MMM d, yyyy') : 'Not set'}
+                              {selectedProject.target_completion ? format(new Date(selectedProject.target_completion), 'dd.MM.yyyy') : 'Nie ustawiono'}
                             </span>
                           </div>
                         </div>
@@ -465,32 +468,41 @@ export default function ProjectsPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-semibold text-black tracking-tight">
-              All Projects
+              Wszystkie projekty
             </h1>
             <p className="text-base md:text-lg text-gray-500 font-normal mt-2">
-              Manage your home renovation portfolio
+              Zarządzaj swoimi projektami remontowymi
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
               className="text-gray-400 hover:text-black"
             >
               {viewMode === 'grid' ? <List className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
             </Button>
-            <Button 
+            <Button
               onClick={() => { setEditingProject(null); setIsFormOpen(true); }}
               className="bg-black text-white hover:bg-gray-800 rounded-lg text-sm font-medium"
             >
               <Plus className="w-4 h-4 mr-2" />
-              New Project
+              Nowy projekt
             </Button>
           </div>
         </div>
         
         {/* Projects Grid/List */}
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
+            <p className="text-red-600 text-sm">{error}</p>
+            <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
+              Spróbuj ponownie
+            </Button>
+          </div>
+        )}
+
         <AnimatePresence>
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -526,16 +538,16 @@ export default function ProjectsPage() {
                 <Plus className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-xl font-medium text-black mb-2">
-                Create your first project
+                Utwórz swój pierwszy projekt
               </h3>
               <p className="text-gray-500 mb-6">
-                Start by planning your next renovation.
+                Zacznij od zaplanowania kolejnego remontu.
               </p>
-              <Button 
+              <Button
                 onClick={() => setIsFormOpen(true)}
                 className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium"
               >
-                Create Project
+                Utwórz projekt
               </Button>
             </div>
           )}

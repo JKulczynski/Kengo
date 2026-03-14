@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [projects, setProjects] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -25,6 +26,7 @@ export default function Dashboard() {
 
   const loadData = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const [projectsData, documentsData] = await Promise.all([
         Project.list('-updated_date'),
@@ -34,6 +36,7 @@ export default function Dashboard() {
       setDocuments(documentsData);
     } catch (error) {
       console.error("Error loading dashboard data:", error);
+      setError("Nie udało się załadować danych.");
     }
     setIsLoading(false);
   };
@@ -47,25 +50,34 @@ export default function Dashboard() {
         {/* Header */}
         <div className="mb-8 md:mb-12">
           <h1 className="text-3xl md:text-4xl font-semibold text-black mb-3 tracking-tight">
-            Good morning
+            Dzień dobry
           </h1>
           <p className="text-base md:text-lg text-gray-500 font-normal">
-            Here's what's happening with your projects
+            Oto co dzieje się z Twoimi projektami
           </p>
         </div>
+
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
+            <p className="text-red-600 text-sm">{error}</p>
+            <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
+              Spróbuj ponownie
+            </Button>
+          </div>
+        )}
 
         {/* Quick Actions - Enhanced for mobile */}
         <div className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-12">
           <Link to={createPageUrl("Upload")} className="w-full sm:w-auto">
             <Button className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6 py-3 text-sm font-medium transition-colors duration-200">
               <Camera className="w-4 h-4 mr-2" />
-              Scan Document
+              Skanuj dokument
             </Button>
           </Link>
           <Link to={createPageUrl("Projects")} className="w-full sm:w-auto">
             <Button variant="outline" className="w-full sm:w-auto border-gray-200 hover:bg-gray-50 rounded-lg px-6 py-3 text-sm font-medium text-black">
               <Plus className="w-4 h-4 mr-2" />
-              New Project
+              Nowy projekt
             </Button>
           </Link>
         </div>
@@ -77,25 +89,25 @@ export default function Dashboard() {
               {activeProjects}
             </div>
             <div className="text-sm text-gray-500 font-normal">
-              Active Projects
+              Aktywne projekty
             </div>
           </div>
-          
+
           <div className="apple-blur rounded-2xl p-6 apple-shadow">
             <div className="text-2xl md:text-3xl font-semibold text-black mb-1">
-              ${totalSpent.toLocaleString()}
+              {totalSpent.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
             </div>
             <div className="text-sm text-gray-500 font-normal">
-              Total Spent
+              Łączne wydatki
             </div>
           </div>
-          
+
           <div className="apple-blur rounded-2xl p-6 apple-shadow">
             <div className="text-2xl md:text-3xl font-semibold text-black mb-1">
               {documents.length}
             </div>
             <div className="text-sm text-gray-500 font-normal">
-              Documents
+              Dokumenty
             </div>
           </div>
         </div>

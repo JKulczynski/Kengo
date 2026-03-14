@@ -89,10 +89,10 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
             <Upload className="w-8 h-8 text-white dark:text-black" />
           </div>
           <h2 className="text-2xl font-semibold text-black dark:text-white mb-3 tracking-tight">
-            Upload Documents
+            Wgraj dokumenty
           </h2>
           <p className="text-gray-500 dark:text-gray-400 text-base">
-            AI will automatically extract and organize your renovation documents
+            AI automatycznie wyodrębni i posegreguje Twoje dokumenty remontowe
           </p>
         </div>
 
@@ -108,13 +108,13 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
                   <FileText className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                 </div>
                 <h3 className="font-medium text-black dark:text-white mb-2">
-                  Browse Files
+                  Przeglądaj pliki
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Upload PDFs, images, or documents
+                  Wgraj pliki PDF, zdjęcia lub dokumenty
                 </p>
                 <Button variant="outline" className="border-gray-200 dark:border-gray-700 text-sm">
-                  Choose Files
+                  Wybierz pliki
                 </Button>
               </div>
             </div>
@@ -131,13 +131,13 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
                   <Camera className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                 </div>
                 <h3 className="font-medium text-black dark:text-white mb-2">
-                  Take Photo
+                  Zrób zdjęcie
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Scan documents with your camera
+                  Zeskanuj dokument aparatem
                 </p>
                 <Button variant="outline" className="border-gray-200 dark:border-gray-700 text-sm">
-                  Open Camera
+                  Otwórz aparat
                 </Button>
               </div>
             </div>
@@ -151,7 +151,7 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 font-medium">
               <Camera className="w-5 h-5" />
-              Capture Document
+              Skanuj dokument
             </DialogTitle>
           </DialogHeader>
           
@@ -167,26 +167,26 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
               <div className="absolute inset-0 flex items-center justify-center text-white">
                 <div className="flex items-center gap-3">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                  <span className="text-sm">Starting camera...</span>
+                  <span className="text-sm">Uruchamiam kamerę...</span>
                 </div>
               </div>
             )}
           </div>
           
           <div className="flex justify-end gap-3 mt-6">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowCameraDialog(false)}
               className="border-gray-200 dark:border-gray-700"
             >
-              Cancel
+              Anuluj
             </Button>
             <Button
               onClick={capturePhoto}
               disabled={!isCameraReady}
               className="bg-blue-500 hover:bg-blue-600 text-white"
             >
-              Capture
+              Zrób zdjęcie
             </Button>
           </div>
         </DialogContent>

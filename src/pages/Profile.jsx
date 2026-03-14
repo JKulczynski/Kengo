@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import { Edit, Save, LogOut, Check } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -37,8 +38,10 @@ export default function ProfilePage() {
       await User.updateMyUserData({ full_name: fullName });
       setUser(prev => ({ ...prev, full_name: fullName }));
       setIsEditing(false);
+      toast.success("Profil zaktualizowany");
     } catch (error) {
       console.error("Failed to update user:", error);
+      toast.error("Nie udało się zaktualizować profilu.");
     } finally {
       setIsSaving(false);
     }
@@ -76,16 +79,16 @@ export default function ProfilePage() {
   }
   
   if (!user) {
-     return <div className="text-center p-12">Could not load user profile.</div>
+     return <div className="text-center p-12">Nie udało się załadować profilu.</div>
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-6 py-12">
         <header className="mb-12">
-          <h1 className="text-4xl font-semibold text-black tracking-tight">Profile</h1>
+          <h1 className="text-4xl font-semibold text-black tracking-tight">Profil</h1>
           <p className="text-lg text-gray-500 mt-2">
-            Manage your personal information.
+            Zarządzaj swoimi danymi osobowymi.
           </p>
         </header>
 
@@ -104,7 +107,7 @@ export default function ProfilePage() {
 
               <div className="flex-1 w-full">
                 <div className="mb-4">
-                  <Label htmlFor="fullName" className="text-sm text-gray-500">Full Name</Label>
+                  <Label htmlFor="fullName" className="text-sm text-gray-500">Imię i nazwisko</Label>
                   {isEditing ? (
                     <Input
                       id="fullName"
@@ -114,11 +117,11 @@ export default function ProfilePage() {
                       autoFocus
                     />
                   ) : (
-                    <p className="text-xl font-medium text-black mt-1">{user.full_name || 'Not set'}</p>
+                    <p className="text-xl font-medium text-black mt-1">{user.full_name || 'Nie ustawiono'}</p>
                   )}
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-500">Email</Label>
+                  <Label className="text-sm text-gray-500">E-mail</Label>
                   <p className="text-base text-gray-600 mt-1">{user.email}</p>
                 </div>
               </div>
@@ -127,15 +130,15 @@ export default function ProfilePage() {
             <div className="flex justify-end mt-8">
               {isEditing ? (
                 <div className="flex gap-2">
-                  <Button type="button" variant="ghost" onClick={() => setIsEditing(false)} disabled={isSaving}>Cancel</Button>
+                  <Button type="button" variant="ghost" onClick={() => setIsEditing(false)} disabled={isSaving}>Anuluj</Button>
                   <Button type="submit" disabled={isSaving}>
                     {isSaving ? <Save className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    Save
+                    Zapisz
                   </Button>
                 </div>
               ) : (
                 <Button type="button" onClick={() => setIsEditing(true)}>
-                  <Edit className="w-4 h-4 mr-2" /> Edit Profile
+                  <Edit className="w-4 h-4 mr-2" /> Edytuj profil
                 </Button>
               )}
             </div>
@@ -154,7 +157,7 @@ export default function ProfilePage() {
                 className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20"
             >
                 <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                Wyloguj się
             </Button>
         </motion.div>
       </div>

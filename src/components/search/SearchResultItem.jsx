@@ -22,9 +22,9 @@ const docIcons = {
 };
 
 const statusConfig = {
-  planning: { icon: PlayCircle, color: "bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400", label: "Planning" },
-  in_progress: { icon: PlayCircle, color: "bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400", label: "In Progress" },
-  completed: { icon: CheckCircle, color: "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400", label: "Completed" }
+  planning: { icon: PlayCircle, color: "bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400", label: "Planowanie" },
+  in_progress: { icon: PlayCircle, color: "bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400", label: "W trakcie" },
+  completed: { icon: CheckCircle, color: "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400", label: "Ukończony" }
 };
 
 const itemVariants = {
@@ -57,7 +57,7 @@ export default function SearchResultItem({ item, type }) {
               {type === 'project' ? (
                 <Badge className={`${statusColor} border-0 text-xs font-medium`}>
                   {StatusIcon && React.createElement(StatusIcon, { className: 'w-3 h-3 mr-1' })}
-                  {item.status.replace(/_/g, ' ')}
+                  {item.status?.replace(/_/g, ' ') ?? ''}
                 </Badge>
               ) : (
                 <>

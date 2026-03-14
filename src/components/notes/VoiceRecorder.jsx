@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
-import { Mic, Square } from "lucide-react";
+import { Mic, Square, AlertCircle } from "lucide-react";
 
 export default function VoiceRecorder({ onTranscript, onAudioReady }) {
   const [isRecording, setIsRecording] = useState(false);
   const [liveText, setLiveText] = useState("");
+  const [micError, setMicError] = useState(false);
   const mediaRecorderRef = useRef(null);
   const recognitionRef = useRef(null);
   const chunksRef = useRef([]);
@@ -17,8 +18,10 @@ export default function VoiceRecorder({ onTranscript, onAudioReady }) {
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMicError(false);
     } catch (err) {
       console.error("Brak dostępu do mikrofonu", err);
+      setMicError(true);
       return;
     }
 
@@ -82,6 +85,12 @@ export default function VoiceRecorder({ onTranscript, onAudioReady }) {
 
   return (
     <div className="flex flex-col items-center gap-4 py-2">
+      {micError && (
+        <div className="flex items-center gap-2 text-red-600 bg-red-50 rounded-lg px-3 py-2 text-sm w-full">
+          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <span>Brak dostępu do mikrofonu. Sprawdź uprawnienia w przeglądarce.</span>
+        </div>
+      )}
       <button
         type="button"
         onClick={isRecording ? stopRecording : startRecording}
