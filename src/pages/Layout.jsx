@@ -3,18 +3,19 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { User } from "@/api/entities";
-import { 
+import {
     Home,
     Upload,
     FolderOpen,
     Search,
     Hammer,
-    Camera,
     User as UserIcon,
     ShieldCheck,
     FileText,
     Users,
-    StickyNote
+    StickyNote,
+    MessageSquare,
+    Palette
 } from "lucide-react";
 import {
   Sidebar,
@@ -41,57 +42,31 @@ const getInitials = (name) => {
 };
 
 const navigationItems = [
-  {
-    title: "Pulpit",
-    url: createPageUrl("Dashboard"),
-    icon: Home,
-  },
-  {
-    title: "Projekty",
-    url: createPageUrl("Projects"),
-    icon: FolderOpen,
-  },
-  {
-    title: "Dokumenty",
-    url: createPageUrl("Documents"),
-    icon: FileText,
-  },
-  {
-    title: "Gwarancje",
-    url: createPageUrl("Warranties"),
-    icon: ShieldCheck,
-  },
-  {
-    title: "Dodaj dokument",
-    url: createPageUrl("Upload"),
-    icon: Upload,
-  },
-  {
-    title: "Szukaj",
-    url: createPageUrl("Search"),
-    icon: Search,
-  },
-  {
-    title: "Notatki",
-    url: "/notes",
-    icon: StickyNote,
-  },
-  {
-    title: "Zespół",
-    url: createPageUrl("Team"),
-    icon: Users,
-  },
-  {
-    title: "Profil",
-    url: createPageUrl("Profile"),
-    icon: UserIcon,
-  }
+  { title: "Pulpit",          url: createPageUrl("Dashboard"),  icon: Home },
+  { title: "Projekty",        url: createPageUrl("Projects"),   icon: FolderOpen },
+  { title: "Dokumenty",       url: createPageUrl("Documents"),  icon: FileText },
+  { title: "Gwarancje",       url: createPageUrl("Warranties"), icon: ShieldCheck },
+  { title: "Dodaj dokument",  url: createPageUrl("Upload"),     icon: Upload },
+  { title: "Szukaj",          url: createPageUrl("Search"),     icon: Search },
+  { title: "Notatki",         url: "/notes",                    icon: StickyNote },
+  { title: "Asystent",        url: createPageUrl("Assistant"),  icon: MessageSquare },
+  { title: "Zespół",          url: createPageUrl("Team"),       icon: Users },
+  { title: "Profil",          url: createPageUrl("Profile"),    icon: UserIcon },
 ];
 
-export default function Layout({ children, currentPageName }) {
+// 3 warianty kolorystyczne do testów
+const THEMES = [
+  { id: "",             label: "Washi",  dot: "#C17F24", title: "Ciepły pergamin" },
+  { id: "theme-aizome", label: "Aizome", dot: "#1B5FA8", title: "Japonski indygo" },
+  { id: "theme-moegi",  label: "Moegi",  dot: "#2A6B3E", title: "Świeży bambus" },
+];
+
+export default function Layout({ children }) {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [activeTheme, setActiveTheme] = useState("");
+  const [showThemePicker, setShowThemePicker] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -107,110 +82,58 @@ export default function Layout({ children, currentPageName }) {
     fetchUser();
   }, []);
 
+  // Przełączanie motywu — zapisuje w localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("kengo-theme") || "";
+    setActiveTheme(saved);
+    applyTheme(saved);
+  }, []);
+
+  const applyTheme = (themeId) => {
+    const html = document.documentElement;
+    html.classList.remove("theme-aizome", "theme-moegi");
+    if (themeId) html.classList.add(themeId);
+  };
+
+  const switchTheme = (themeId) => {
+    setActiveTheme(themeId);
+    applyTheme(themeId);
+    localStorage.setItem("kengo-theme", themeId);
+    setShowThemePicker(false);
+  };
+
   return (
     <SidebarProvider>
-      <style>
-        {`
-          :root {
-            --primary: #1c1917;
-            --primary-foreground: #fafaf9;
-            --secondary: #f5f0e8;
-            --secondary-foreground: #1c1917;
-            --muted: #f5f0e8;
-            --muted-foreground: #78716c;
-            --accent: #d97706;
-            --accent-foreground: #ffffff;
-            --background: #faf8f4;
-            --foreground: #1c1917;
-            --border: #e8e0d4;
-            --card: #fffdf9;
-            --card-foreground: #1c1917;
-            --input: #e8e0d4;
-            --ring: #d97706;
-          }
+      <div className="min-h-screen flex w-full" style={{ backgroundColor: "var(--k-bg)" }}>
 
-          * {
-            font-feature-settings: "cv11", "ss01";
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-          }
-
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            background-color: #f8f5ef;
-            color: #1c1917;
-          }
-
-          /* Warm glass — jak papier washi, nie zimne biuro */
-          .apple-blur {
-            backdrop-filter: saturate(160%) blur(24px);
-            -webkit-backdrop-filter: saturate(160%) blur(24px);
-            background: rgba(255, 252, 244, 0.88);
-            border: 1px solid rgba(200, 180, 140, 0.22);
-          }
-
-          /* Ciepłe cienie — piasek i bursztyn zamiast czerni */
-          .apple-shadow {
-            box-shadow:
-              0 1px 2px rgba(100, 70, 20, 0.06),
-              0 4px 12px rgba(100, 70, 20, 0.07),
-              0 0 0 1px rgba(200, 170, 110, 0.08);
-          }
-
-          .apple-shadow-lg {
-            box-shadow:
-              0 2px 8px rgba(100, 70, 20, 0.08),
-              0 12px 32px rgba(100, 70, 20, 0.10),
-              0 0 0 1px rgba(200, 170, 110, 0.10);
-          }
-
-          /* Gradient ciepłego bursztynu — do przycisków akcji */
-          .renovation-gradient {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-            color: #ffffff;
-            border: none;
-          }
-          .renovation-gradient:hover {
-            background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
-          }
-
-          /* Subtelna ciepła ramka wokół inputów */
-          input:focus, textarea:focus {
-            outline: none;
-            border-color: #d97706 !important;
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12) !important;
-          }
-
-          /* Tło stron — ciepła kremowa biel */
-          .bg-gray-50 {
-            background-color: #f8f5ef !important;
-          }
-
-          /* Scrollbar — dyskretny i ciepły */
-          ::-webkit-scrollbar { width: 5px; height: 5px; }
-          ::-webkit-scrollbar-track { background: transparent; }
-          ::-webkit-scrollbar-thumb { background: rgba(180, 140, 80, 0.25); border-radius: 99px; }
-          ::-webkit-scrollbar-thumb:hover { background: rgba(180, 140, 80, 0.45); }
-
-          /* Płynne przejścia */
-          a, button { transition: all 0.18s ease; }
-        `}
-      </style>
-      <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f8f5ef' }}>
-        <Sidebar className="border-r" style={{ borderColor: '#e8ddd0', backgroundColor: '#fdfaf5' }}>
-          <SidebarHeader className="border-b p-6" style={{ borderColor: '#ede5d8' }}>
+        <Sidebar
+          className="border-r"
+          style={{ borderColor: "var(--k-border-md)", backgroundColor: "var(--k-bg-sidebar)" }}
+        >
+          {/* Logo */}
+          <SidebarHeader
+            className="border-b p-6"
+            style={{ borderColor: "var(--k-border)" }}
+          >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #92400e 0%, #d97706 100%)' }}>
-                <Hammer className="w-4 h-4 text-white" />
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: "linear-gradient(135deg, var(--k-accent-dark) 0%, var(--k-accent) 100%)" }}
+              >
+                <Hammer className="w-4 h-4" style={{ color: "var(--k-accent-text)", strokeWidth: 2 }} />
               </div>
               <div>
-                <h2 className="font-semibold text-base" style={{ color: '#1c1917' }}>Kengo</h2>
-                <p className="text-xs font-normal" style={{ color: '#a8956e' }}>Asystent remontu</p>
+                <h2 className="font-semibold text-base" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
+                  Kengo
+                </h2>
+                <p className="text-xs font-normal" style={{ color: "var(--k-text-subtle)" }}>
+                  Asystent remontu
+                </p>
               </div>
             </div>
           </SidebarHeader>
 
+          {/* Nawigacja */}
           <SidebarContent className="p-2">
             <SidebarGroup>
               <SidebarGroupContent>
@@ -222,13 +145,17 @@ export default function Layout({ children, currentPageName }) {
                         <SidebarMenuButton
                           asChild
                           className="mx-1 rounded-lg font-normal"
-                          style={isActive
-                            ? { backgroundColor: '#fdf3e0', color: '#92400e' }
-                            : { color: '#6b5c47' }
+                          style={
+                            isActive
+                              ? { backgroundColor: "var(--k-bg-active)", color: "var(--k-accent-dark)" }
+                              : { color: "var(--k-text-muted)" }
                           }
                         >
                           <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
-                            <item.icon className="w-4 h-4" style={isActive ? { color: '#d97706' } : {}} />
+                            <item.icon
+                              className="w-4 h-4 flex-shrink-0"
+                              style={isActive ? { color: "var(--k-accent)", strokeWidth: 2 } : {}}
+                            />
                             <span className="text-sm">{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
@@ -239,13 +166,24 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupContent>
             </SidebarGroup>
 
+            {/* Beta banner */}
             <SidebarGroup className="mt-auto p-4">
-              <div className="p-4 rounded-xl text-center" style={{ backgroundColor: '#fef9ec', border: '1px solid #f0d9a0' }}>
-                <h4 className="font-semibold text-sm" style={{ color: '#78350f' }}>Wersja Beta</h4>
-                <p className="text-xs mt-1 mb-3" style={{ color: '#92400e', opacity: 0.8 }}>Daj znać co myślisz — każda opinia ma znaczenie.</p>
+              <div
+                className="p-4 rounded-xl text-center"
+                style={{ backgroundColor: "var(--k-accent-light)", border: "1px solid var(--k-border-md)" }}
+              >
+                <h4 className="font-semibold text-sm" style={{ color: "var(--k-accent-dark)" }}>
+                  Wersja Beta
+                </h4>
+                <p className="text-xs mt-1 mb-3" style={{ color: "var(--k-accent-dark)", opacity: 0.75 }}>
+                  Twoja opinia kształtuje Kengo.
+                </p>
                 <button
                   className="text-xs font-semibold rounded-full px-4 py-1.5"
-                  style={{ background: 'linear-gradient(135deg, #d97706, #b45309)', color: '#fff' }}
+                  style={{
+                    background: "linear-gradient(135deg, var(--k-accent), var(--k-accent-dark))",
+                    color: "var(--k-accent-text)"
+                  }}
                 >
                   Wyślij opinię
                 </button>
@@ -253,11 +191,63 @@ export default function Layout({ children, currentPageName }) {
             </SidebarGroup>
           </SidebarContent>
 
-          <SidebarFooter className="border-t p-4" style={{ borderColor: '#ede5d8' }}>
-            <Link to={createPageUrl("Profile")} className="flex items-center gap-3 p-2 -m-2 rounded-lg" style={{ ':hover': { backgroundColor: '#f5f0e8' } }}>
+          {/* Stopka — użytkownik + przełącznik motywu */}
+          <SidebarFooter
+            className="border-t p-4 space-y-3"
+            style={{ borderColor: "var(--k-border)" }}
+          >
+            {/* Theme picker */}
+            <div className="relative">
+              <button
+                onClick={() => setShowThemePicker(p => !p)}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs"
+                style={{ color: "var(--k-text-subtle)" }}
+              >
+                <Palette className="w-3.5 h-3.5" />
+                <span>Motyw:</span>
+                <span style={{ color: "var(--k-accent)", fontWeight: 600 }}>
+                  {THEMES.find(t => t.id === activeTheme)?.label ?? "Washi"}
+                </span>
+              </button>
+
+              {showThemePicker && (
+                <div
+                  className="absolute bottom-full left-0 mb-2 w-48 rounded-xl p-2 z-50 apple-shadow"
+                  style={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border-md)" }}
+                >
+                  {THEMES.map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => switchTheme(t.id)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-sm"
+                      style={
+                        activeTheme === t.id
+                          ? { backgroundColor: "var(--k-bg-active)", color: "var(--k-accent-dark)" }
+                          : { color: "var(--k-text-muted)" }
+                      }
+                    >
+                      <span
+                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: t.dot }}
+                      />
+                      <div>
+                        <div className="font-medium text-xs">{t.label}</div>
+                        <div className="text-xs opacity-60">{t.title}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Profil */}
+            <Link
+              to={createPageUrl("Profile")}
+              className="flex items-center gap-3 p-2 -mx-2 rounded-lg"
+            >
               {isLoadingUser ? (
                 <>
-                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <Skeleton className="w-8 h-8 rounded-full flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <Skeleton className="h-4 w-20 mb-1" />
                     <Skeleton className="h-3 w-16" />
@@ -265,26 +255,44 @@ export default function Layout({ children, currentPageName }) {
                 </>
               ) : user ? (
                 <>
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#f0e6d0' }}>
-                    <span className="font-medium text-sm" style={{ color: '#92400e' }}>{getInitials(user.full_name)}</span>
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: "var(--k-accent-light)" }}
+                  >
+                    <span className="font-semibold text-sm" style={{ color: "var(--k-accent-dark)" }}>
+                      {getInitials(user.full_name)}
+                    </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate" style={{ color: '#1c1917' }}>{user.full_name || 'Użytkownik'}</p>
-                    <p className="text-xs truncate" style={{ color: '#a8956e' }}>{user.email}</p>
+                    <p className="font-medium text-sm truncate" style={{ color: "var(--k-text)" }}>
+                      {user.full_name || "Użytkownik"}
+                    </p>
+                    <p className="text-xs truncate" style={{ color: "var(--k-text-subtle)" }}>
+                      {user.email}
+                    </p>
                   </div>
                 </>
               ) : (
-                <p className="text-sm" style={{ color: '#a8956e' }}>Nie zalogowano</p>
+                <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>Nie zalogowano</p>
               )}
             </Link>
           </SidebarFooter>
         </Sidebar>
 
-        <main className="flex-1 flex flex-col" style={{ backgroundColor: '#f8f5ef' }}>
-          <header className="apple-blur border-b px-4 py-3 md:hidden" style={{ borderColor: '#ede5d8' }}>
+        {/* Główna treść */}
+        <main className="flex-1 flex flex-col" style={{ backgroundColor: "var(--k-bg)" }}>
+          <header
+            className="apple-blur border-b px-4 py-3 md:hidden"
+            style={{ borderColor: "var(--k-border)" }}
+          >
             <div className="flex items-center gap-4">
-              <SidebarTrigger className="p-2 rounded-lg" style={{ color: '#1c1917' }} />
-              <h1 className="text-lg font-medium" style={{ color: '#1c1917' }}>Kengo</h1>
+              <SidebarTrigger
+                className="p-2 rounded-lg"
+                style={{ color: "var(--k-text)" }}
+              />
+              <h1 className="text-lg font-medium" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
+                Kengo
+              </h1>
             </div>
           </header>
 
