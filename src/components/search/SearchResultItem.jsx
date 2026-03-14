@@ -62,7 +62,7 @@ export default function SearchResultItem({ item, type }) {
               ) : (
                 <>
                   <Badge variant="outline" className="text-xs capitalize">{item.type}</Badge>
-                  {item.amount && <span className="text-xs text-green-600 font-medium">${item.amount.toLocaleString()}</span>}
+                  {item.amount && <span className="text-xs text-green-600 font-medium">{item.amount.toLocaleString('pl-PL')} zł</span>}
                 </>
               )}
             </div>

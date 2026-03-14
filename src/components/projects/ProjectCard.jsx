@@ -51,7 +51,7 @@ const BudgetTracker = ({ budget, actualCost }) => {
       <div className="flex justify-between items-center mb-1">
         <span className="text-xs text-gray-500">Budżet</span>
         <span className={`text-xs font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-black'}`}>
-          ${cost.toLocaleString()} / ${budget.toLocaleString()}
+          {cost.toLocaleString('pl-PL')} zł / {budget.toLocaleString('pl-PL')} zł
         </span>
       </div>
       <div className="w-full bg-gray-100 rounded-full h-1.5">

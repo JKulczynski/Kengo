@@ -114,7 +114,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                     <div>
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-xs text-gray-500">
-                          Budżet: ${actualCost.toLocaleString()} / ${project.budget.toLocaleString()}
+                          Budżet: {actualCost.toLocaleString('pl-PL')} zł / {project.budget.toLocaleString('pl-PL')} zł
                         </span>
                         <span className={`text-xs font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-gray-700'}`}>
                           {budgetUsage.toFixed(0)}%

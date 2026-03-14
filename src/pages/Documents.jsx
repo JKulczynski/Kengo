@@ -297,7 +297,7 @@ export default function DocumentsPage() {
                               <div>
                                 <span className="block text-xs text-gray-500">Kwota</span>
                                 <span className="font-medium text-green-600">
-                                  ${doc.amount.toLocaleString()}
+                                  {doc.amount.toLocaleString('pl-PL')} zł
                                 </span>
                               </div>
                             )}

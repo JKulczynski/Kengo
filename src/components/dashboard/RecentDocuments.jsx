@@ -82,7 +82,7 @@ export default function RecentDocuments({ documents, isLoading }) {
                     <div className="flex items-center gap-2 mt-0.5">
                       {doc.amount && (
                         <span className="text-xs text-green-600 font-medium">
-                          ${doc.amount.toLocaleString()}
+                          {doc.amount.toLocaleString('pl-PL')} zł
                         </span>
                       )}
                       <span className="text-xs text-gray-500">

@@ -173,9 +173,9 @@ export default function ProjectDetailPage() {
                   <DollarSign className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Budget</p>
+                  <p className="text-xs text-gray-500">Budżet</p>
                   <p className="font-medium text-black">
-                    ${actualCost.toLocaleString()} / ${project.budget?.toLocaleString() || '0'}
+                    {actualCost.toLocaleString('pl-PL')} zł / {(project.budget || 0).toLocaleString('pl-PL')} zł
                   </p>
                 </div>
               </div>
@@ -266,7 +266,7 @@ export default function ProjectDetailPage() {
                             <h4 className="font-medium text-black">{doc.title}</h4>
                             <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
                               {doc.vendor && <span>Vendor: {doc.vendor}</span>}
-                              {doc.amount && <span className="text-green-600">${doc.amount.toLocaleString()}</span>}
+                              {doc.amount && <span className="text-green-600">{doc.amount.toLocaleString('pl-PL')} zł</span>}
                               {doc.date && <span>{format(new Date(doc.date), 'MMM d, yyyy')}</span>}
                             </div>
                           </div>
