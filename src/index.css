@@ -83,7 +83,7 @@
    ------------------------------------------------------------ */
 .theme-ukiyo {
   --k-icon-bg:    rgba(150, 114, 73, 0.13);
-  --k-icon-color: #967249;
+  --k-icon-color: #2D2926;            /* Sumi-e — głęboki brąz/grafit */
   --k-ok-bg:      rgba(100, 130, 80, 0.12);
   --k-ok-color:   #4a6830;
   --k-warn-bg:    rgba(180, 120, 50, 0.14);
@@ -94,17 +94,17 @@
   --k-bg-card:      rgba(255, 252, 247, 0.93);
   --k-bg-sidebar:   #FBF5EE;
   --k-bg-surface:   #FFFCF8;
-  --k-bg-hover:     rgba(175, 199, 192, 0.10);
+  --k-bg-hover:     rgba(150, 114, 73, 0.07);
   --k-bg-active:    rgba(150, 114, 73, 0.10);
 
-  --k-text:         #4A4A4A;          /* Ciepły grafit */
-  --k-text-muted:   #AFC7C0;          /* Seiji-zu — seledynowa porcelana */
-  --k-text-subtle:  #C8D8D4;
+  --k-text:         #2D2926;          /* Sumi-e — głęboki brąz/grafit */
+  --k-text-muted:   #4A443F;          /* Ciepły ciemny szary */
+  --k-text-subtle:  #7F776F;          /* Wyciszony, ciepły szary */
 
   --k-accent:       #967249;          /* Kurumi — orzech japoński */
   --k-accent-light: rgba(150, 114, 73, 0.12);
   --k-accent-dark:  #6B5135;
-  --k-accent-text:  #FFFFFF;
+  --k-accent-text:  #FDFCFB;          /* Jasny krem — max czytelność na przycisku */
 
   --k-border:       rgba(175, 199, 192, 0.22);
   --k-border-md:    rgba(175, 199, 192, 0.35);
