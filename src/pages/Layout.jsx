@@ -164,7 +164,7 @@ export default function Layout({ children, currentPageName }) {
                 <Hammer className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h2 className="font-semibold text-black text-base">RenovateAI</h2>
+                <h2 className="font-semibold text-black text-base">Kengo</h2>
                 <p className="text-xs text-gray-500 font-normal">Asystent remontu</p>
               </div>
             </div>
@@ -235,7 +235,7 @@ export default function Layout({ children, currentPageName }) {
           <header className="apple-blur border-b border-gray-100 px-4 py-3 md:hidden">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200 text-black" />
-              <h1 className="text-lg font-medium text-black">RenovateAI</h1>
+              <h1 className="text-lg font-medium text-black">Kengo</h1>
             </div>
           </header>
 

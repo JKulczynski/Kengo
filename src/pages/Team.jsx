@@ -171,7 +171,7 @@ export default function TeamPage() {
       await SendEmail({
         to: inviteEmail,
         subject: `Zaproszenie do projektu: ${project.name}`,
-        body: `Witaj!\n\n${currentUser.full_name} zaprosił Cię do współpracy nad projektem remontowym "${project.name}" w aplikacji RenovateAI.\n\nTwoja rola: ${getRoleDisplayName(inviteRole)}\n\nZaloguj się do aplikacji RenovateAI, aby dołączyć do projektu.\n\nPozdrawiam,\nZespół RenovateAI`
+        body: `Witaj!\n\n${currentUser.full_name} zaprosił Cię do współpracy nad projektem remontowym "${project.name}" w aplikacji Kengo.\n\nTwoja rola: ${getRoleDisplayName(inviteRole)}\n\nZaloguj się do aplikacji Kengo, aby dołączyć do projektu.\n\nPozdrawiam,\nZespół Kengo`
       });
 
       // Reset form

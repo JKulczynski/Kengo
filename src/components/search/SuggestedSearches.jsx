@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Zap } from 'lucide-react';
 
 const suggestions = [
-  "Invoices over $1000",
-  "All contracts",
-  "Photos of the kitchen",
-  "Permits for bathroom remodel",
-  "Completed projects",
+  "Faktury powyżej 1000 zł",
+  "Wszystkie umowy",
+  "Zdjęcia kuchni",
+  "Pozwolenia na remont łazienki",
+  "Ukończone projekty",
 ];
 
 const containerVariants = {
@@ -37,7 +37,7 @@ export default function SuggestedSearches({ onSearch }) {
     >
       <div className="inline-flex items-center gap-2 mb-6">
         <Zap className="w-5 h-5 text-gray-400" />
-        <h3 className="text-lg font-medium text-black dark:text-white">Try these searches</h3>
+        <h3 className="text-lg font-medium text-black dark:text-white">Spróbuj tych wyszukiwań</h3>
       </div>
       <motion.div
         variants={containerVariants}

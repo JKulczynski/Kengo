@@ -211,7 +211,7 @@ export default function AssistantPage() {
                                     <Bot className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-lg font-medium text-black dark:text-white mb-2">
-                                    Witaj w RenovateAI Assistant!
+                                    Witaj w Kengo Assistant!
                                 </h3>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
                                     Jestem Twoim inteligentnym asystentem remontowym. Mogę pomóc Ci:
