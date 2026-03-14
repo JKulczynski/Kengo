@@ -74,8 +74,8 @@ export default function Dashboard() {
         ? `"${expiringWarranties[0].title}" — sprawdź datę`
         : `W ciągu 30 dni. Sprawdź menedżer gwarancji.`,
       link: createPageUrl('Warranties'),
-      color: 'bg-orange-50 border-orange-100',
-      iconColor: 'text-orange-500',
+      bannerStyle: { backgroundColor: "var(--k-warn-bg)", border: "1px solid var(--k-border-md)" },
+      iconStyle: { color: "var(--k-warn-color)" },
       btnColor: 'text-orange-600 hover:text-orange-700'
     });
   }
@@ -97,8 +97,8 @@ export default function Dashboard() {
         ? `"${overBudgetProjects[0].name}" — sprawdź wydatki`
         : `Sprawdź wydatki w szczegółach projektów.`,
       link: createPageUrl('Projects'),
-      color: 'bg-red-50 border-red-100',
-      iconColor: 'text-red-500',
+      bannerStyle: { backgroundColor: "var(--k-err-bg)", border: "1px solid var(--k-border-md)" },
+      iconStyle: { color: "var(--k-err-color)" },
       btnColor: 'text-red-600 hover:text-red-700'
     });
   }
@@ -120,8 +120,8 @@ export default function Dashboard() {
         ? `"${approachingDeadlines[0].name}" — zostało ${differenceInDays(parseISO(approachingDeadlines[0].target_completion), today)} dni`
         : `${approachingDeadlines.length} projektów ma termin w ciągu 14 dni.`,
       link: createPageUrl('Projects'),
-      color: 'bg-blue-50 border-blue-100',
-      iconColor: 'text-blue-500',
+      bannerStyle: { backgroundColor: "var(--k-icon-bg)", border: "1px solid var(--k-border-md)" },
+      iconStyle: { color: "var(--k-icon-color)" },
       btnColor: 'text-blue-600 hover:text-blue-700'
     });
   }
@@ -131,8 +131,8 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
 
         {error && (
-          <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
-            <p className="text-red-600 text-sm">{error}</p>
+          <div className="mb-8 p-4 rounded-xl flex items-center justify-between" style={{ backgroundColor: "var(--k-err-bg)", border: "1px solid var(--k-border-md)" }}>
+            <p className="text-sm" style={{ color: "var(--k-err-color)" }}>{error}</p>
             <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
               Spróbuj ponownie
             </Button>
@@ -143,8 +143,8 @@ export default function Dashboard() {
         {isEmpty && (
           <div className="mb-12">
             <div className="apple-blur rounded-3xl p-8 md:p-12 apple-shadow text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-8 h-8 text-white" />
+              <div className="icon-box w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Sparkles className="w-8 h-8" />
               </div>
               <h1 className="text-3xl md:text-4xl font-semibold text-black tracking-tight mb-3">
                 Witaj w Kengo!
@@ -154,7 +154,7 @@ export default function Dashboard() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link to={createPageUrl("Projects")}>
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6 py-3 text-sm font-medium">
+                  <Button className="btn-primary rounded-lg px-6 py-3 text-sm font-medium">
                     <Plus className="w-4 h-4 mr-2" />
                     Stwórz pierwszy projekt
                   </Button>
@@ -172,29 +172,23 @@ export default function Dashboard() {
               {[
                 {
                   icon: Folder,
-                  color: 'bg-blue-50',
-                  iconColor: 'text-blue-500',
                   title: 'Projekty',
                   desc: 'Śledź postęp, budżet i termin każdego remontu w jednym miejscu.'
                 },
                 {
                   icon: FileText,
-                  color: 'bg-green-50',
-                  iconColor: 'text-green-500',
                   title: 'Dokumenty',
                   desc: 'Faktury, paragony, umowy — AI automatycznie rozpoznaje i kategoryzuje.'
                 },
                 {
                   icon: Shield,
-                  color: 'bg-purple-50',
-                  iconColor: 'text-purple-500',
                   title: 'Gwarancje',
                   desc: 'Nie zapomnij o gwarancji. Dostajesz przypomnienie zanim wygaśnie.'
                 }
-              ].map(({ icon: Icon, color, iconColor, title, desc }) => (
+              ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="apple-blur rounded-2xl p-6 apple-shadow">
-                  <div className={`w-10 h-10 ${color} rounded-xl flex items-center justify-center mb-4`}>
-                    <Icon className={`w-5 h-5 ${iconColor}`} />
+                  <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center mb-4">
+                    <Icon className="w-5 h-5" />
                   </div>
                   <h3 className="font-semibold text-black mb-2">{title}</h3>
                   <p className="text-sm text-gray-500">{desc}</p>
@@ -223,8 +217,8 @@ export default function Dashboard() {
                 {reminders.map((r, i) => {
                   const Icon = r.icon;
                   return (
-                    <div key={i} className={`flex items-center gap-4 p-4 rounded-xl border ${r.color}`}>
-                      <div className={`flex-shrink-0 ${r.iconColor}`}>
+                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl" style={r.bannerStyle}>
+                      <div className="flex-shrink-0" style={r.iconStyle}>
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -245,7 +239,7 @@ export default function Dashboard() {
             {/* Quick Actions */}
             <div className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-12">
               <Link to={createPageUrl("Upload")} className="w-full sm:w-auto">
-                <Button className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6 py-3 text-sm font-medium transition-colors duration-200">
+                <Button className="btn-primary w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-medium">
                   <Camera className="w-4 h-4 mr-2" />
                   Skanuj dokument
                 </Button>

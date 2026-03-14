@@ -19,23 +19,12 @@ import {
 import { motion } from "framer-motion";
 
 const statusConfig = {
-  planning: { icon: Clock, color: "bg-blue-50 text-blue-600", label: "Planowanie" },
-  in_progress: { icon: PlayCircle, color: "bg-orange-50 text-orange-600", label: "W trakcie" },
-  on_hold: { icon: PauseCircle, color: "bg-gray-100 text-gray-600", label: "Wstrzymany" },
-  completed: { icon: CheckCircle, color: "bg-green-50 text-green-600", label: "Ukończony" }
+  planning:    { icon: Clock,        label: "Planowanie", style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
+  in_progress: { icon: PlayCircle,   label: "W trakcie",  style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
+  on_hold:     { icon: PauseCircle,  label: "Wstrzymany", style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
+  completed:   { icon: CheckCircle,  label: "Ukończony",  style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
 };
 
-const typeColors = {
-  kitchen: "from-red-500 to-orange-500",
-  bathroom: "from-blue-500 to-cyan-500",
-  living_room: "from-purple-500 to-pink-500",
-  bedroom: "from-indigo-500 to-purple-500",
-  outdoor: "from-green-500 to-lime-500",
-  whole_house: "from-gray-700 to-gray-900",
-  basement: "from-gray-400 to-gray-500",
-  attic: "from-yellow-400 to-amber-500",
-  other: "from-gray-500 to-gray-600"
-};
 
 const BudgetTracker = ({ budget, actualCost }) => {
   if (!budget || budget <= 0) return null;
@@ -68,7 +57,7 @@ const GridView = ({ project, onEdit, onDelete }) => (
   <div className="apple-blur rounded-2xl p-6 h-full flex flex-col justify-between apple-shadow hover:apple-shadow-lg transition-shadow duration-300">
     <div>
       <div className="flex justify-between items-start mb-4">
-        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${typeColors[project.type] || typeColors.other} flex items-center justify-center text-white font-bold text-lg`}>
+        <div className="icon-box w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-base">
           {project.name.charAt(0)}
         </div>
         <DropdownMenu>
@@ -103,7 +92,7 @@ const GridView = ({ project, onEdit, onDelete }) => (
       <BudgetTracker budget={project.budget} actualCost={project.actualCost} />
     </div>
     <div className="mt-6 flex justify-between items-center">
-      <Badge className={`${statusConfig[project.status]?.color} border-0 text-xs font-medium`}>
+      <Badge style={statusConfig[project.status]?.style} className="border-0 text-xs font-medium">
         {React.createElement(statusConfig[project.status]?.icon, { className: 'w-3 h-3 mr-1' })}
         {statusConfig[project.status]?.label}
       </Badge>
@@ -119,7 +108,7 @@ const ListView = ({ project, onEdit, onDelete }) => {
   return (
     <div className="apple-blur rounded-2xl p-4 flex items-center justify-between apple-shadow hover:apple-shadow-lg transition-shadow duration-300">
       <div className="flex items-center gap-4">
-        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${typeColors[project.type] || typeColors.other} flex-shrink-0 flex items-center justify-center text-white font-bold text-lg`}>
+        <div className="icon-box w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center font-semibold text-base">
           {project.name.charAt(0)}
         </div>
         <div>
@@ -154,7 +143,7 @@ const ListView = ({ project, onEdit, onDelete }) => {
           </div>
         )}
         
-        <Badge className={`${statusConfig[project.status]?.color} border-0 text-xs font-medium`}>
+        <Badge style={statusConfig[project.status]?.style} className="border-0 text-xs font-medium">
           {React.createElement(statusConfig[project.status]?.icon, { className: 'w-3 h-3 mr-1' })}
           {statusConfig[project.status]?.label}
         </Badge>

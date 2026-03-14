@@ -6,12 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
     Send,
-    Sparkles,
-    Bot,
     Loader2,
     User,
     Zap
 } from "lucide-react";
+
+// Unikalny icon Kengo — ensō (otwarte koło) z kompasem wewnątrz
+function KengoIcon({ className = "w-6 h-6" }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            {/* Ensō — otwarte koło (niedokończone = doskonałość w filozofii zen) */}
+            <path d="M21 12a9 9 0 1 1-1.5-5" stroke="currentColor" strokeWidth="1.6" />
+            {/* Krzyż kompasu */}
+            <line x1="12" y1="8" x2="12" y2="10" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="12" y1="14" x2="12" y2="16" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="8" y1="12" x2="10" y2="12" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="14" y1="12" x2="16" y2="12" stroke="currentColor" strokeWidth="1.2" />
+            {/* Punkt centralny */}
+            <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+    );
+}
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 
@@ -48,21 +63,24 @@ function MessageBubble({ message }) {
     const isUser = message.role === 'user';
     return (
         <div className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                isUser
-                    ? 'bg-blue-500'
-                    : 'bg-gradient-to-br from-blue-500 to-purple-600'
-            }`}>
+            <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isUser ? '' : 'icon-box'}`}
+                style={isUser ? { backgroundColor: "var(--k-accent)" } : {}}
+            >
                 {isUser
                     ? <User className="w-4 h-4 text-white" />
-                    : <Bot className="w-4 h-4 text-white" />
+                    : <KengoIcon className="w-4 h-4" />
                 }
             </div>
-            <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
-                isUser
-                    ? 'bg-blue-500 text-white rounded-tr-sm'
-                    : 'bg-white dark:bg-gray-900 text-black dark:text-white apple-shadow rounded-tl-sm'
-            }`}>
+            <div
+                className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                    isUser ? 'rounded-tr-sm' : 'apple-shadow rounded-tl-sm'
+                }`}
+                style={isUser
+                    ? { backgroundColor: "var(--k-accent)", color: "var(--k-accent-text)" }
+                    : { backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border)" }
+                }
+            >
                 {message.content}
             </div>
         </div>
@@ -151,28 +169,28 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
 
     if (isLoadingData) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--k-bg)" }}>
                 <div className="text-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400">Ładuję Twoje dane...</p>
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: "var(--k-accent)" }} />
+                    <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>Ładuję Twoje dane...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-black">
+        <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
             <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-12">
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                        <Sparkles className="w-6 h-6 text-white" />
+                    <div className="icon-box w-12 h-12 rounded-2xl flex items-center justify-center">
+                        <KengoIcon className="w-6 h-6" />
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-semibold text-black dark:text-white tracking-tight">
+                        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
                             Asystent Kengo
                         </h1>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
+                        <p className="text-sm mt-0.5" style={{ color: "var(--k-text-subtle)" }}>
                             {projects.length > 0
                                 ? `Znam Twoje ${projects.length} ${projects.length === 1 ? 'projekt' : 'projekty'} i ${documents.length} dokumentów`
                                 : 'Zacznij rozmowę — pomogę Ci zorganizować remont'}
@@ -191,10 +209,10 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                                 className="apple-blur rounded-xl p-4 text-left apple-shadow hover:apple-shadow-lg transition-all duration-200 group"
                             >
                                 <div className="flex items-center gap-2 mb-1">
-                                    <Zap className="w-3.5 h-3.5 text-blue-500" />
-                                    <p className="font-medium text-black dark:text-white text-sm">{action.label}</p>
+                                    <Zap className="w-3.5 h-3.5" style={{ color: "var(--k-accent)" }} />
+                                    <p className="font-medium text-sm" style={{ color: "var(--k-text)" }}>{action.label}</p>
                                 </div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug line-clamp-2">
+                                <p className="text-xs leading-snug line-clamp-2" style={{ color: "var(--k-text-subtle)" }}>
                                     {action.prompt}
                                 </p>
                             </button>
@@ -208,13 +226,13 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                     <div className="flex-1 p-6 overflow-y-auto space-y-4" style={{ maxHeight: '520px', overflowY: 'auto' }}>
                         {messages.length === 0 ? (
                             <div className="text-center py-16">
-                                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Bot className="w-7 h-7 text-white" />
+                                <div className="icon-box w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <KengoIcon className="w-7 h-7" />
                                 </div>
-                                <h3 className="text-base font-medium text-black dark:text-white mb-2">
+                                <h3 className="text-base font-medium mb-2" style={{ color: "var(--k-text)" }}>
                                     Cześć! Jak mogę pomóc?
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                                <p className="text-sm max-w-sm mx-auto" style={{ color: "var(--k-text-subtle)" }}>
                                     Pytaj o projekty, budżet, gwarancje — znam Twoje dane i odpowiem konkretnie.
                                 </p>
                             </div>
@@ -224,14 +242,14 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
 
                         {isLoading && (
                             <div className="flex items-start gap-3">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                                    <Bot className="w-4 h-4 text-white" />
+                                <div className="icon-box w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <KengoIcon className="w-4 h-4" />
                                 </div>
-                                <div className="bg-white dark:bg-gray-900 apple-shadow rounded-2xl rounded-tl-sm px-4 py-3">
+                                <div className="apple-shadow rounded-2xl rounded-tl-sm px-4 py-3" style={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border)" }}>
                                     <div className="flex gap-1.5 items-center">
-                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                        <span className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: "var(--k-text-subtle)", animationDelay: '0ms' }} />
+                                        <span className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: "var(--k-text-subtle)", animationDelay: '150ms' }} />
+                                        <span className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: "var(--k-text-subtle)", animationDelay: '300ms' }} />
                                     </div>
                                 </div>
                             </div>
@@ -240,7 +258,7 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                     </div>
 
                     {/* Input */}
-                    <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+                    <div className="border-t p-4" style={{ borderColor: "var(--k-border)" }}>
                         <div className="flex gap-3">
                             <Input
                                 value={inputMessage}
@@ -253,7 +271,7 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                             <Button
                                 onClick={() => sendMessage()}
                                 disabled={isLoading || !inputMessage.trim()}
-                                className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-4"
+                                className="btn-primary rounded-xl px-4"
                             >
                                 <Send className="w-4 h-4" />
                             </Button>

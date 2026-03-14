@@ -101,16 +101,19 @@ export default function MessageBubble({ message }) {
     return (
         <div className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}>
             {!isUser && (
-                <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mt-0.5">
-                    <div className="text-white text-xs font-bold">AI</div>
+                <div className="icon-box h-7 w-7 rounded-lg flex items-center justify-center mt-0.5">
+                    <span className="text-xs font-semibold">K</span>
                 </div>
             )}
             <div className={cn("max-w-[85%]", isUser && "flex flex-col items-end")}>
                 {message.content && (
-                    <div className={cn(
-                        "rounded-2xl px-4 py-2.5",
-                        isUser ? "bg-blue-500 text-white" : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-                    )}>
+                    <div
+                        className="rounded-2xl px-4 py-2.5"
+                        style={isUser
+                            ? { backgroundColor: "var(--k-accent)", color: "var(--k-accent-text)" }
+                            : { backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border)" }
+                        }
+                    >
                         {isUser ? (
                             <p className="text-sm leading-relaxed">{message.content}</p>
                         ) : (
@@ -142,7 +145,7 @@ export default function MessageBubble({ message }) {
                                         );
                                     },
                                     a: ({ children, ...props }) => (
-                                        <a {...props} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600">{children}</a>
+                                        <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: "var(--k-accent)" }}>{children}</a>
                                     ),
                                     p: ({ children }) => <p className="my-1 leading-relaxed">{children}</p>,
                                     ul: ({ children }) => <ul className="my-1 ml-4 list-disc">{children}</ul>,

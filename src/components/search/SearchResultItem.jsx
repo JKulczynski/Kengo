@@ -22,9 +22,9 @@ const docIcons = {
 };
 
 const statusConfig = {
-  planning: { icon: PlayCircle, color: "bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400", label: "Planowanie" },
-  in_progress: { icon: PlayCircle, color: "bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400", label: "W trakcie" },
-  completed: { icon: CheckCircle, color: "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400", label: "Ukończony" }
+  planning:    { icon: PlayCircle,  label: "Planowanie", style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
+  in_progress: { icon: PlayCircle,  label: "W trakcie",  style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
+  completed:   { icon: CheckCircle, label: "Ukończony",  style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
 };
 
 const itemVariants = {
@@ -35,7 +35,7 @@ const itemVariants = {
 export default function SearchResultItem({ item, type }) {
   const Icon = type === 'project' ? Folder : (docIcons[item.type] || FileText);
   const StatusIcon = item.status ? statusConfig[item.status]?.icon || PlayCircle : null;
-  const statusColor = item.status ? statusConfig[item.status]?.color : '';
+  const statusStyle = item.status ? statusConfig[item.status]?.style : {};
 
   return (
     <motion.div variants={itemVariants}>
@@ -55,7 +55,7 @@ export default function SearchResultItem({ item, type }) {
             </p>
             <div className="flex items-center gap-2 mt-1">
               {type === 'project' ? (
-                <Badge className={`${statusColor} border-0 text-xs font-medium`}>
+                <Badge style={statusStyle} className="border-0 text-xs font-medium">
                   {StatusIcon && React.createElement(StatusIcon, { className: 'w-3 h-3 mr-1' })}
                   {item.status?.replace(/_/g, ' ') ?? ''}
                 </Badge>

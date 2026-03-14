@@ -12,6 +12,16 @@
    Shikkui White · Rikyū-nezumi · Koke · Sumi
    ------------------------------------------------------------ */
 :root {
+  /* Ikony — monochromatyczne, zgodne z motywem */
+  --k-icon-bg:    rgba(136, 144, 120, 0.13);
+  --k-icon-color: #707C74;
+  /* Ikony semantyczne (status) */
+  --k-ok-bg:      rgba(112, 124, 116, 0.12);
+  --k-ok-color:   #4a6350;
+  --k-warn-bg:    rgba(180, 130, 60, 0.12);
+  --k-warn-color: #8a5e20;
+  --k-err-bg:     rgba(160, 70, 60, 0.12);
+  --k-err-color:  #8b3a30;
   /* Tła */
   --k-bg:           #F7F6F2;          /* Shikkui — tynk wapienny */
   --k-bg-card:      rgba(250, 249, 246, 0.93);
@@ -72,6 +82,14 @@
    Aktywuj przez: <html class="theme-ukiyo">
    ------------------------------------------------------------ */
 .theme-ukiyo {
+  --k-icon-bg:    rgba(150, 114, 73, 0.13);
+  --k-icon-color: #967249;
+  --k-ok-bg:      rgba(100, 130, 80, 0.12);
+  --k-ok-color:   #4a6830;
+  --k-warn-bg:    rgba(180, 120, 50, 0.14);
+  --k-warn-color: #7a4e18;
+  --k-err-bg:     rgba(160, 70, 60, 0.12);
+  --k-err-color:  #8b3a30;
   --k-bg:           #FEF9F3;          /* Washi — papier ryżowy */
   --k-bg-card:      rgba(255, 252, 247, 0.93);
   --k-bg-sidebar:   #FBF5EE;
@@ -108,6 +126,14 @@
    Aktywuj przez: <html class="theme-aizome">
    ------------------------------------------------------------ */
 .theme-aizome {
+  --k-icon-bg:    rgba(75, 94, 112, 0.12);
+  --k-icon-color: #4B5E70;
+  --k-ok-bg:      rgba(50, 100, 80, 0.12);
+  --k-ok-color:   #2e5e48;
+  --k-warn-bg:    rgba(160, 120, 50, 0.12);
+  --k-warn-color: #6e4e20;
+  --k-err-bg:     rgba(140, 60, 55, 0.12);
+  --k-err-color:  #7a2e28;
   --k-bg:           #F2F4F7;          /* Poranna mgła */
   --k-bg-card:      rgba(242, 245, 250, 0.93);
   --k-bg-sidebar:   #EEF1F5;
@@ -143,6 +169,14 @@
    Aktywuj przez: <html class="theme-moegi">
    ------------------------------------------------------------ */
 .theme-moegi {
+  --k-icon-bg:    rgba(42, 107, 62, 0.12);
+  --k-icon-color: #2A6B3E;
+  --k-ok-bg:      rgba(42, 107, 62, 0.15);
+  --k-ok-color:   #1a4228;
+  --k-warn-bg:    rgba(160, 120, 40, 0.12);
+  --k-warn-color: #6e5010;
+  --k-err-bg:     rgba(140, 55, 50, 0.12);
+  --k-err-color:  #7a2820;
   --k-bg:           #EEF5EE;
   --k-bg-card:      rgba(240, 249, 240, 0.92);
   --k-bg-sidebar:   #F3F9F3;
@@ -299,6 +333,56 @@
 /* ------------------------------------------------------------
    KLASY UŻYTKOWE — Kengo design utilities
    ------------------------------------------------------------ */
+
+/* ============================================================
+   IKONY — zasada monochromatyczności (jeden kolor per motyw)
+   ============================================================ */
+
+/* Pudełko z ikoną — używaj zamiast bg-blue-50 text-blue-600 */
+.icon-box {
+  background-color: var(--k-icon-bg);
+  color:            var(--k-icon-color);
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  flex-shrink:      0;
+}
+/* Ikona semantyczna "ok/success" */
+.icon-box-ok   { background-color: var(--k-ok-bg);   color: var(--k-ok-color); }
+/* Ikona semantyczna "warning" */
+.icon-box-warn { background-color: var(--k-warn-bg); color: var(--k-warn-color); }
+/* Ikona semantyczna "error" */
+.icon-box-err  { background-color: var(--k-err-bg);  color: var(--k-err-color); }
+
+/* ============================================================
+   PRZYCISKI — jeden system, zmienny z motywem
+   ============================================================ */
+
+/* Główny przycisk akcji */
+.btn-primary {
+  background:    var(--k-accent);
+  color:         var(--k-accent-text);
+  border:        none;
+  font-weight:   500;
+  transition:    all 0.18s ease;
+}
+.btn-primary:hover  { background: var(--k-accent-dark); }
+.btn-primary:active { opacity: 0.88; }
+
+/* Przycisk drugorzędny (outline style) */
+.btn-secondary {
+  background:    transparent;
+  color:         var(--k-text-muted);
+  border:        1px solid var(--k-border-md);
+}
+.btn-secondary:hover {
+  background: var(--k-bg-hover);
+  color:      var(--k-text);
+}
+
+/* ============================================================
+   Glass card — zasada Ma: lekkie i przezroczyste
+   ============================================================ */
 
 /* Glass card — zasada Ma: lekkie i przezroczyste */
 .apple-blur {

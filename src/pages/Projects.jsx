@@ -18,10 +18,10 @@ import ProjectCard from "../components/projects/ProjectCard";
 import DeleteConfirmationDialog from "../components/projects/DeleteConfirmationDialog";
 
 const statusConfig = {
-  planning: { color: "bg-blue-50 text-blue-600", label: "Planowanie" },
-  in_progress: { color: "bg-orange-50 text-orange-600", label: "W trakcie" },
-  on_hold: { color: "bg-gray-50 text-gray-600", label: "Wstrzymany" },
-  completed: { color: "bg-green-50 text-green-600", label: "Ukończony" }
+  planning:    { label: "Planowanie",  style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
+  in_progress: { label: "W trakcie",   style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
+  completed:   { label: "Ukończony",   style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
+  on_hold:     { label: "Wstrzymany",  style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
 };
 
 const typeIcons = {
@@ -163,7 +163,7 @@ export default function ProjectsPage() {
                 {selectedProject.type?.replace(/_/g, ' ')} • {selectedProject.current_phase?.replace(/_/g, ' ') || 'Planning'}
               </p>
             </div>
-            <Badge className={`${statusConfig[selectedProject.status]?.color} border-0 font-medium hidden sm:block`}>
+            <Badge style={statusConfig[selectedProject.status]?.style} className="border-0 font-medium hidden sm:block">
               {statusConfig[selectedProject.status]?.label}
             </Badge>
           </div>
@@ -173,8 +173,8 @@ export default function ProjectsPage() {
             <Card className="apple-blur apple-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-blue-600" />
+                  <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center">
+                    <Calendar className="w-5 h-5" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Data rozpoczęcia</p>
@@ -189,8 +189,8 @@ export default function ProjectsPage() {
             <Card className="apple-blur apple-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 text-green-600" />
+                  <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center">
+                    <DollarSign className="w-5 h-5" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Budżet</p>
@@ -205,8 +205,8 @@ export default function ProjectsPage() {
             <Card className="apple-blur apple-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-                    <Users className="w-5 h-5 text-purple-600" />
+                  <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center">
+                    <Users className="w-5 h-5" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Zespół</p>
@@ -219,8 +219,8 @@ export default function ProjectsPage() {
             <Card className="apple-blur apple-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-orange-600" />
+                  <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center">
+                    <FileText className="w-5 h-5" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Dokumenty</p>
@@ -294,7 +294,7 @@ export default function ProjectsPage() {
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-black">Dokumenty projektu</CardTitle>
                   <Link to={createPageUrl("Upload")}>
-                    <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
+                    <Button size="sm" className="btn-primary">
                       Dodaj dokument
                     </Button>
                   </Link>
@@ -335,7 +335,7 @@ export default function ProjectsPage() {
                       <h3 className="font-medium text-black mb-2">Brak dokumentów</h3>
                       <p className="text-gray-500 mb-4">Wgraj pierwszy dokument, aby zacząć</p>
                       <Link to={createPageUrl("Upload")}>
-                        <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+                        <Button className="btn-primary">
                           Dodaj dokument
                         </Button>
                       </Link>
@@ -354,8 +354,8 @@ export default function ProjectsPage() {
                   <div className="space-y-4">
                     {/* Project Owner */}
                     <div className="flex items-center gap-4 p-4 rounded-lg bg-white border">
-                      <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center">
-                        <Crown className="w-5 h-5 text-purple-600" />
+                      <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center">
+                        <Crown className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-black">
@@ -363,7 +363,7 @@ export default function ProjectsPage() {
                         </h4>
                         <p className="text-sm text-gray-500">Właściciel projektu</p>
                       </div>
-                      <Badge className="bg-purple-50 text-purple-600 border-0">Właściciel</Badge>
+                      <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0">Właściciel</Badge>
                     </div>
 
                     {/* Team Members */}
@@ -371,12 +371,8 @@ export default function ProjectsPage() {
                       const RoleIcon = roleIcons[member.role];
                       return (
                         <div key={member.id} className="flex items-center gap-4 p-4 rounded-lg bg-white border">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            member.role === 'editor' ? 'bg-blue-50' : 'bg-gray-50'
-                          }`}>
-                            <RoleIcon className={`w-5 h-5 ${
-                              member.role === 'editor' ? 'text-blue-600' : 'text-gray-600'
-                            }`} />
+                          <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center">
+                            <RoleIcon className="w-5 h-5" />
                           </div>
                           <div className="flex-1">
                             <h4 className="font-medium text-black">
@@ -386,9 +382,7 @@ export default function ProjectsPage() {
                               Zaproszony przez {member.invited_by}
                             </p>
                           </div>
-                          <Badge className={`border-0 ${
-                            member.role === 'editor' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-600'
-                          }`}>
+                          <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0">
                             {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                           </Badge>
                         </div>
@@ -495,8 +489,8 @@ export default function ProjectsPage() {
         
         {/* Projects Grid/List */}
         {error && (
-          <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
-            <p className="text-red-600 text-sm">{error}</p>
+          <div className="mb-8 p-4 rounded-xl flex items-center justify-between" style={{ backgroundColor: "var(--k-err-bg)", border: "1px solid var(--k-border-md)" }}>
+            <p className="text-sm" style={{ color: "var(--k-err-color)" }}>{error}</p>
             <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
               Spróbuj ponownie
             </Button>
@@ -545,7 +539,7 @@ export default function ProjectsPage() {
               </p>
               <Button
                 onClick={() => setIsFormOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium"
+                className="btn-primary rounded-lg text-sm font-medium"
               >
                 Utwórz projekt
               </Button>

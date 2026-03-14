@@ -493,7 +493,7 @@ export default function TeamPage() {
                 <Button 
                   onClick={sendInvitation}
                   disabled={isInviting || !inviteEmail.trim() || !inviteProject}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                  className="btn-primary w-full"
                 >
                   {isInviting ? (
                     <>Wysyłam zaproszenie...</>

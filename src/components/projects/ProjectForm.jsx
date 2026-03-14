@@ -115,7 +115,7 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
             <DialogClose asChild>
               <Button type="button" variant="outline" className="border-gray-200 dark:border-gray-700">Anuluj</Button>
             </DialogClose>
-            <Button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white">{project ? 'Zapisz zmiany' : 'Utwórz projekt'}</Button>
+            <Button type="submit" className="btn-primary">{project ? 'Zapisz zmiany' : 'Utwórz projekt'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

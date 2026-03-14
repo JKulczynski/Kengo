@@ -21,23 +21,20 @@ const WarrantyCard = ({ doc, projectName }) => {
 
   let status = {
     label: 'Aktywna',
-    color: 'text-green-600',
-    bgColor: 'bg-green-50',
+    style: { backgroundColor: 'var(--k-ok-bg)', color: 'var(--k-ok-color)' },
     icon: <ShieldCheck className="w-4 h-4" />,
   };
 
   if (daysLeft <= 0) {
     status = {
       label: 'Wygasła',
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
+      style: { backgroundColor: 'var(--k-err-bg)', color: 'var(--k-err-color)' },
       icon: <XCircle className="w-4 h-4" />,
     };
   } else if (daysLeft <= 30) {
     status = {
       label: 'Wygasa wkrótce',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
+      style: { backgroundColor: 'var(--k-warn-bg)', color: 'var(--k-warn-color)' },
       icon: <AlertTriangle className="w-4 h-4" />,
     };
   }
@@ -55,10 +52,10 @@ const WarrantyCard = ({ doc, projectName }) => {
     >
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="font-semibold text-lg text-black">{doc.title}</h3>
-          <p className="text-sm text-gray-500">{doc.vendor || 'Brak dostawcy'}</p>
+          <h3 className="font-semibold text-lg" style={{ color: "var(--k-text)" }}>{doc.title}</h3>
+          <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>{doc.vendor || 'Brak dostawcy'}</p>
         </div>
-        <div className={`flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-full ${status.bgColor} ${status.color}`}>
+        <div className="flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-full" style={status.style}>
           {status.icon}
           <span>{status.label}</span>
         </div>
@@ -66,25 +63,25 @@ const WarrantyCard = ({ doc, projectName }) => {
 
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-500">Projekt:</span>
-          <span className="font-medium text-black">{projectName || 'Brak'}</span>
+          <span style={{ color: "var(--k-text-subtle)" }}>Projekt:</span>
+          <span className="font-medium" style={{ color: "var(--k-text)" }}>{projectName || 'Brak'}</span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Data zakupu:</span>
-          <span className="font-medium text-black">
+          <span style={{ color: "var(--k-text-subtle)" }}>Data zakupu:</span>
+          <span className="font-medium" style={{ color: "var(--k-text)" }}>
             {hasValidPurchaseDate ? format(purchaseDate, 'dd.MM.yyyy') : 'Brak'}
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Gwarancja do:</span>
-          <span className={`font-medium ${status.color}`}>{format(endDate, 'dd.MM.yyyy')}</span>
+          <span style={{ color: "var(--k-text-subtle)" }}>Gwarancja do:</span>
+          <span className="font-medium" style={{ color: status.style.color }}>{format(endDate, 'dd.MM.yyyy')}</span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Pozostało:</span>
-          <span className={`font-medium ${status.color}`}>
+          <span style={{ color: "var(--k-text-subtle)" }}>Pozostało:</span>
+          <span className="font-medium" style={{ color: status.style.color }}>
             {daysLeft > 0 ? `${daysLeft} dni` : 'Wygasła'}
           </span>
         </div>
@@ -95,7 +92,8 @@ const WarrantyCard = ({ doc, projectName }) => {
           href={doc.file_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 hover:text-blue-600 text-xs font-medium mt-4 inline-flex items-center gap-1"
+          className="text-xs font-medium mt-4 inline-flex items-center gap-1"
+          style={{ color: "var(--k-accent)" }}
         >
           Zobacz dokument <FileText className="w-3 h-3" />
         </a>
@@ -157,14 +155,14 @@ export default function WarrantiesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
           <div>
-            <h1 className="text-4xl font-semibold text-black tracking-tight">
+            <h1 className="text-4xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
               Menedżer gwarancji
             </h1>
-            <p className="text-lg text-gray-500 font-normal mt-2">
+            <p className="text-lg font-normal mt-2" style={{ color: "var(--k-text-subtle)" }}>
               Śledź wszystkie gwarancje produktów w jednym miejscu.
             </p>
           </div>
@@ -183,8 +181,8 @@ export default function WarrantiesPage() {
         </div>
 
         {error && (
-          <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
-            <p className="text-red-600 text-sm">{error}</p>
+          <div className="mb-8 p-4 rounded-xl flex items-center justify-between" style={{ backgroundColor: "var(--k-err-bg)", border: "1px solid var(--k-border-md)" }}>
+            <p className="text-sm" style={{ color: "var(--k-err-color)" }}>{error}</p>
             <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="ml-4 text-sm">
               Spróbuj ponownie
             </Button>
@@ -205,13 +203,13 @@ export default function WarrantiesPage() {
           </div>
         ) : (
           <div className="text-center py-24 apple-blur rounded-2xl">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-              <ShieldCheck className="w-8 h-8 text-gray-400" />
+            <div className="icon-box w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center">
+              <ShieldCheck className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-medium text-black mb-2">
+            <h3 className="text-xl font-medium mb-2" style={{ color: "var(--k-text)" }}>
               Brak gwarancji
             </h3>
-            <p className="text-gray-500">
+            <p style={{ color: "var(--k-text-subtle)" }}>
               Podczas dodawania dokumentu wpisz datę końca gwarancji, aby śledzić ją tutaj.
             </p>
           </div>

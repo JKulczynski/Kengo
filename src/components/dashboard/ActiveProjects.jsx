@@ -11,10 +11,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 const statusConfig = {
-  planning: { color: "bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400", label: "Planowanie" },
-  in_progress: { color: "bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400", label: "W trakcie" },
-  on_hold: { color: "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400", label: "Wstrzymany" },
-  completed: { color: "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400", label: "Ukończony" }
+  planning:    { label: "Planowanie", style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
+  in_progress: { label: "W trakcie",  style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
+  on_hold:     { label: "Wstrzymany", style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
+  completed:   { label: "Ukończony",  style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
 };
 
 export default function ActiveProjects({ projects, documents, isLoading, onProjectUpdate }) {
@@ -88,7 +88,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                         {project.type.replace(/_/g, ' ')}
                       </p>
                     </div>
-                    <Badge className={`${statusConfig[project.status]?.color} border-0 text-xs font-medium`}>
+                    <Badge style={statusConfig[project.status]?.style} className="border-0 text-xs font-medium">
                       {statusConfig[project.status]?.label}
                     </Badge>
                   </div>

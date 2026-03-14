@@ -26,10 +26,10 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 
 const statusConfig = {
-  planning: { color: "bg-blue-50 text-blue-600", label: "Planning" },
-  in_progress: { color: "bg-orange-50 text-orange-600", label: "In Progress" },
-  on_hold: { color: "bg-gray-50 text-gray-600", label: "On Hold" },
-  completed: { color: "bg-green-50 text-green-600", label: "Completed" }
+  planning:    { label: "Planning",     style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
+  in_progress: { label: "In Progress",  style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
+  completed:   { label: "Completed",    style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
+  on_hold:     { label: "On Hold",      style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
 };
 
 const typeIcons = {
@@ -113,7 +113,7 @@ export default function ProjectDetailPage() {
         <div className="text-center">
           <h2 className="text-xl font-medium text-black">Projekt nie znaleziony</h2>
           <Link to={createPageUrl('Projects')}>
-            <Button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white">
+            <Button className="mt-4 btn-primary">
               Wróć do projektów
             </Button>
           </Link>
@@ -143,7 +143,7 @@ export default function ProjectDetailPage() {
               {project.type?.replace(/_/g, ' ')} • {project.current_phase?.replace(/_/g, ' ') || 'Planning'}
             </p>
           </div>
-          <Badge className={`${statusConfig[project.status]?.color} border-0 font-medium hidden sm:block`}>
+          <Badge style={statusConfig[project.status]?.style} className="border-0 font-medium hidden sm:block">
             {statusConfig[project.status]?.label}
           </Badge>
         </div>
@@ -153,8 +153,8 @@ export default function ProjectDetailPage() {
           <Card className="apple-blur apple-shadow">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-blue-600" />
+                <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center">
+                  <Calendar className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Data rozpoczęcia</p>
@@ -169,8 +169,8 @@ export default function ProjectDetailPage() {
           <Card className="apple-blur apple-shadow">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-green-600" />
+                <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center">
+                  <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Budżet</p>
@@ -185,8 +185,8 @@ export default function ProjectDetailPage() {
           <Card className="apple-blur apple-shadow">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-purple-600" />
+                <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center">
+                  <Users className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Zespół</p>
@@ -199,8 +199,8 @@ export default function ProjectDetailPage() {
           <Card className="apple-blur apple-shadow">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-orange-600" />
+                <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center">
+                  <FileText className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Dokumenty</p>
@@ -247,7 +247,7 @@ export default function ProjectDetailPage() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-black">Dokumenty projektu</CardTitle>
                 <Link to={createPageUrl("Upload")}>
-                  <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
+                  <Button size="sm" className="btn-primary">
                     Dodaj dokument
                   </Button>
                 </Link>
@@ -288,7 +288,7 @@ export default function ProjectDetailPage() {
                     <h3 className="font-medium text-black mb-2">Brak dokumentów</h3>
                     <p className="text-gray-500 mb-4">Dodaj pierwszy dokument do projektu</p>
                     <Link to={createPageUrl("Upload")}>
-                      <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+                      <Button className="btn-primary">
                         Dodaj dokument
                       </Button>
                     </Link>
@@ -307,8 +307,8 @@ export default function ProjectDetailPage() {
                 <div className="space-y-4">
                   {/* Project Owner */}
                   <div className="flex items-center gap-4 p-4 rounded-lg bg-white border">
-                    <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center">
-                      <Crown className="w-5 h-5 text-purple-600" />
+                    <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center">
+                      <Crown className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium text-black">
@@ -316,7 +316,7 @@ export default function ProjectDetailPage() {
                       </h4>
                       <p className="text-sm text-gray-500">Właściciel projektu</p>
                     </div>
-                    <Badge className="bg-purple-50 text-purple-600">Właściciel</Badge>
+                    <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }}>Właściciel</Badge>
                   </div>
 
                   {/* Team Members */}
@@ -324,12 +324,8 @@ export default function ProjectDetailPage() {
                     const RoleIcon = roleIcons[member.role];
                     return (
                       <div key={member.id} className="flex items-center gap-4 p-4 rounded-lg bg-white border">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          member.role === 'editor' ? 'bg-blue-50' : 'bg-gray-50'
-                        }`}>
-                          <RoleIcon className={`w-5 h-5 ${
-                            member.role === 'editor' ? 'text-blue-600' : 'text-gray-600'
-                          }`} />
+                        <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center">
+                          <RoleIcon className="w-5 h-5" />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-black">
@@ -339,9 +335,7 @@ export default function ProjectDetailPage() {
                             Zaproszony przez {member.invited_by}
                           </p>
                         </div>
-                        <Badge className={`${
-                          member.role === 'editor' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-600'
-                        }`}>
+                        <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }}>
                           {member.role === 'editor' ? 'Edytor' : member.role === 'viewer' ? 'Obserwator' : member.role}
                         </Badge>
                       </div>

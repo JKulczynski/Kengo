@@ -155,7 +155,7 @@ export default function DocumentsPage() {
               </p>
             </div>
             <Link to={createPageUrl("Upload")}>
-              <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium">
+              <Button className="btn-primary rounded-lg text-sm font-medium">
                 <Upload className="w-4 h-4 mr-2" />
                 Dodaj dokument
               </Button>
@@ -235,8 +235,8 @@ export default function DocumentsPage() {
           </div>
 
           {error && (
-            <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
-              <p className="text-red-600 text-sm">{error}</p>
+            <div className="mb-8 p-4 rounded-xl flex items-center justify-between" style={{ backgroundColor: "var(--k-err-bg)", border: "1px solid var(--k-border-md)" }}>
+              <p className="text-sm" style={{ color: "var(--k-err-color)" }}>{error}</p>
               <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
                 Spróbuj ponownie
               </Button>
@@ -368,7 +368,7 @@ export default function DocumentsPage() {
               </p>
               {documents.length === 0 ? (
                 <Link to={createPageUrl("Upload")}>
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+                  <Button className="btn-primary">
                     <Upload className="w-4 h-4 mr-2" />
                     Dodaj dokument
                   </Button>

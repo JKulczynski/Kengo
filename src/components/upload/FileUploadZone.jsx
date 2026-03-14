@@ -72,9 +72,10 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
 
   return (
     <>
-      <div className={`apple-blur rounded-3xl p-12 apple-shadow-lg transition-all duration-300 ${
-        dragActive ? "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800" : ""
-      }`}>
+      <div
+        className="apple-blur rounded-3xl p-12 apple-shadow-lg transition-all duration-300"
+        style={dragActive ? { backgroundColor: "var(--k-accent-light)", borderColor: "var(--k-border-strong)" } : {}}
+      >
         <input
           ref={fileInputRef}
           type="file"
@@ -184,7 +185,7 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
             <Button
               onClick={capturePhoto}
               disabled={!isCameraReady}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+              className="btn-primary"
             >
               Zrób zdjęcie
             </Button>

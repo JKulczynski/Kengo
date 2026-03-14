@@ -63,13 +63,13 @@ export default function ProcessingQueue({ files, processing, removeFile, process
                     <span className="text-sm text-slate-500">
                       {formatFileSize(file.size)}
                     </span>
-                    <Badge 
-                      variant="outline" 
-                      className={`text-xs ${
-                        file.type === "application/pdf" 
-                          ? "bg-red-50 text-red-700 border-red-200" 
-                          : "bg-blue-50 text-blue-700 border-blue-200"
-                      }`}
+                    <Badge
+                      variant="outline"
+                      className="text-xs"
+                      style={file.type === "application/pdf"
+                        ? { backgroundColor: "var(--k-err-bg)", color: "var(--k-err-color)", borderColor: "var(--k-border-md)" }
+                        : { backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)", borderColor: "var(--k-border-md)" }
+                      }
                     >
                       {file.type === "application/pdf" ? "PDF" : "Obraz"}
                     </Badge>
