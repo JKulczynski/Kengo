@@ -172,7 +172,7 @@ export default function WarrantiesPage() {
           <div>
             <Select value={sortOrder} onValueChange={setSortOrder}>
               <SelectTrigger className="w-[180px] apple-blur">
-                <SelectValue placeholder="Sort by..." />
+                <SelectValue placeholder="Sortuj..." />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="asc">Wygasa najwcześniej</SelectItem>

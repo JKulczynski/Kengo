@@ -23,20 +23,60 @@ import {
 import { format } from "date-fns";
 
 const DOCUMENT_TYPES = [
-  "invoice", "receipt", "contract", "permit", "blueprint", 
+  "invoice", "receipt", "contract", "permit", "blueprint",
   "photo", "warranty", "manual", "estimate", "other"
 ];
 
+const DOCUMENT_TYPE_LABELS = {
+  invoice: "Faktura",
+  receipt: "Paragon",
+  contract: "Umowa",
+  permit: "Pozwolenie",
+  blueprint: "Projekt techniczny",
+  photo: "Zdjęcie",
+  warranty: "Gwarancja",
+  manual: "Instrukcja",
+  estimate: "Kosztorys",
+  other: "Inne",
+};
+
 const CATEGORIES = [
-  "materials", "labor", "permits", "appliances", "fixtures", 
+  "materials", "labor", "permits", "appliances", "fixtures",
   "tools", "utilities", "insurance", "other"
 ];
 
+const CATEGORY_LABELS = {
+  materials: "Materiały",
+  labor: "Robocizna",
+  permits: "Pozwolenia",
+  appliances: "Sprzęt AGD",
+  fixtures: "Armatura",
+  tools: "Narzędzia",
+  utilities: "Media",
+  insurance: "Ubezpieczenie",
+  other: "Inne",
+};
+
 const PHASES = [
-  "design", "permits", "demolition", "structural", "electrical", 
-  "plumbing", "insulation", "drywall", "flooring", "painting", 
+  "design", "permits", "demolition", "structural", "electrical",
+  "plumbing", "insulation", "drywall", "flooring", "painting",
   "fixtures", "final_touches"
 ];
+
+const PHASE_LABELS = {
+  design: "Projekt",
+  permits: "Pozwolenia",
+  demolition: "Rozbiórka",
+  structural: "Konstrukcja",
+  electrical: "Elektryka",
+  plumbing: "Hydraulika",
+  insulation: "Izolacja",
+  drywall: "Płyty gipsowe",
+  flooring: "Podłogi",
+  painting: "Malowanie",
+  fixtures: "Montaż",
+  final_touches: "Wykończenie",
+};
 
 export default function DocumentPreview({ 
   extractedData, 
@@ -95,7 +135,7 @@ export default function DocumentPreview({
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-slate-600" />
-              Document Preview
+              Podgląd dokumentu
             </div>
             <a
               href={extractedData.file_url}
@@ -113,7 +153,7 @@ export default function DocumentPreview({
             {extractedData.file_url && (
               <img 
                 src={extractedData.file_url} 
-                alt="Document"
+                alt="Dokument"
                 className="w-full h-full object-contain"
               />
             )}
@@ -122,7 +162,7 @@ export default function DocumentPreview({
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-4 h-4 text-amber-500" />
             <span className="text-sm font-medium text-slate-700">
-              AI extracted {Object.keys(extractedData.ai_extracted_data || {}).length} fields
+              AI odczytało {Object.keys(extractedData.ai_extracted_data || {}).length} pól
             </span>
           </div>
         </CardContent>
@@ -133,7 +173,7 @@ export default function DocumentPreview({
         <CardHeader className="border-b border-slate-100">
           <CardTitle className="flex items-center gap-2">
             <Eye className="w-5 h-5 text-slate-600" />
-            Review & Edit Details
+            Sprawdź i edytuj dane
           </CardTitle>
         </CardHeader>
         
@@ -142,20 +182,20 @@ export default function DocumentPreview({
           <div className="space-y-4">
             <div>
               <Label htmlFor="title" className="text-sm font-semibold text-slate-700">
-                Document Title
+                Tytuł dokumentu
               </Label>
               <Input
                 id="title"
                 value={editedData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="Enter document title"
+                placeholder="Wpisz tytuł dokumentu"
                 className="mt-1"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-semibold text-slate-700">Type</Label>
+                <Label className="text-sm font-semibold text-slate-700">Typ</Label>
                 <Select
                   value={editedData.type}
                   onValueChange={(value) => handleInputChange('type', value)}
@@ -166,7 +206,7 @@ export default function DocumentPreview({
                   <SelectContent>
                     {DOCUMENT_TYPES.map((type) => (
                       <SelectItem key={type} value={type}>
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                        {DOCUMENT_TYPE_LABELS[type]}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -174,7 +214,7 @@ export default function DocumentPreview({
               </div>
 
               <div>
-                <Label className="text-sm font-semibold text-slate-700">Category</Label>
+                <Label className="text-sm font-semibold text-slate-700">Kategoria</Label>
                 <Select
                   value={editedData.category}
                   onValueChange={(value) => handleInputChange('category', value)}
@@ -185,7 +225,7 @@ export default function DocumentPreview({
                   <SelectContent>
                     {CATEGORIES.map((category) => (
                       <SelectItem key={category} value={category}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                        {CATEGORY_LABELS[category]}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -199,12 +239,12 @@ export default function DocumentPreview({
             <div>
               <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
                 <Building className="w-3 h-3" />
-                Vendor
+                Dostawca
               </Label>
               <Input
                 value={editedData.vendor}
                 onChange={(e) => handleInputChange('vendor', e.target.value)}
-                placeholder="Vendor name"
+                placeholder="Nazwa dostawcy"
                 className="mt-1"
               />
             </div>
@@ -212,7 +252,7 @@ export default function DocumentPreview({
             <div>
               <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
                 <DollarSign className="w-3 h-3" />
-                Amount
+                Kwota
               </Label>
               <Input
                 type="number"
@@ -228,16 +268,16 @@ export default function DocumentPreview({
           {/* Project & Phase */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm font-semibold text-slate-700">Project</Label>
+              <Label className="text-sm font-semibold text-slate-700">Projekt</Label>
               <Select
                 value={editedData.project_id}
                 onValueChange={(value) => handleInputChange('project_id', value)}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select project (optional)" />
+                  <SelectValue placeholder="Wybierz projekt (opcjonalnie)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={null}>No project</SelectItem>
+                  <SelectItem value={null}>Bez projektu</SelectItem>
                   {projects.map((project) => (
                     <SelectItem key={project.id} value={project.id}>
                       {project.name}
@@ -248,7 +288,7 @@ export default function DocumentPreview({
             </div>
 
             <div>
-              <Label className="text-sm font-semibold text-slate-700">Phase</Label>
+              <Label className="text-sm font-semibold text-slate-700">Etap</Label>
               <Select
                 value={editedData.phase}
                 onValueChange={(value) => handleInputChange('phase', value)}
@@ -259,7 +299,7 @@ export default function DocumentPreview({
                 <SelectContent>
                   {PHASES.map((phase) => (
                     <SelectItem key={phase} value={phase}>
-                      {phase.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      {PHASE_LABELS[phase]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -272,7 +312,7 @@ export default function DocumentPreview({
             <div>
               <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                Date
+                Data
               </Label>
               <Input
                 type="date"
@@ -284,14 +324,14 @@ export default function DocumentPreview({
             <div>
               <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3" />
-                Warranty Ends
+                Gwarancja do
               </Label>
               <Input
                 type="date"
                 value={editedData.warranty_end_date || ''}
                 onChange={(e) => handleInputChange('warranty_end_date', e.target.value)}
                 className="mt-1"
-                placeholder="Optional"
+                placeholder="Opcjonalnie"
               />
             </div>
           </div>
@@ -300,14 +340,14 @@ export default function DocumentPreview({
           <div>
             <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
               <Tag className="w-3 h-3" />
-              Tags
+              Tagi
             </Label>
             <div className="mt-1 space-y-2">
               <div className="flex gap-2">
                 <Input
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
-                  placeholder="Add tags..."
+                  placeholder="Dodaj tagi..."
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag(tagInput))}
                   className="flex-1"
                 />
@@ -317,7 +357,7 @@ export default function DocumentPreview({
                   onClick={() => addTag(tagInput)}
                   disabled={!tagInput.trim()}
                 >
-                  Add
+                  Dodaj
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -337,11 +377,11 @@ export default function DocumentPreview({
 
           {/* Notes */}
           <div>
-            <Label className="text-sm font-semibold text-slate-700">Notes</Label>
+            <Label className="text-sm font-semibold text-slate-700">Notatki</Label>
             <Textarea
               value={editedData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="Additional notes about this document..."
+              placeholder="Dodatkowe informacje o dokumencie..."
               rows={3}
               className="mt-1"
             />
@@ -355,7 +395,7 @@ export default function DocumentPreview({
             disabled={isProcessing}
           >
             <X className="w-4 h-4 mr-2" />
-            Cancel
+            Anuluj
           </Button>
           <Button
             onClick={() => onSave(editedData)}
@@ -363,7 +403,7 @@ export default function DocumentPreview({
             className="renovation-gradient"
           >
             <Save className="w-4 h-4 mr-2" />
-            {isProcessing ? 'Saving...' : 'Save Document'}
+            {isProcessing ? 'Zapisuję...' : 'Zapisz dokument'}
           </Button>
         </CardFooter>
       </Card>
