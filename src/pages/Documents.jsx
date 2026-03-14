@@ -117,7 +117,7 @@ export default function DocumentsPage() {
   };
 
   const getProjectName = (projectId) => {
-    return projects.find(p => p.id === projectId)?.name || 'No Project';
+    return projects.find(p => p.id === projectId)?.name || 'Bez projektu';
   };
 
   const clearFilters = () => {

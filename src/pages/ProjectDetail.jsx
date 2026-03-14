@@ -111,10 +111,10 @@ export default function ProjectDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-medium text-black">Project not found</h2>
+          <h2 className="text-xl font-medium text-black">Projekt nie znaleziony</h2>
           <Link to={createPageUrl('Projects')}>
             <Button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white">
-              Back to Projects
+              Wróć do projektów
             </Button>
           </Link>
         </div>
@@ -157,9 +157,9 @@ export default function ProjectDetailPage() {
                   <Calendar className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Start Date</p>
+                  <p className="text-xs text-gray-500">Data rozpoczęcia</p>
                   <p className="font-medium text-black">
-                    {project.start_date ? format(new Date(project.start_date), 'MMM d, yyyy') : 'Not set'}
+                    {project.start_date ? format(new Date(project.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
                   </p>
                 </div>
               </div>
@@ -190,7 +190,7 @@ export default function ProjectDetailPage() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Team</p>
-                  <p className="font-medium text-black">{members.length + 1} members</p>
+                  <p className="font-medium text-black">{members.length + 1} osób</p>
                 </div>
               </div>
             </CardContent>
@@ -216,7 +216,7 @@ export default function ProjectDetailPage() {
           <Card className="apple-blur apple-shadow mb-8">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium text-black">Budget Progress</h3>
+                <h3 className="font-medium text-black">Realizacja budżetu</h3>
                 <span className={`text-sm font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-black'}`}>
                   {budgetUsage.toFixed(1)}%
                 </span>
@@ -238,17 +238,17 @@ export default function ProjectDetailPage() {
         <Tabs defaultValue="documents" className="space-y-6">
           <TabsList className="apple-blur">
             <TabsTrigger value="documents" className="text-black data-[state=active]:text-black">Documents ({documents.length})</TabsTrigger>
-            <TabsTrigger value="team" className="text-black data-[state=active]:text-black">Team ({members.length + 1})</TabsTrigger>
-            <TabsTrigger value="overview" className="text-black data-[state=active]:text-black">Overview</TabsTrigger>
+            <TabsTrigger value="team" className="text-black data-[state=active]:text-black">Zespół ({members.length + 1})</TabsTrigger>
+            <TabsTrigger value="overview" className="text-black data-[state=active]:text-black">Przegląd</TabsTrigger>
           </TabsList>
 
           <TabsContent value="documents">
             <Card className="apple-blur apple-shadow">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-black">Project Documents</CardTitle>
+                <CardTitle className="text-black">Dokumenty projektu</CardTitle>
                 <Link to={createPageUrl("Upload")}>
                   <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
-                    Add Document
+                    Dodaj dokument
                   </Button>
                 </Link>
               </CardHeader>
@@ -285,11 +285,11 @@ export default function ProjectDetailPage() {
                 ) : (
                   <div className="text-center py-12">
                     <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="font-medium text-black mb-2">No documents yet</h3>
-                    <p className="text-gray-500 mb-4">Upload your first document to get started</p>
+                    <h3 className="font-medium text-black mb-2">Brak dokumentów</h3>
+                    <p className="text-gray-500 mb-4">Dodaj pierwszy dokument do projektu</p>
                     <Link to={createPageUrl("Upload")}>
                       <Button className="bg-blue-500 hover:bg-blue-600 text-white">
-                        Add Document
+                        Dodaj dokument
                       </Button>
                     </Link>
                   </div>
@@ -301,7 +301,7 @@ export default function ProjectDetailPage() {
           <TabsContent value="team">
             <Card className="apple-blur apple-shadow">
               <CardHeader>
-                <CardTitle className="text-black">Team Members</CardTitle>
+                <CardTitle className="text-black">Członkowie zespołu</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -314,9 +314,9 @@ export default function ProjectDetailPage() {
                       <h4 className="font-medium text-black">
                         {project.created_by === currentUser?.email ? 'You' : project.created_by}
                       </h4>
-                      <p className="text-sm text-gray-500">Project Owner</p>
+                      <p className="text-sm text-gray-500">Właściciel projektu</p>
                     </div>
-                    <Badge className="bg-purple-50 text-purple-600">Owner</Badge>
+                    <Badge className="bg-purple-50 text-purple-600">Właściciel</Badge>
                   </div>
 
                   {/* Team Members */}
@@ -333,16 +333,16 @@ export default function ProjectDetailPage() {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-black">
-                            {member.user_email === currentUser?.email ? 'You' : member.user_email}
+                            {member.user_email === currentUser?.email ? 'Ty' : member.user_email}
                           </h4>
                           <p className="text-sm text-gray-500">
-                            Invited by {member.invited_by}
+                            Zaproszony przez {member.invited_by}
                           </p>
                         </div>
                         <Badge className={`${
                           member.role === 'editor' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-600'
                         }`}>
-                          {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                          {member.role === 'editor' ? 'Edytor' : member.role === 'viewer' ? 'Obserwator' : member.role}
                         </Badge>
                       </div>
                     );
@@ -355,23 +355,23 @@ export default function ProjectDetailPage() {
           <TabsContent value="overview">
             <Card className="apple-blur apple-shadow">
               <CardHeader>
-                <CardTitle className="text-black">Project Overview</CardTitle>
+                <CardTitle className="text-black">Przegląd projektu</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {project.description && (
                     <div>
-                      <h4 className="font-medium text-black mb-2">Description</h4>
+                      <h4 className="font-medium text-black mb-2">Opis</h4>
                       <p className="text-gray-600">{project.description}</p>
                     </div>
                   )}
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-medium text-black mb-2">Project Details</h4>
+                      <h4 className="font-medium text-black mb-2">Szczegóły projektu</h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-500">Type:</span>
+                          <span className="text-gray-500">Typ:</span>
                           <span className="text-black capitalize">{project.type?.replace(/_/g, ' ')}</span>
                         </div>
                         <div className="flex justify-between">
@@ -379,25 +379,25 @@ export default function ProjectDetailPage() {
                           <span className="text-black capitalize">{project.status?.replace(/_/g, ' ')}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-500">Progress:</span>
+                          <span className="text-gray-500">Postęp:</span>
                           <span className="text-black">{project.progress_percentage || 0}%</span>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div>
-                      <h4 className="font-medium text-black mb-2">Timeline</h4>
+                      <h4 className="font-medium text-black mb-2">Harmonogram</h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-500">Start Date:</span>
+                          <span className="text-gray-500">Data rozpoczęcia:</span>
                           <span className="text-black">
-                            {project.start_date ? format(new Date(project.start_date), 'MMM d, yyyy') : 'Not set'}
+                            {project.start_date ? format(new Date(project.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-500">Target Completion:</span>
+                          <span className="text-gray-500">Planowane zakończenie:</span>
                           <span className="text-black">
-                            {project.target_completion ? format(new Date(project.target_completion), 'MMM d, yyyy') : 'Not set'}
+                            {project.target_completion ? format(new Date(project.target_completion), 'dd.MM.yyyy') : 'Nie ustawiono'}
                           </span>
                         </div>
                       </div>

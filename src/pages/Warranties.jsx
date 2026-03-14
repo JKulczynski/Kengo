@@ -56,7 +56,7 @@ const WarrantyCard = ({ doc, projectName }) => {
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-semibold text-lg text-black">{doc.title}</h3>
-          <p className="text-sm text-gray-500">{doc.vendor || 'No vendor'}</p>
+          <p className="text-sm text-gray-500">{doc.vendor || 'Brak dostawcy'}</p>
         </div>
         <div className={`flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-full ${status.bgColor} ${status.color}`}>
           {status.icon}

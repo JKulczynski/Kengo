@@ -1,100 +1,145 @@
-
-import React, { useState, useEffect, useCallback } from "react";
-import { agentSDK } from "@/agents";
+import React, { useState, useEffect, useRef } from "react";
+import { Project } from "@/api/entities";
+import { Document } from "@/api/entities";
+import { InvokeLLM } from "@/api/integrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { 
-    Send, 
-    Sparkles, 
-    MessageSquare, 
+import {
+    Send,
+    Sparkles,
     Bot,
     Loader2,
-    ExternalLink,
-    MessageCircle,
+    User,
     Zap
 } from "lucide-react";
-import MessageBubble from "../components/assistant/MessageBubble";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
+
+function buildSystemContext(projects, documents) {
+    const projectsSummary = projects.map(p => {
+        const projectDocs = documents.filter(d => d.project_id === p.id);
+        const spent = projectDocs.reduce((sum, d) => sum + (d.amount || 0), 0);
+        return `- Projekt: "${p.name}" | Status: ${p.status} | Budżet: ${(p.budget || 0).toLocaleString('pl-PL')} zł | Wydano: ${spent.toLocaleString('pl-PL')} zł | Typ: ${p.type || 'brak'} | Opis: ${p.description || 'brak'} | Termin: ${p.target_completion || 'brak'}`;
+    }).join('\n');
+
+    const documentsSummary = documents.slice(0, 60).map(d =>
+        `- Dokument: "${d.title}" | Typ: ${d.type} | Dostawca: ${d.vendor || 'brak'} | Kwota: ${d.amount ? `${d.amount.toLocaleString('pl-PL')} zł` : 'brak'} | Data: ${d.date || 'brak'} | Gwarancja do: ${d.warranty_end_date || 'brak'}`
+    ).join('\n');
+
+    return `Jesteś Kengo — ciepłym, pomocnym asystentem remontowym. Pomagasz użytkownikowi zarządzać jego projektami remontowymi.
+
+DANE UŻYTKOWNIKA:
+
+Projekty (${projects.length}):
+${projectsSummary || 'Brak projektów'}
+
+Dokumenty (${documents.length}):
+${documentsSummary || 'Brak dokumentów'}
+
+ZASADY:
+- Odpowiadaj po polsku, ciepło i konkretnie
+- Opieraj się na danych użytkownika — nie wymyślaj
+- Gdy czegoś brakuje, sugeruj jak to uzupełnić w aplikacji
+- Formatuj odpowiedzi czytelnie (listy, podsumowania)
+- Nie udawaj, że masz więcej danych niż masz`;
+}
+
+function MessageBubble({ message }) {
+    const isUser = message.role === 'user';
+    return (
+        <div className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                isUser
+                    ? 'bg-blue-500'
+                    : 'bg-gradient-to-br from-blue-500 to-purple-600'
+            }`}>
+                {isUser
+                    ? <User className="w-4 h-4 text-white" />
+                    : <Bot className="w-4 h-4 text-white" />
+                }
+            </div>
+            <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                isUser
+                    ? 'bg-blue-500 text-white rounded-tr-sm'
+                    : 'bg-white dark:bg-gray-900 text-black dark:text-white apple-shadow rounded-tl-sm'
+            }`}>
+                {message.content}
+            </div>
+        </div>
+    );
+}
+
+const quickActions = [
+    { label: "Moje projekty", prompt: "Podsumuj moje projekty — co jest aktywne, jaki jest budżet i co wymaga uwagi?" },
+    { label: "Analiza wydatków", prompt: "Przeanalizuj moje wydatki i powiedz, gdzie idzie najwięcej pieniędzy." },
+    { label: "Gwarancje", prompt: "Które gwarancje wygasają wkrótce? Daj mi przegląd." },
+    { label: "Co zrobić dalej?", prompt: "Patrząc na moje projekty — co powinienem zrobić teraz, żeby posunąć prace do przodu?" },
+];
 
 export default function AssistantPage() {
-    const [conversations, setConversations] = useState([]);
-    const [activeConversation, setActiveConversation] = useState(null);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+    const [isLoadingData, setIsLoadingData] = useState(true);
+    const [projects, setProjects] = useState([]);
+    const [documents, setDocuments] = useState([]);
+    const messagesEndRef = useRef(null);
 
-    const createNewConversation = useCallback(async () => {
-        try {
-            const newConv = await agentSDK.createConversation({
-                agent_name: "renovation_assistant",
-                metadata: {
-                    name: `Rozmowa ${new Date().toLocaleString("pl-PL")}`,
-                    description: "Rozmowa z asystentem remontowym"
-                }
-            });
-            setActiveConversation(newConv);
-            setConversations(prev => [newConv, ...prev]);
-            setMessages([]);
-        } catch (error) {
-            console.error("Error creating conversation:", error);
-        }
+    useEffect(() => {
+        loadUserData();
     }, []);
 
-    const loadConversations = useCallback(async () => {
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, isLoading]);
+
+    const loadUserData = async () => {
+        setIsLoadingData(true);
         try {
-            const convs = await agentSDK.listConversations({
-                agent_name: "renovation_assistant",
-            });
-            setConversations(convs);
-            
-            // If there are existing conversations, load the most recent one
-            if (convs.length > 0) {
-                setActiveConversation(convs[0]);
-            } else {
-                // Create a new conversation if none exist
-                await createNewConversation();
-            }
+            const [projectsData, documentsData] = await Promise.all([
+                Project.list(),
+                Document.list('-created_date', 100)
+            ]);
+            setProjects(projectsData);
+            setDocuments(documentsData);
         } catch (error) {
-            console.error("Error loading conversations:", error);
+            console.error("Error loading user data:", error);
         }
-        setIsLoadingConversations(false);
-    }, [createNewConversation]); // createNewConversation is stable due to useCallback([])
+        setIsLoadingData(false);
+    };
 
-    useEffect(() => {
-        loadConversations();
-    }, [loadConversations]); // loadConversations is stable due to useCallback([])
+    const sendMessage = async (text) => {
+        const messageText = (text || inputMessage).trim();
+        if (!messageText || isLoading) return;
 
-    useEffect(() => {
-        if (activeConversation) {
-            const unsubscribe = agentSDK.subscribeToConversation(activeConversation.id, (data) => {
-                setMessages(data.messages || []);
-                setIsLoading(false);
-            });
-
-            return () => {
-                unsubscribe();
-            };
-        }
-    }, [activeConversation]);
-
-    const sendMessage = async () => {
-        if (!inputMessage.trim() || !activeConversation || isLoading) return;
-
-        const messageText = inputMessage.trim();
         setInputMessage("");
+        const userMsg = { role: 'user', content: messageText };
+        setMessages(prev => [...prev, userMsg]);
         setIsLoading(true);
 
         try {
-            await agentSDK.addMessage(activeConversation, {
-                role: "user",
-                content: messageText
-            });
+            const systemContext = buildSystemContext(projects, documents);
+            const conversationHistory = [...messages, userMsg]
+                .map(m => `${m.role === 'user' ? 'Użytkownik' : 'Kengo'}: ${m.content}`)
+                .join('\n\n');
+
+            const fullPrompt = `${systemContext}
+
+HISTORIA ROZMOWY:
+${conversationHistory}
+
+Odpowiedz na ostatnią wiadomość użytkownika.`;
+
+            const response = await InvokeLLM({ prompt: fullPrompt });
+            setMessages(prev => [...prev, { role: 'assistant', content: response }]);
         } catch (error) {
-            console.error("Error sending message:", error);
-            setIsLoading(false);
+            console.error("Error calling LLM:", error);
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: 'Przepraszam, coś poszło nie tak. Spróbuj ponownie za chwilę.'
+            }]);
         }
+        setIsLoading(false);
     };
 
     const handleKeyPress = (e) => {
@@ -104,14 +149,12 @@ export default function AssistantPage() {
         }
     };
 
-    const whatsappURL = agentSDK.getWhatsAppConnectURL('renovation_assistant');
-
-    if (isLoadingConversations) {
+    if (isLoadingData) {
         return (
             <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
                 <div className="text-center">
                     <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400">Loading assistant...</p>
+                    <p className="text-gray-500 dark:text-gray-400">Ładuję Twoje dane...</p>
                 </div>
             </div>
         );
@@ -119,121 +162,81 @@ export default function AssistantPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-black">
-            <div className="max-w-6xl mx-auto px-6 py-12">
+            <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-12">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
-                    <div>
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                <Sparkles className="w-5 h-5 text-white" />
-                            </div>
-                            <h1 className="text-4xl font-semibold text-black dark:text-white tracking-tight">
-                                AI Assistant
-                            </h1>
-                        </div>
-                        <p className="text-lg text-gray-500 dark:text-gray-400 font-normal">
-                            Twój inteligentny asystent remontowy
-                        </p>
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-white" />
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Button 
-                            onClick={createNewConversation}
-                            variant="outline"
-                            className="border-gray-200 dark:border-gray-700"
-                        >
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            Nowa rozmowa
-                        </Button>
-                        <a href={whatsappURL} target="_blank" rel="noopener noreferrer">
-                            <Button className="bg-green-500 hover:bg-green-600 text-white">
-                                <MessageCircle className="w-4 h-4 mr-2" />
-                                WhatsApp
-                            </Button>
-                        </a>
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-semibold text-black dark:text-white tracking-tight">
+                            Asystent Kengo
+                        </h1>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
+                            {projects.length > 0
+                                ? `Znam Twoje ${projects.length} ${projects.length === 1 ? 'projekt' : 'projekty'} i ${documents.length} dokumentów`
+                                : 'Zacznij rozmowę — pomogę Ci zorganizować remont'}
+                        </p>
                     </div>
                 </div>
 
                 {/* Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <Card className="apple-blur apple-shadow border-0 hover:apple-shadow-lg transition-shadow cursor-pointer" 
-                          onClick={() => setInputMessage("Pokaż mi wszystkie moje projekty")}>
-                        <CardContent className="p-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center">
-                                    <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                {messages.length === 0 && (
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {quickActions.map((action) => (
+                            <button
+                                key={action.label}
+                                onClick={() => sendMessage(action.prompt)}
+                                disabled={isLoading}
+                                className="apple-blur rounded-xl p-4 text-left apple-shadow hover:apple-shadow-lg transition-all duration-200 group"
+                            >
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Zap className="w-3.5 h-3.5 text-blue-500" />
+                                    <p className="font-medium text-black dark:text-white text-sm">{action.label}</p>
                                 </div>
-                                <div>
-                                    <p className="font-medium text-black dark:text-white text-sm">Moje projekty</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Pokaż wszystkie projekty</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="apple-blur apple-shadow border-0 hover:apple-shadow-lg transition-shadow cursor-pointer"
-                          onClick={() => setInputMessage("Jaki jest status mojego budżetu?")}>
-                        <CardContent className="p-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-green-100 dark:bg-green-950 rounded-lg flex items-center justify-center">
-                                    <Zap className="w-4 h-4 text-green-600 dark:text-green-400" />
-                                </div>
-                                <div>
-                                    <p className="font-medium text-black dark:text-white text-sm">Analiza budżetu</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Status wydatków</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="apple-blur apple-shadow border-0 hover:apple-shadow-lg transition-shadow cursor-pointer"
-                          onClick={() => setInputMessage("Pokaż mi gwarancje wygasające w najbliższym czasie")}>
-                        <CardContent className="p-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-purple-100 dark:bg-purple-950 rounded-lg flex items-center justify-center">
-                                    <Zap className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                                </div>
-                                <div>
-                                    <p className="font-medium text-black dark:text-white text-sm">Gwarancje</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Sprawdź daty ważności</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Chat Interface */}
-                <div className="apple-blur rounded-2xl apple-shadow-lg h-[600px] flex flex-col">
-                    {/* Messages */}
-                    <div className="flex-1 p-6 overflow-y-auto space-y-4">
-                        {messages.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Bot className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-lg font-medium text-black dark:text-white mb-2">
-                                    Witaj w Kengo Assistant!
-                                </h3>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                                    Jestem Twoim inteligentnym asystentem remontowym. Mogę pomóc Ci:
+                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug line-clamp-2">
+                                    {action.prompt}
                                 </p>
-                                <div className="text-left max-w-md mx-auto text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                    <p>• Zarządzać projektami i dokumentami</p>
-                                    <p>• Analizować budżet i wydatki</p>
-                                    <p>• Śledzić gwarancje</p>
-                                    <p>• Udzielać porad remontowych</p>
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {/* Chat */}
+                <div className="apple-blur rounded-2xl apple-shadow flex flex-col" style={{ minHeight: '500px' }}>
+                    {/* Messages area */}
+                    <div className="flex-1 p-6 overflow-y-auto space-y-4" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                        {messages.length === 0 ? (
+                            <div className="text-center py-16">
+                                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Bot className="w-7 h-7 text-white" />
                                 </div>
+                                <h3 className="text-base font-medium text-black dark:text-white mb-2">
+                                    Cześć! Jak mogę pomóc?
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                                    Pytaj o projekty, budżet, gwarancje — znam Twoje dane i odpowiem konkretnie.
+                                </p>
                             </div>
                         ) : (
-                            messages.map((message, index) => (
-                                <MessageBubble key={index} message={message} />
-                            ))
+                            messages.map((msg, i) => <MessageBubble key={i} message={msg} />)
                         )}
+
                         {isLoading && (
-                            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                <span className="text-sm">Asystent pisze...</span>
+                            <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                                    <Bot className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="bg-white dark:bg-gray-900 apple-shadow rounded-2xl rounded-tl-sm px-4 py-3">
+                                    <div className="flex gap-1.5 items-center">
+                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                    </div>
+                                </div>
                             </div>
                         )}
+                        <div ref={messagesEndRef} />
                     </div>
 
                     {/* Input */}
@@ -242,19 +245,27 @@ export default function AssistantPage() {
                             <Input
                                 value={inputMessage}
                                 onChange={(e) => setInputMessage(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                placeholder="Zadaj pytanie lub poproś o pomoc..."
-                                className="flex-1"
+                                onKeyDown={handleKeyPress}
+                                placeholder="Zadaj pytanie..."
+                                className="flex-1 rounded-xl"
                                 disabled={isLoading}
                             />
-                            <Button 
-                                onClick={sendMessage}
+                            <Button
+                                onClick={() => sendMessage()}
                                 disabled={isLoading || !inputMessage.trim()}
-                                className="bg-blue-500 hover:bg-blue-600 text-white"
+                                className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-4"
                             >
                                 <Send className="w-4 h-4" />
                             </Button>
                         </div>
+                        {messages.length > 0 && (
+                            <button
+                                onClick={() => setMessages([])}
+                                className="text-xs text-gray-400 hover:text-gray-600 mt-2 ml-1"
+                            >
+                                Wyczyść rozmowę
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
