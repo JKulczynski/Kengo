@@ -77,6 +77,7 @@ if (useMockApi) {
       Project: makeEntityMock("Project"),
       Document: makeEntityMock("Document"),
       ProjectMember: makeEntityMock("ProjectMember"),
+      Note: makeEntityMock("Note"),
     },
 
     auth: {

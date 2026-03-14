@@ -20,10 +20,12 @@ import ProjectDetail from "./ProjectDetail";
 
 import Team from "./Team";
 
+import Notes from "./Notes";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
-    
+
     Dashboard: Dashboard,
     
     Upload: Upload,
@@ -43,7 +45,9 @@ const PAGES = {
     ProjectDetail: ProjectDetail,
     
     Team: Team,
-    
+
+    Notes: Notes,
+
 }
 
 function _getCurrentPage(url) {
@@ -90,7 +94,9 @@ function PagesContent() {
                 <Route path="/ProjectDetail" element={<ProjectDetail />} />
                 
                 <Route path="/Team" element={<Team />} />
-                
+
+                <Route path="/notes" element={<Notes />} />
+
             </Routes>
         </Layout>
     );

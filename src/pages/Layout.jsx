@@ -4,16 +4,17 @@ import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { User } from "@/api/entities";
 import { 
-    Home, 
-    Upload, 
-    FolderOpen, 
-    Search, 
+    Home,
+    Upload,
+    FolderOpen,
+    Search,
     Hammer,
     Camera,
     User as UserIcon,
     ShieldCheck,
     FileText,
-    Users
+    Users,
+    StickyNote
 } from "lucide-react";
 import {
   Sidebar,
@@ -69,6 +70,11 @@ const navigationItems = [
     title: "Search",
     url: createPageUrl("Search"),
     icon: Search,
+  },
+  {
+    title: "Notes",
+    url: "/notes",
+    icon: StickyNote,
   },
   {
     title: "Team",
