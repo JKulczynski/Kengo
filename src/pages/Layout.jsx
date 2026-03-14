@@ -9,6 +9,7 @@ import {
     FolderOpen,
     Search,
     Hammer,
+    Camera,
     User as UserIcon,
     ShieldCheck,
     FileText,
@@ -282,26 +283,109 @@ export default function Layout({ children }) {
 
         {/* Główna treść */}
         <main className="flex-1 flex flex-col" style={{ backgroundColor: "var(--k-bg)" }}>
+          {/* Topbar mobilny — tylko logo i trigger */}
           <header
-            className="apple-blur border-b px-4 py-3 md:hidden"
+            className="apple-blur border-b px-4 py-3 md:hidden flex-shrink-0"
             style={{ borderColor: "var(--k-border)" }}
           >
-            <div className="flex items-center gap-4">
-              <SidebarTrigger
-                className="p-2 rounded-lg"
-                style={{ color: "var(--k-text)" }}
-              />
-              <h1 className="text-lg font-medium" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
+            <div className="flex items-center gap-3">
+              <div
+                className="w-7 h-7 rounded-lg flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, var(--k-accent-dark), var(--k-accent))" }}
+              >
+                <Hammer className="w-3.5 h-3.5" style={{ color: "var(--k-accent-text)", strokeWidth: 2.5 }} />
+              </div>
+              <h1 className="text-base font-semibold" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
                 Kengo
               </h1>
             </div>
           </header>
 
-          <div className="flex-1 overflow-auto">
+          {/* Treść — padding-bottom na mobile żeby nie chować się pod bottom nav */}
+          <div className="flex-1 overflow-auto pb-20 md:pb-0">
             {children}
           </div>
         </main>
       </div>
+
+      {/* ====== DOLNA NAWIGACJA MOBILNA ====== */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 apple-blur border-t"
+        style={{ borderColor: "var(--k-border-md)" }}
+      >
+        {/* Safe area na notch i home indicator */}
+        <div className="flex items-end justify-around px-2 pt-2 pb-safe" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
+
+          {/* Pulpit */}
+          <MobileNavItem
+            to={createPageUrl("Dashboard")}
+            icon={Home}
+            label="Pulpit"
+            active={location.pathname === createPageUrl("Dashboard") || location.pathname === "/"}
+          />
+
+          {/* Projekty */}
+          <MobileNavItem
+            to={createPageUrl("Projects")}
+            icon={FolderOpen}
+            label="Projekty"
+            active={location.pathname === createPageUrl("Projects")}
+          />
+
+          {/* FAB — Skanuj (środkowy, uniesiony) */}
+          <Link
+            to={createPageUrl("Upload")}
+            className="relative -top-4 flex flex-col items-center"
+          >
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center apple-shadow-lg"
+              style={{
+                background: "linear-gradient(135deg, var(--k-accent), var(--k-accent-dark))",
+              }}
+            >
+              <Camera className="w-6 h-6" style={{ color: "var(--k-accent-text)", strokeWidth: 2 }} />
+            </div>
+            <span className="text-xs mt-1 font-medium" style={{ color: "var(--k-accent)" }}>Skanuj</span>
+          </Link>
+
+          {/* Asystent */}
+          <MobileNavItem
+            to={createPageUrl("Assistant")}
+            icon={MessageSquare}
+            label="Asystent"
+            active={location.pathname === createPageUrl("Assistant")}
+          />
+
+          {/* Profil */}
+          <MobileNavItem
+            to={createPageUrl("Profile")}
+            icon={UserIcon}
+            label="Profil"
+            active={location.pathname === createPageUrl("Profile")}
+          />
+        </div>
+      </nav>
     </SidebarProvider>
+  );
+}
+
+// Komponent pojedynczej pozycji w dolnej nawigacji
+function MobileNavItem({ to, icon: Icon, label, active }) {
+  return (
+    <Link to={to} className="flex flex-col items-center gap-1 px-3 py-1 min-w-[3rem]">
+      <Icon
+        className="w-5 h-5"
+        style={{
+          color: active ? "var(--k-accent)" : "var(--k-text-subtle)",
+          strokeWidth: active ? 2 : 1.6,
+        }}
+      />
+      <span
+        className="text-xs font-medium"
+        style={{ color: active ? "var(--k-accent)" : "var(--k-text-subtle)" }}
+      >
+        {label}
+      </span>
+    </Link>
   );
 }

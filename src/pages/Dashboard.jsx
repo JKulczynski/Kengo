@@ -17,6 +17,7 @@ import {
     ChevronRight
 } from "lucide-react";
 import { differenceInDays, parseISO, isValid } from "date-fns";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 import ActiveProjects from "../components/dashboard/ActiveProjects";
 import RecentDocuments from "../components/dashboard/RecentDocuments";
@@ -286,6 +287,80 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+
+            {/* Wykres budżetu projektów */}
+            {projects.length > 0 && (() => {
+              const chartData = projects
+                .filter(p => p.budget > 0)
+                .slice(0, 6)
+                .map(p => {
+                  const spent = documents
+                    .filter(d => d.project_id === p.id)
+                    .reduce((s, d) => s + (d.amount || 0), 0);
+                  return {
+                    name: p.name.length > 14 ? p.name.slice(0, 14) + '…' : p.name,
+                    Budżet: p.budget,
+                    Wydano: spent,
+                    overBudget: spent > p.budget,
+                  };
+                });
+
+              if (chartData.length === 0) return null;
+
+              return (
+                <div className="apple-blur rounded-2xl apple-shadow p-6 mb-8">
+                  <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
+                    Budżet projektów
+                  </h3>
+                  <ResponsiveContainer width="100%" height={160}>
+                    <BarChart data={chartData} barGap={4} barCategoryGap="30%">
+                      <XAxis
+                        dataKey="name"
+                        tick={{ fontSize: 11, fill: "var(--k-text-muted)", fontFamily: "inherit" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis hide />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "var(--k-bg-surface)",
+                          border: "1px solid var(--k-border-md)",
+                          borderRadius: "0.75rem",
+                          fontSize: 12,
+                          fontFamily: "inherit",
+                          color: "var(--k-text)",
+                        }}
+                        formatter={(val) => `${val.toLocaleString('pl-PL')} zł`}
+                        cursor={{ fill: "var(--k-bg-hover)" }}
+                      />
+                      <Bar dataKey="Budżet" radius={[4, 4, 0, 0]} fill="var(--k-border-strong)" />
+                      <Bar dataKey="Wydano" radius={[4, 4, 0, 0]}>
+                        {chartData.map((entry, i) => (
+                          <Cell
+                            key={i}
+                            fill={entry.overBudget ? "#d97706" : "var(--k-accent)"}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div className="flex items-center gap-4 mt-3">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ backgroundColor: "var(--k-border-strong)" }} />
+                      <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>Budżet</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ backgroundColor: "var(--k-accent)" }} />
+                      <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>Wydano</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-sm inline-block bg-amber-500" />
+                      <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>Przekroczono</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Main Content */}
             <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
