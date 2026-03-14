@@ -8,42 +8,43 @@
    ============================================================ */
 
 /* ------------------------------------------------------------
-   TOKENY — Wariant 1: Washi (ciepły pergamin) — domyślny
+   TOKENY — Wariant 1: Karesansui (japoński ogród kamienny) — domyślny
+   Shikkui White · Rikyū-nezumi · Koke · Sumi
    ------------------------------------------------------------ */
 :root {
   /* Tła */
-  --k-bg:           #F8F4EC;
-  --k-bg-card:      rgba(255, 252, 244, 0.92);
-  --k-bg-sidebar:   #FDFAF4;
-  --k-bg-surface:   #FFFDF6;
-  --k-bg-hover:     rgba(200, 170, 100, 0.08);
-  --k-bg-active:    #FDF3E0;
+  --k-bg:           #F7F6F2;          /* Shikkui — tynk wapienny */
+  --k-bg-card:      rgba(250, 249, 246, 0.93);
+  --k-bg-sidebar:   #F3F2EE;
+  --k-bg-surface:   #FAFAF8;
+  --k-bg-hover:     rgba(112, 124, 116, 0.07);
+  --k-bg-active:    rgba(136, 144, 120, 0.13);
 
   /* Tekst */
-  --k-text:         #1C1410;
-  --k-text-muted:   #9C8B6E;
-  --k-text-subtle:  #C4B89A;
+  --k-text:         #333333;          /* Sumi — tusz kaligraficzny */
+  --k-text-muted:   #707C74;          /* Rikyū-nezumi — szarość mistrza herbaty */
+  --k-text-subtle:  #A8B0A4;
 
-  /* Akcent — ciepły bursztyn */
-  --k-accent:       #C17F24;
-  --k-accent-light: #FEF3DC;
-  --k-accent-dark:  #8B5A18;
+  /* Akcent — kolor mchu Koke */
+  --k-accent:       #889078;          /* Koke — mech */
+  --k-accent-light: rgba(136, 144, 120, 0.12);
+  --k-accent-dark:  #5A6455;          /* Głęboki mech */
   --k-accent-text:  #FFFFFF;
 
-  /* Krawędzie i separatory */
-  --k-border:       rgba(196, 168, 120, 0.20);
-  --k-border-md:    rgba(196, 168, 120, 0.32);
-  --k-border-strong:rgba(196, 168, 120, 0.50);
+  /* Krawędzie */
+  --k-border:       rgba(112, 124, 116, 0.15);
+  --k-border-md:    rgba(112, 124, 116, 0.24);
+  --k-border-strong:rgba(112, 124, 116, 0.42);
 
-  /* Cienie — ciepły piasek */
+  /* Cienie — kamień i ziemia */
   --k-shadow-sm:
-    0 1px 2px  rgba(100, 70, 20, 0.05),
-    0 4px 12px rgba(100, 70, 20, 0.07),
-    0 0 0 1px  rgba(200, 160, 80, 0.07);
+    0 1px 2px  rgba(50, 60, 50, 0.05),
+    0 4px 14px rgba(50, 60, 50, 0.07),
+    0 0 0 1px  rgba(112, 124, 116, 0.07);
   --k-shadow-md:
-    0 2px 8px  rgba(100, 70, 20, 0.08),
-    0 16px 40px rgba(100, 70, 20, 0.10),
-    0 0 0 1px  rgba(200, 160, 80, 0.08);
+    0 2px 8px  rgba(50, 60, 50, 0.07),
+    0 16px 40px rgba(50, 60, 50, 0.09),
+    0 0 0 1px  rgba(112, 124, 116, 0.08);
 
   /* Typografia */
   --k-font: -apple-system, BlinkMacSystemFont, "SF Pro Text",
@@ -173,34 +174,42 @@
    ------------------------------------------------------------ */
 @layer base {
   :root {
-    --background:        36 30% 96%;
-    --foreground:        20 20% 10%;
-    --card:              40 30% 99%;
-    --card-foreground:   20 20% 10%;
-    --popover:           40 30% 99%;
-    --popover-foreground:20 20% 10%;
-    --primary:           20 20% 10%;
-    --primary-foreground:40 30% 99%;
-    --secondary:         36 20% 94%;
-    --secondary-foreground: 20 15% 25%;
-    --muted:             36 20% 94%;
-    --muted-foreground:  30 15% 55%;
-    --accent:            36 60% 45%;
+    /* Shikkui White #F7F6F2 ≈ hsl(48, 18%, 96%) */
+    --background:        48 18% 96%;
+    /* Sumi #333333 ≈ hsl(0, 0%, 20%) */
+    --foreground:        0 0% 20%;
+    /* Card — nieco jaśniejszy */
+    --card:              48 20% 98%;
+    --card-foreground:   0 0% 20%;
+    --popover:           48 20% 98%;
+    --popover-foreground:0 0% 20%;
+    /* Primary — Sumi */
+    --primary:           0 0% 20%;
+    --primary-foreground:48 20% 98%;
+    /* Secondary — Shikkui lekko ciemniejszy */
+    --secondary:         48 12% 93%;
+    --secondary-foreground: 0 0% 28%;
+    --muted:             48 12% 93%;
+    /* Muted — Rikyū-nezumi #707C74 ≈ hsl(140, 5%, 46%) */
+    --muted-foreground:  140 5% 46%;
+    /* Accent — Koke #889078 ≈ hsl(80, 10%, 52%) */
+    --accent:            80 10% 52%;
     --accent-foreground: 0 0% 100%;
-    --destructive:       0 84% 60%;
+    --destructive:       0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border:            34 30% 82%;
-    --input:             34 30% 82%;
-    --ring:              36 60% 45%;
+    /* Border — delikatna zielonoszarość */
+    --border:            140 8% 82%;
+    --input:             140 8% 82%;
+    --ring:              80 10% 52%;
     --radius:            0.75rem;
-    --sidebar-background:40 30% 98%;
-    --sidebar-foreground:20 15% 40%;
-    --sidebar-primary:   20 20% 10%;
-    --sidebar-primary-foreground: 40 30% 99%;
-    --sidebar-accent:    36 20% 94%;
-    --sidebar-accent-foreground: 20 20% 10%;
-    --sidebar-border:    34 20% 88%;
-    --sidebar-ring:      36 60% 45%;
+    --sidebar-background:48 15% 95%;
+    --sidebar-foreground:140 5% 42%;
+    --sidebar-primary:   0 0% 20%;
+    --sidebar-primary-foreground: 48 20% 98%;
+    --sidebar-accent:    80 10% 52%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border:    140 8% 86%;
+    --sidebar-ring:      80 10% 52%;
   }
 
   .dark {
