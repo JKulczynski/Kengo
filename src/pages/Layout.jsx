@@ -57,7 +57,8 @@ const navigationItems = [
 // 3 warianty kolorystyczne do testów
 const THEMES = [
   { id: "",             label: "Karesansui", dot: "#889078", title: "Ogród kamienny" },
-  { id: "theme-aizome", label: "Aizome",     dot: "#1B5FA8", title: "Japoński indygo" },
+  { id: "theme-ukiyo",  label: "Ukiyo",      dot: "#967249", title: "Unoszący się świat" },
+  { id: "theme-aizome", label: "Aizome",     dot: "#4B5E70", title: "Tradycyjne indygo" },
   { id: "theme-moegi",  label: "Moegi",      dot: "#2A6B3E", title: "Świeży bambus" },
 ];
 
@@ -91,7 +92,7 @@ export default function Layout({ children }) {
 
   const applyTheme = (themeId) => {
     const html = document.documentElement;
-    html.classList.remove("theme-aizome", "theme-moegi");
+    html.classList.remove("theme-ukiyo", "theme-aizome", "theme-moegi");
     if (themeId) html.classList.add(themeId);
   };
 

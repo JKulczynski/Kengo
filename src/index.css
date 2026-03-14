@@ -67,38 +67,75 @@
 }
 
 /* ------------------------------------------------------------
-   TOKENY — Wariant 2: Aizome (japonski indygo)
+   TOKENY — Wariant 2: Ukiyo (Unoszący się świat)
+   Washi · Seiji-zu · Kurumi · ciepły grafit
+   Aktywuj przez: <html class="theme-ukiyo">
+   ------------------------------------------------------------ */
+.theme-ukiyo {
+  --k-bg:           #FEF9F3;          /* Washi — papier ryżowy */
+  --k-bg-card:      rgba(255, 252, 247, 0.93);
+  --k-bg-sidebar:   #FBF5EE;
+  --k-bg-surface:   #FFFCF8;
+  --k-bg-hover:     rgba(175, 199, 192, 0.10);
+  --k-bg-active:    rgba(150, 114, 73, 0.10);
+
+  --k-text:         #4A4A4A;          /* Ciepły grafit */
+  --k-text-muted:   #AFC7C0;          /* Seiji-zu — seledynowa porcelana */
+  --k-text-subtle:  #C8D8D4;
+
+  --k-accent:       #967249;          /* Kurumi — orzech japoński */
+  --k-accent-light: rgba(150, 114, 73, 0.12);
+  --k-accent-dark:  #6B5135;
+  --k-accent-text:  #FFFFFF;
+
+  --k-border:       rgba(175, 199, 192, 0.22);
+  --k-border-md:    rgba(175, 199, 192, 0.35);
+  --k-border-strong:rgba(175, 199, 192, 0.55);
+
+  --k-shadow-sm:
+    0 1px 2px  rgba(60, 80, 75, 0.05),
+    0 4px 14px rgba(60, 80, 75, 0.07),
+    0 0 0 1px  rgba(175, 199, 192, 0.10);
+  --k-shadow-md:
+    0 2px 8px  rgba(60, 80, 75, 0.07),
+    0 16px 40px rgba(60, 80, 75, 0.09),
+    0 0 0 1px  rgba(175, 199, 192, 0.10);
+}
+
+/* ------------------------------------------------------------
+   TOKENY — Wariant 3: Aizome (Tradycyjne Indigo)
+   Poranna mgła · Kachi-iro · Uguisu · ciemny granat
    Aktywuj przez: <html class="theme-aizome">
    ------------------------------------------------------------ */
 .theme-aizome {
-  --k-bg:           #EDF2F7;
-  --k-bg-card:      rgba(236, 243, 250, 0.92);
-  --k-bg-sidebar:   #F4F8FC;
-  --k-bg-surface:   #FAFCFF;
-  --k-bg-hover:     rgba(30, 80, 150, 0.06);
-  --k-bg-active:    #E8F0FA;
+  --k-bg:           #F2F4F7;          /* Poranna mgła */
+  --k-bg-card:      rgba(242, 245, 250, 0.93);
+  --k-bg-sidebar:   #EEF1F5;
+  --k-bg-surface:   #F6F8FB;
+  --k-bg-hover:     rgba(75, 94, 112, 0.07);
+  --k-bg-active:    rgba(215, 208, 183, 0.22);  /* Uguisu tint */
 
-  --k-text:         #0E1C2E;
-  --k-text-muted:   #5A7A9A;
-  --k-text-subtle:  #9ABAC8;
+  --k-text:         #2E3A46;          /* Ciemny granat */
+  --k-text-muted:   #4B5E70;          /* Kachi-iro — kolor zwycięstwa */
+  --k-text-subtle:  #8A9EAE;
 
-  --k-accent:       #1B5FA8;
-  --k-accent-light: #E8F0FA;
-  --k-accent-dark:  #0E3B6B;
+  --k-accent:       #4B5E70;          /* Kachi-iro — jako CTA */
+  --k-accent-light: rgba(215, 208, 183, 0.28);  /* Uguisu jako bg-active */
+  --k-accent-dark:  #2E3A46;
   --k-accent-text:  #FFFFFF;
 
-  --k-border:       rgba(30, 80, 150, 0.12);
-  --k-border-md:    rgba(30, 80, 150, 0.20);
-  --k-border-strong:rgba(30, 80, 150, 0.36);
+  --k-border:       rgba(75, 94, 112, 0.14);
+  --k-border-md:    rgba(75, 94, 112, 0.22);
+  --k-border-strong:rgba(75, 94, 112, 0.40);
 
   --k-shadow-sm:
-    0 1px 2px  rgba(10, 30, 70, 0.05),
-    0 4px 12px rgba(10, 30, 70, 0.08),
-    0 0 0 1px  rgba(30, 80, 150, 0.07);
+    0 1px 2px  rgba(30, 46, 60, 0.05),
+    0 4px 14px rgba(30, 46, 60, 0.08),
+    0 0 0 1px  rgba(75, 94, 112, 0.07);
   --k-shadow-md:
-    0 2px 8px  rgba(10, 30, 70, 0.08),
-    0 16px 40px rgba(10, 30, 70, 0.11),
-    0 0 0 1px  rgba(30, 80, 150, 0.08);
+    0 2px 8px  rgba(30, 46, 60, 0.08),
+    0 16px 40px rgba(30, 46, 60, 0.10),
+    0 0 0 1px  rgba(75, 94, 112, 0.08);
 }
 
 /* ------------------------------------------------------------
