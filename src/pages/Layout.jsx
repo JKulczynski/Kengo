@@ -22,7 +22,7 @@ import {
     X,
     ChevronRight,
     Plus,
-    StickyNote as NoteIcon
+    MoreHorizontal
 } from "lucide-react";
 import {
   Sidebar,
@@ -414,34 +414,34 @@ export default function Layout({ children }) {
 
         {/* Główna treść */}
         <main className="flex-1 flex flex-col" style={{ backgroundColor: "var(--k-bg)" }}>
-          {/* Topbar mobilny */}
+          {/* Topbar mobilny — slim */}
           <header
-            className="apple-blur border-b px-4 py-3 md:hidden flex-shrink-0"
+            className="apple-blur border-b px-4 py-2.5 md:hidden flex-shrink-0"
             style={{ borderColor: "var(--k-border)" }}
           >
             <div className="flex items-center justify-between">
-              {/* Hamburger — lewy górny róg */}
-              <button
-                onClick={() => setDrawerOpen(true)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl"
-                style={{ color: "var(--k-text-muted)" }}
-                aria-label="Menu"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-
-              {/* Logo — prawy górny róg */}
+              {/* Logo — lewa strona */}
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-semibold" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
-                  Kengo
-                </h1>
                 <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
                   style={{ background: "linear-gradient(135deg, var(--k-accent-dark), var(--k-accent))" }}
                 >
                   <Hammer className="w-3.5 h-3.5" style={{ color: "var(--k-accent-text)", strokeWidth: 2.5 }} />
                 </div>
+                <h1 className="text-base font-semibold" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
+                  Kengo
+                </h1>
               </div>
+
+              {/* Szukaj — prawa strona */}
+              <Link
+                to={createPageUrl("Search")}
+                className="w-9 h-9 flex items-center justify-center rounded-xl"
+                style={{ color: "var(--k-text-muted)" }}
+                aria-label="Szukaj"
+              >
+                <Search className="w-5 h-5" />
+              </Link>
             </div>
           </header>
 
@@ -611,13 +611,19 @@ export default function Layout({ children }) {
             active={location.pathname === createPageUrl("Assistant")}
           />
 
-          {/* Profil */}
-          <MobileNavItem
-            to={createPageUrl("Profile")}
-            icon={UserIcon}
-            label="Profil"
-            active={location.pathname === createPageUrl("Profile")}
-          />
+          {/* Więcej — otwiera drawer */}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="flex flex-col items-center gap-1 px-3 py-1 min-w-[3rem]"
+          >
+            <MoreHorizontal
+              className="w-5 h-5"
+              style={{ color: "var(--k-text-subtle)", strokeWidth: 1.6 }}
+            />
+            <span className="text-xs font-medium" style={{ color: "var(--k-text-subtle)" }}>
+              Więcej
+            </span>
+          </button>
         </div>
       </nav>
     </SidebarProvider>

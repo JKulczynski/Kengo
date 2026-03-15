@@ -15,14 +15,11 @@ import {
 function KengoIcon({ className = "w-6 h-6" }) {
     return (
         <svg className={className} viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-            {/* Ensō — otwarte koło (niedokończone = doskonałość w filozofii zen) */}
             <path d="M21 12a9 9 0 1 1-1.5-5" stroke="currentColor" strokeWidth="1.6" />
-            {/* Krzyż kompasu */}
             <line x1="12" y1="8" x2="12" y2="10" stroke="currentColor" strokeWidth="1.2" />
             <line x1="12" y1="14" x2="12" y2="16" stroke="currentColor" strokeWidth="1.2" />
             <line x1="8" y1="12" x2="10" y2="12" stroke="currentColor" strokeWidth="1.2" />
             <line x1="14" y1="12" x2="16" y2="12" stroke="currentColor" strokeWidth="1.2" />
-            {/* Punkt centralny */}
             <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
         </svg>
     );
@@ -73,7 +70,7 @@ function MessageBubble({ message }) {
                 }
             </div>
             <div
-                className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                     isUser ? 'rounded-tr-sm' : 'apple-shadow rounded-tl-sm'
                 }`}
                 style={isUser
@@ -91,7 +88,8 @@ const quickActions = [
     { label: "Moje projekty", prompt: "Podsumuj moje projekty — co jest aktywne, jaki jest budżet i co wymaga uwagi?" },
     { label: "Analiza wydatków", prompt: "Przeanalizuj moje wydatki i powiedz, gdzie idzie najwięcej pieniędzy." },
     { label: "Gwarancje", prompt: "Które gwarancje wygasają wkrótce? Daj mi przegląd." },
-    { label: "Co zrobić dalej?", prompt: "Patrząc na moje projekty — co powinienem zrobić teraz, żeby posunąć prace do przodu?" },
+    { label: "Co dalej?", prompt: "Patrząc na moje projekty — co powinienem zrobić teraz, żeby posunąć prace do przodu?" },
+    { label: "Ile wydałem?", prompt: "Ile łącznie wydałem na wszystkie projekty? Podsumuj według kategorii." },
 ];
 
 export default function AssistantPage() {
@@ -178,56 +176,41 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
         );
     }
 
+    const subtitle = projects.length > 0
+        ? `${projects.length} ${projects.length === 1 ? 'projekt' : 'projekty'} · ${documents.length} dokumentów`
+        : 'Zacznij rozmowę — pomogę Ci zorganizować remont';
+
     return (
-        <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
-            <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-12">
+        <div style={{ backgroundColor: "var(--k-bg)" }} className="flex flex-col min-h-screen md:min-h-0">
+            <div className="flex flex-col flex-1 max-w-3xl mx-auto w-full px-4 md:px-6 pt-4 md:pt-12 pb-2 md:pb-12">
+
                 {/* Header */}
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="icon-box w-12 h-12 rounded-2xl flex items-center justify-center">
-                        <KengoIcon className="w-6 h-6" />
+                <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+                    <div className="icon-box w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <KengoIcon className="w-5 h-5 md:w-6 md:h-6" />
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
+                        <h1 className="text-lg md:text-3xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
                             Asystent Kengo
                         </h1>
-                        <p className="text-sm mt-0.5" style={{ color: "var(--k-text-subtle)" }}>
-                            {projects.length > 0
-                                ? `Znam Twoje ${projects.length} ${projects.length === 1 ? 'projekt' : 'projekty'} i ${documents.length} dokumentów`
-                                : 'Zacznij rozmowę — pomogę Ci zorganizować remont'}
+                        <p className="text-xs md:text-sm" style={{ color: "var(--k-text-subtle)" }}>
+                            {subtitle}
                         </p>
                     </div>
                 </div>
 
-                {/* Quick Actions — chips (zawsze widoczne) */}
-                <div className="overflow-x-auto -mx-4 px-4 mb-6 scrollbar-hide">
-                    <div className="flex gap-2 pb-1" style={{ width: 'max-content' }}>
-                        {quickActions.map((action) => (
-                            <button
-                                key={action.label}
-                                onClick={() => sendMessage(action.prompt)}
-                                disabled={isLoading}
-                                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium whitespace-nowrap apple-blur apple-shadow"
-                                style={{
-                                    border: "1px solid var(--k-border-md)",
-                                    color: "var(--k-text)",
-                                    backgroundColor: "var(--k-bg-surface)"
-                                }}
-                            >
-                                <Zap className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
-                                {action.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                {/* Chat card */}
+                <div className="apple-blur rounded-2xl apple-shadow flex flex-col flex-1" style={{ minHeight: 0 }}>
 
-                {/* Chat */}
-                <div className="apple-blur rounded-2xl apple-shadow flex flex-col" style={{ minHeight: '500px' }}>
-                    {/* Messages area */}
-                    <div className="flex-1 p-6 overflow-y-auto space-y-4" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                    {/* Messages area — scrolluje wewnętrznie */}
+                    <div
+                        className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4"
+                        style={{ minHeight: '160px', maxHeight: 'calc(100dvh - 22rem)' }}
+                    >
                         {messages.length === 0 ? (
-                            <div className="text-center py-16">
-                                <div className="icon-box w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <KengoIcon className="w-7 h-7" />
+                            <div className="text-center py-8 md:py-16">
+                                <div className="icon-box w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <KengoIcon className="w-6 h-6 md:w-7 md:h-7" />
                                 </div>
                                 <h3 className="text-base font-medium mb-2" style={{ color: "var(--k-text)" }}>
                                     Cześć! Jak mogę pomóc?
@@ -257,9 +240,34 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                         <div ref={messagesEndRef} />
                     </div>
 
+                    {/* Chips — poziomy scroll nad inputem */}
+                    <div
+                        className="overflow-x-auto scrollbar-hide px-4 pt-3 flex-shrink-0"
+                        style={{ borderTop: "1px solid var(--k-border)" }}
+                    >
+                        <div className="flex gap-2 pb-2" style={{ width: 'max-content' }}>
+                            {quickActions.map((action) => (
+                                <button
+                                    key={action.label}
+                                    onClick={() => sendMessage(action.prompt)}
+                                    disabled={isLoading}
+                                    className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap"
+                                    style={{
+                                        border: "1px solid var(--k-border-md)",
+                                        color: "var(--k-text-muted)",
+                                        backgroundColor: "var(--k-bg)"
+                                    }}
+                                >
+                                    <Zap className="w-3 h-3 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
+                                    {action.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Input */}
-                    <div className="border-t p-4" style={{ borderColor: "var(--k-border)" }}>
-                        <div className="flex gap-3">
+                    <div className="p-3 md:p-4 flex-shrink-0">
+                        <div className="flex gap-2 md:gap-3">
                             <Input
                                 value={inputMessage}
                                 onChange={(e) => setInputMessage(e.target.value)}
@@ -271,7 +279,7 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                             <Button
                                 onClick={() => sendMessage()}
                                 disabled={isLoading || !inputMessage.trim()}
-                                className="btn-primary rounded-xl px-4"
+                                className="btn-primary rounded-xl px-3 md:px-4 flex-shrink-0"
                             >
                                 <Send className="w-4 h-4" />
                             </Button>
@@ -279,7 +287,8 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                         {messages.length > 0 && (
                             <button
                                 onClick={() => setMessages([])}
-                                className="text-xs text-gray-400 hover:text-gray-600 mt-2 ml-1"
+                                className="text-xs mt-2 ml-1"
+                                style={{ color: "var(--k-text-subtle)" }}
                             >
                                 Wyczyść rozmowę
                             </button>
