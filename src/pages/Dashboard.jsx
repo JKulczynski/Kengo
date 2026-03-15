@@ -51,7 +51,7 @@ export default function Dashboard() {
 
   const totalSpent = documents.reduce((sum, doc) => sum + (doc.amount || 0), 0);
   const activeProjects = projects.filter(p => p.status === 'in_progress').length;
-  const isEmpty = !isLoading && projects.length === 0 && documents.length === 0;
+  const isEmpty = !isLoading && projects.length === 0;
 
   // Compute reminders
   const today = new Date();
@@ -127,7 +127,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
 
         {error && (
@@ -146,10 +146,10 @@ export default function Dashboard() {
               <div className="icon-box w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Sparkles className="w-8 h-8" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-semibold text-black tracking-tight mb-3">
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3" style={{ color: "var(--k-text)" }}>
                 Witaj w Kengo!
               </h1>
-              <p className="text-lg text-gray-500 max-w-lg mx-auto mb-8">
+              <p className="text-lg max-w-lg mx-auto mb-8" style={{ color: "var(--k-text-muted)" }}>
                 Twój osobisty asystent remontowy. Zacznij od stworzenia pierwszego projektu — a resztą zajmiemy się razem.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -160,7 +160,7 @@ export default function Dashboard() {
                   </Button>
                 </Link>
                 <Link to={createPageUrl("Upload")}>
-                  <Button variant="outline" className="rounded-lg px-6 py-3 text-sm font-medium text-black border-gray-200">
+                  <Button variant="outline" className="rounded-lg px-6 py-3 text-sm font-medium" style={{ color: "var(--k-text)", borderColor: "var(--k-border-md)" }}>
                     <Camera className="w-4 h-4 mr-2" />
                     Dodaj dokument
                   </Button>
@@ -190,8 +190,8 @@ export default function Dashboard() {
                   <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center mb-4">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="font-semibold text-black mb-2">{title}</h3>
-                  <p className="text-sm text-gray-500">{desc}</p>
+                  <h3 className="font-semibold mb-2" style={{ color: "var(--k-text)" }}>{title}</h3>
+                  <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>{desc}</p>
                 </div>
               ))}
             </div>
@@ -203,10 +203,10 @@ export default function Dashboard() {
           <>
             {/* Header */}
             <div className="mb-8 md:mb-10">
-              <h1 className="text-3xl md:text-4xl font-semibold text-black mb-3 tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-semibold mb-3 tracking-tight" style={{ color: "var(--k-text)" }}>
                 Dzień dobry
               </h1>
-              <p className="text-base md:text-lg text-gray-500 font-normal">
+              <p className="text-base md:text-lg font-normal" style={{ color: "var(--k-text-muted)" }}>
                 Oto co dzieje się z Twoimi projektami
               </p>
             </div>
@@ -222,8 +222,8 @@ export default function Dashboard() {
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-black text-sm">{r.title}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{r.desc}</p>
+                        <p className="font-medium text-sm" style={{ color: "var(--k-text)" }}>{r.title}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "var(--k-text-muted)" }}>{r.desc}</p>
                       </div>
                       <Link to={r.link}>
                         <Button variant="ghost" size="sm" className={`${r.btnColor} text-xs font-medium flex-shrink-0`}>
@@ -245,7 +245,7 @@ export default function Dashboard() {
                 </Button>
               </Link>
               <Link to={createPageUrl("Projects")} className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full sm:w-auto border-gray-200 hover:bg-gray-50 rounded-lg px-6 py-3 text-sm font-medium text-black">
+                <Button variant="outline" className="w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-medium" style={{ color: "var(--k-text)", borderColor: "var(--k-border-md)" }}>
                   <Plus className="w-4 h-4 mr-2" />
                   Nowy projekt
                 </Button>
@@ -255,28 +255,28 @@ export default function Dashboard() {
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
               <div className="apple-blur rounded-2xl p-6 apple-shadow">
-                <div className="text-2xl md:text-3xl font-semibold text-black mb-1">
+                <div className="text-2xl md:text-3xl font-semibold mb-1" style={{ color: "var(--k-text)" }}>
                   {activeProjects}
                 </div>
-                <div className="text-sm text-gray-500 font-normal">
+                <div className="text-sm font-normal" style={{ color: "var(--k-text-muted)" }}>
                   Aktywne projekty
                 </div>
               </div>
 
               <div className="apple-blur rounded-2xl p-6 apple-shadow">
-                <div className="text-2xl md:text-3xl font-semibold text-black mb-1">
+                <div className="text-2xl md:text-3xl font-semibold mb-1" style={{ color: "var(--k-text)" }}>
                   {totalSpent.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
                 </div>
-                <div className="text-sm text-gray-500 font-normal">
+                <div className="text-sm font-normal" style={{ color: "var(--k-text-muted)" }}>
                   Łączne wydatki
                 </div>
               </div>
 
               <div className="apple-blur rounded-2xl p-6 apple-shadow">
-                <div className="text-2xl md:text-3xl font-semibold text-black mb-1">
+                <div className="text-2xl md:text-3xl font-semibold mb-1" style={{ color: "var(--k-text)" }}>
                   {documents.length}
                 </div>
-                <div className="text-sm text-gray-500 font-normal">
+                <div className="text-sm font-normal" style={{ color: "var(--k-text-muted)" }}>
                   Dokumenty
                 </div>
               </div>

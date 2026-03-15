@@ -18,6 +18,17 @@ import { Slider } from "@/components/ui/slider";
 const PROJECT_TYPES = ["kitchen", "bathroom", "living_room", "bedroom", "outdoor", "whole_house", "basement", "attic", "other"];
 const PROJECT_STATUSES = ["planning", "in_progress", "on_hold", "completed"];
 
+const PROJECT_TYPE_LABELS = {
+  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
+  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
+  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
+};
+
+const PROJECT_STATUS_LABELS = {
+  planning: 'Planowanie', in_progress: 'W trakcie',
+  on_hold: 'Wstrzymany', completed: 'Ukończony'
+};
+
 const defaultProject = {
   name: '',
   description: '',
@@ -70,7 +81,7 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
               <Select value={formData.type} onValueChange={value => handleChange('type', value)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent className="apple-blur">
-                  {PROJECT_TYPES.map(type => <SelectItem key={type} value={type}>{type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>)}
+                  {PROJECT_TYPES.map(type => <SelectItem key={type} value={type}>{PROJECT_TYPE_LABELS[type] || type}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -79,15 +90,23 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
               <Select value={formData.status} onValueChange={value => handleChange('status', value)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent className="apple-blur">
-                  {PROJECT_STATUSES.map(status => <SelectItem key={status} value={status}>{status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>)}
+                  {PROJECT_STATUSES.map(status => <SelectItem key={status} value={status}>{PROJECT_STATUS_LABELS[status] || status}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div>
-            <Label htmlFor="budget">Budżet (PLN)</Label>
-            <Input id="budget" type="number" value={formData.budget} onChange={e => handleChange('budget', parseFloat(e.target.value) || 0)} placeholder="25000" />
+            <Label htmlFor="budget">Budżet (zł)</Label>
+            <Input
+              id="budget"
+              type="number"
+              inputMode="decimal"
+              min="0"
+              value={formData.budget}
+              onChange={e => handleChange('budget', parseFloat(e.target.value) || 0)}
+              placeholder="25000"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

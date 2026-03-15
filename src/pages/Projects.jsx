@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, LayoutGrid, List, ArrowLeft, Calendar, DollarSign, Users, FileText, ExternalLink, Crown, Edit, Eye } from "lucide-react";
+import { toast } from 'sonner';
 import { AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -85,14 +86,20 @@ export default function ProjectsPage() {
     try {
       if (editingProject) {
         await Project.update(editingProject.id, projectData);
+        setIsFormOpen(false);
+        setEditingProject(null);
+        await loadData();
+        toast.success('Projekt zaktualizowany');
       } else {
         await Project.create(projectData);
+        setIsFormOpen(false);
+        setEditingProject(null);
+        await loadData();
+        toast.success('Projekt utworzony');
       }
-      setIsFormOpen(false);
-      setEditingProject(null);
-      await loadData();
     } catch (error) {
       console.error("Error saving project:", error);
+      toast.error('Coś poszło nie tak. Spróbuj ponownie.');
     }
   };
 
@@ -112,8 +119,10 @@ export default function ProjectsPage() {
         setProjectToDelete(null);
         setSelectedProject(null); // Close detail view if deleting current project
         await loadData();
+        toast.success('Projekt usunięty');
       } catch (error) {
         console.error("Error deleting project:", error);
+        toast.error('Coś poszło nie tak. Spróbuj ponownie.');
       }
     }
   };
@@ -143,7 +152,7 @@ export default function ProjectsPage() {
     const budgetUsage = selectedProject.budget > 0 ? (actualCost / selectedProject.budget) * 100 : 0;
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
@@ -151,15 +160,15 @@ export default function ProjectsPage() {
               variant="ghost"
               size="icon"
               onClick={backToList}
-              className="hover:bg-gray-100 text-black"
+              style={{ color: "var(--k-text)" }}
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-semibold text-black tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
                 {selectedProject.name}
               </h1>
-              <p className="text-gray-500 mt-1 capitalize">
+              <p className="mt-1 capitalize" style={{ color: "var(--k-text-muted)" }}>
                 {selectedProject.type?.replace(/_/g, ' ')} • {selectedProject.current_phase?.replace(/_/g, ' ') || 'Planning'}
               </p>
             </div>
@@ -177,8 +186,8 @@ export default function ProjectsPage() {
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Data rozpoczęcia</p>
-                    <p className="font-medium text-black">
+                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Data rozpoczęcia</p>
+                    <p className="font-medium" style={{ color: "var(--k-text)" }}>
                       {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
                     </p>
                   </div>
@@ -193,8 +202,8 @@ export default function ProjectsPage() {
                     <DollarSign className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Budżet</p>
-                    <p className="font-medium text-black">
+                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Budżet</p>
+                    <p className="font-medium" style={{ color: "var(--k-text)" }}>
                       {actualCost.toLocaleString('pl-PL')} zł / {(selectedProject.budget || 0).toLocaleString('pl-PL')} zł
                     </p>
                   </div>
@@ -209,8 +218,8 @@ export default function ProjectsPage() {
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Zespół</p>
-                    <p className="font-medium text-black">{selectedProjectMembers.length + 1} członków</p>
+                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Zespół</p>
+                    <p className="font-medium" style={{ color: "var(--k-text)" }}>{selectedProjectMembers.length + 1} członków</p>
                   </div>
                 </div>
               </CardContent>
@@ -223,8 +232,8 @@ export default function ProjectsPage() {
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Dokumenty</p>
-                    <p className="font-medium text-black">{selectedProjectDocs.length}</p>
+                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Dokumenty</p>
+                    <p className="font-medium" style={{ color: "var(--k-text)" }}>{selectedProjectDocs.length}</p>
                   </div>
                 </div>
               </CardContent>
@@ -237,15 +246,15 @@ export default function ProjectsPage() {
             <Card className="apple-blur apple-shadow">
               <CardContent className="p-6">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium text-black">Postęp projektu</h3>
-                  <span className="text-sm font-medium text-black">
+                  <h3 className="font-medium" style={{ color: "var(--k-text)" }}>Postęp projektu</h3>
+                  <span className="text-sm font-medium" style={{ color: "var(--k-text)" }}>
                     {selectedProject.progress_percentage || 0}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-2">
-                  <div 
-                    className="bg-black rounded-full h-2"
-                    style={{ width: `${selectedProject.progress_percentage || 0}%` }}
+                <div className="w-full rounded-full h-2" style={{ backgroundColor: "var(--k-border)" }}>
+                  <div
+                    className="rounded-full h-2"
+                    style={{ width: `${selectedProject.progress_percentage || 0}%`, backgroundColor: "var(--k-accent)" }}
                   />
                 </div>
               </CardContent>
@@ -256,18 +265,18 @@ export default function ProjectsPage() {
               <Card className="apple-blur apple-shadow">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-medium text-black">Wykorzystanie budżetu</h3>
-                    <span className={`text-sm font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-black'}`}>
+                    <h3 className="font-medium" style={{ color: "var(--k-text)" }}>Wykorzystanie budżetu</h3>
+                    <span className="text-sm font-medium" style={{ color: budgetUsage > 100 ? "var(--k-err-color)" : "var(--k-text)" }}>
                       {budgetUsage.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full ${
-                        budgetUsage > 100 ? 'bg-red-500' : 
-                        budgetUsage > 75 ? 'bg-orange-500' : 'bg-green-500'
-                      }`}
-                      style={{ width: `${Math.min(budgetUsage, 100)}%` }}
+                  <div className="w-full rounded-full h-2" style={{ backgroundColor: "var(--k-border)" }}>
+                    <div
+                      className="h-2 rounded-full"
+                      style={{
+                        width: `${Math.min(budgetUsage, 100)}%`,
+                        backgroundColor: budgetUsage > 100 ? "var(--k-err-color)" : budgetUsage > 75 ? "#f59e0b" : "var(--k-accent)"
+                      }}
                     />
                   </div>
                 </CardContent>
@@ -278,13 +287,13 @@ export default function ProjectsPage() {
           {/* Tabs */}
           <Tabs defaultValue="documents" className="space-y-6">
             <TabsList className="apple-blur">
-              <TabsTrigger value="documents" className="text-black data-[state=active]:text-black data-[state=active]:bg-white">
+              <TabsTrigger value="documents">
                 Dokumenty ({selectedProjectDocs.length})
               </TabsTrigger>
-              <TabsTrigger value="team" className="text-black data-[state=active]:text-black data-[state=active]:bg-white">
+              <TabsTrigger value="team">
                 Zespół ({selectedProjectMembers.length + 1})
               </TabsTrigger>
-              <TabsTrigger value="overview" className="text-black data-[state=active]:text-black data-[state=active]:bg-white">
+              <TabsTrigger value="overview">
                 Przegląd
               </TabsTrigger>
             </TabsList>
@@ -292,7 +301,7 @@ export default function ProjectsPage() {
             <TabsContent value="documents">
               <Card className="apple-blur apple-shadow">
                 <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="text-black">Dokumenty projektu</CardTitle>
+                  <CardTitle style={{ color: "var(--k-text)" }}>Dokumenty projektu</CardTitle>
                   <Link to={createPageUrl("Upload")}>
                     <Button size="sm" className="btn-primary">
                       Dodaj dokument
@@ -305,13 +314,13 @@ export default function ProjectsPage() {
                       {selectedProjectDocs.map((doc) => {
                         const TypeIcon = typeIcons[doc.type] || FileText;
                         return (
-                          <div key={doc.id} className="flex items-center gap-4 p-4 rounded-lg bg-white border">
-                            <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center">
-                              <TypeIcon className="w-5 h-5 text-gray-500" />
+                          <div key={doc.id} className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border)" }}>
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center icon-box">
+                              <TypeIcon className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
-                              <h4 className="font-medium text-black">{doc.title}</h4>
-                              <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                              <h4 className="font-medium" style={{ color: "var(--k-text)" }}>{doc.title}</h4>
+                              <div className="flex items-center gap-4 text-sm mt-1" style={{ color: "var(--k-text-muted)" }}>
                                 {doc.vendor && <span>Vendor: {doc.vendor}</span>}
                                 {doc.amount && <span className="text-green-600">{doc.amount.toLocaleString('pl-PL')} zł</span>}
                                 {doc.date && <span>{format(new Date(doc.date), 'MMM d, yyyy')}</span>}
@@ -331,9 +340,9 @@ export default function ProjectsPage() {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="font-medium text-black mb-2">Brak dokumentów</h3>
-                      <p className="text-gray-500 mb-4">Wgraj pierwszy dokument, aby zacząć</p>
+                      <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: "var(--k-text-subtle)" }} />
+                      <h3 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Brak dokumentów</h3>
+                      <p className="mb-4" style={{ color: "var(--k-text-muted)" }}>Wgraj pierwszy dokument, aby zacząć</p>
                       <Link to={createPageUrl("Upload")}>
                         <Button className="btn-primary">
                           Dodaj dokument
@@ -348,20 +357,20 @@ export default function ProjectsPage() {
             <TabsContent value="team">
               <Card className="apple-blur apple-shadow">
                 <CardHeader>
-                  <CardTitle className="text-black">Członkowie zespołu</CardTitle>
+                  <CardTitle style={{ color: "var(--k-text)" }}>Członkowie zespołu</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {/* Project Owner */}
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-white border">
+                    <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border)" }}>
                       <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center">
                         <Crown className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-black">
+                        <h4 className="font-medium" style={{ color: "var(--k-text)" }}>
                           {selectedProject.created_by === currentUser?.email ? 'You' : selectedProject.created_by}
                         </h4>
-                        <p className="text-sm text-gray-500">Właściciel projektu</p>
+                        <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>Właściciel projektu</p>
                       </div>
                       <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0">Właściciel</Badge>
                     </div>
@@ -370,15 +379,15 @@ export default function ProjectsPage() {
                     {selectedProjectMembers.map((member) => {
                       const RoleIcon = roleIcons[member.role];
                       return (
-                        <div key={member.id} className="flex items-center gap-4 p-4 rounded-lg bg-white border">
+                        <div key={member.id} className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border)" }}>
                           <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center">
                             <RoleIcon className="w-5 h-5" />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium text-black">
+                            <h4 className="font-medium" style={{ color: "var(--k-text)" }}>
                               {member.user_email === currentUser?.email ? 'You' : member.user_email}
                             </h4>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>
                               Zaproszony przez {member.invited_by}
                             </p>
                           </div>
@@ -396,48 +405,48 @@ export default function ProjectsPage() {
             <TabsContent value="overview">
               <Card className="apple-blur apple-shadow">
                 <CardHeader>
-                  <CardTitle className="text-black">Przegląd projektu</CardTitle>
+                  <CardTitle style={{ color: "var(--k-text)" }}>Przegląd projektu</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
                     {selectedProject.description && (
                       <div>
-                        <h4 className="font-medium text-black mb-2">Opis</h4>
-                        <p className="text-gray-600">{selectedProject.description}</p>
+                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Opis</h4>
+                        <p style={{ color: "var(--k-text-muted)" }}>{selectedProject.description}</p>
                       </div>
                     )}
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <h4 className="font-medium text-black mb-2">Szczegóły projektu</h4>
+                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Szczegóły projektu</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Typ:</span>
-                            <span className="text-black capitalize">{selectedProject.type?.replace(/_/g, ' ')}</span>
+                            <span style={{ color: "var(--k-text-muted)" }}>Typ:</span>
+                            <span className="capitalize" style={{ color: "var(--k-text)" }}>{selectedProject.type?.replace(/_/g, ' ')}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Status:</span>
-                            <span className="text-black">{statusConfig[selectedProject.status]?.label || selectedProject.status}</span>
+                            <span style={{ color: "var(--k-text-muted)" }}>Status:</span>
+                            <span style={{ color: "var(--k-text)" }}>{statusConfig[selectedProject.status]?.label || selectedProject.status}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Postęp:</span>
-                            <span className="text-black">{selectedProject.progress_percentage || 0}%</span>
+                            <span style={{ color: "var(--k-text-muted)" }}>Postęp:</span>
+                            <span style={{ color: "var(--k-text)" }}>{selectedProject.progress_percentage || 0}%</span>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div>
-                        <h4 className="font-medium text-black mb-2">Harmonogram</h4>
+                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Harmonogram</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Data rozpoczęcia:</span>
-                            <span className="text-black">
+                            <span style={{ color: "var(--k-text-muted)" }}>Data rozpoczęcia:</span>
+                            <span style={{ color: "var(--k-text)" }}>
                               {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Planowane zakończenie:</span>
-                            <span className="text-black">
+                            <span style={{ color: "var(--k-text-muted)" }}>Planowane zakończenie:</span>
+                            <span style={{ color: "var(--k-text)" }}>
                               {selectedProject.target_completion ? format(new Date(selectedProject.target_completion), 'dd.MM.yyyy') : 'Nie ustawiono'}
                             </span>
                           </div>
@@ -456,15 +465,15 @@ export default function ProjectsPage() {
 
   // Default view - project list
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-semibold text-black tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
               Wszystkie projekty
             </h1>
-            <p className="text-base md:text-lg text-gray-500 font-normal mt-2">
+            <p className="text-base md:text-lg font-normal mt-2" style={{ color: "var(--k-text-muted)" }}>
               Zarządzaj swoimi projektami remontowymi
             </p>
           </div>
@@ -479,7 +488,7 @@ export default function ProjectsPage() {
             </Button>
             <Button
               onClick={() => { setEditingProject(null); setIsFormOpen(true); }}
-              className="bg-black text-white hover:bg-gray-800 rounded-lg text-sm font-medium"
+              className="btn-primary rounded-lg text-sm font-medium"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nowy projekt
@@ -501,7 +510,7 @@ export default function ProjectsPage() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array(6).fill(0).map((_, i) => (
-                <div key={i} className="h-48 bg-gray-100 rounded-2xl animate-pulse" />
+                <div key={i} className="h-48 rounded-2xl animate-pulse" style={{ backgroundColor: "var(--k-border)" }} />
               ))}
             </div>
           ) : projects.length > 0 ? (
@@ -528,14 +537,14 @@ export default function ProjectsPage() {
             </div>
           ) : (
             <div className="text-center py-24 apple-blur rounded-2xl">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-                <Plus className="w-8 h-8 text-gray-400" />
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "var(--k-accent-light)" }}>
+                <Plus className="w-8 h-8" style={{ color: "var(--k-accent)" }} />
               </div>
-              <h3 className="text-xl font-medium text-black mb-2">
+              <h3 className="text-xl font-medium mb-2" style={{ color: "var(--k-text)" }}>
                 Utwórz swój pierwszy projekt
               </h3>
-              <p className="text-gray-500 mb-6">
-                Zacznij od zaplanowania kolejnego remontu.
+              <p className="mb-6 max-w-md mx-auto" style={{ color: "var(--k-text-muted)" }}>
+                Twoja przestrzeń remontowa czeka. Dodaj pierwszy projekt i zacznij zarządzać budżetem, harmonogramem i dokumentami w jednym miejscu.
               </p>
               <Button
                 onClick={() => setIsFormOpen(true)}

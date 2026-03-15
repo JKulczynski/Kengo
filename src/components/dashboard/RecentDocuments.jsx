@@ -68,13 +68,14 @@ export default function RecentDocuments({ documents, isLoading }) {
           <div className="space-y-3 hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors cursor-pointer">
             {documents.slice(0, 6).map((doc) => {
               const TypeIcon = typeIcons[doc.type] || FileText;
-              
+              const aiProcessed = doc.amount != null;
+
               return (
                 <div key={doc.id} className="group flex items-center gap-3 p-2 -m-2 rounded-lg">
                   <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <TypeIcon className="w-4 h-4 text-gray-500" />
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-black text-sm truncate">
                       {doc.title}
@@ -90,6 +91,16 @@ export default function RecentDocuments({ documents, isLoading }) {
                       </span>
                     </div>
                   </div>
+
+                  <span
+                    className="text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 font-medium"
+                    style={aiProcessed
+                      ? { backgroundColor: "var(--k-ok-bg)", color: "var(--k-ok-color)" }
+                      : { backgroundColor: "var(--k-warn-bg)", color: "var(--k-warn-color)" }
+                    }
+                  >
+                    {aiProcessed ? "OK" : "?"}
+                  </span>
                 </div>
               );
             })}

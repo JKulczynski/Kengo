@@ -32,22 +32,24 @@ function PagesContent() {
 
   return (
     <Layout>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/"              element={<Dashboard />} />
-          <Route path="/Dashboard"     element={<Dashboard />} />
-          <Route path="/Upload"        element={<Upload />} />
-          <Route path="/Projects"      element={<Projects />} />
-          <Route path="/Search"        element={<Search />} />
-          <Route path="/Profile"       element={<Profile />} />
-          <Route path="/Warranties"    element={<Warranties />} />
-          <Route path="/Documents"     element={<Documents />} />
-          <Route path="/Assistant"     element={<Assistant />} />
-          <Route path="/ProjectDetail" element={<ProjectDetail />} />
-          <Route path="/Team"          element={<Team />} />
-          <Route path="/notes"         element={<Notes />} />
-        </Routes>
-      </Suspense>
+      <div key={location.pathname} className="page-transition flex-1">
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/"              element={<Dashboard />} />
+            <Route path="/Dashboard"     element={<Dashboard />} />
+            <Route path="/Upload"        element={<Upload />} />
+            <Route path="/Projects"      element={<Projects />} />
+            <Route path="/Search"        element={<Search />} />
+            <Route path="/Profile"       element={<Profile />} />
+            <Route path="/Warranties"    element={<Warranties />} />
+            <Route path="/Documents"     element={<Documents />} />
+            <Route path="/Assistant"     element={<Assistant />} />
+            <Route path="/ProjectDetail" element={<ProjectDetail />} />
+            <Route path="/Team"          element={<Team />} />
+            <Route path="/notes"         element={<Notes />} />
+          </Routes>
+        </Suspense>
+      </div>
     </Layout>
   );
 }

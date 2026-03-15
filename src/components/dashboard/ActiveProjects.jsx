@@ -22,7 +22,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
     return (
       <div className="apple-blur rounded-2xl p-8 apple-shadow">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xl font-semibold text-black">Projekty</h2>
+          <h2 className="text-xl font-semibold" style={{ color: "var(--k-text)" }}>Projekty</h2>
         </div>
         <div className="space-y-6">
           {Array(3).fill(0).map((_, i) => (
@@ -40,9 +40,9 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
   return (
     <div className="apple-blur rounded-2xl p-6 md:p-8 apple-shadow">
       <div className="flex justify-between items-center mb-6 md:mb-8">
-        <h2 className="text-xl font-semibold text-black tracking-tight">Projekty</h2>
+        <h2 className="text-xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>Projekty</h2>
         <Link to={createPageUrl("Projects")}>
-          <Button variant="ghost" size="sm" className="text-gray-500 hover:text-black">
+          <Button variant="ghost" size="sm" style={{ color: "var(--k-text-muted)" }}>
             <ArrowUpRight className="w-4 h-4" />
           </Button>
         </Link>
@@ -50,89 +50,146 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
 
       {projects.length === 0 ? (
         <div className="text-center py-12 md:py-16">
-          <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-            <Plus className="w-6 h-6 text-gray-400" />
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: "var(--k-accent-light)" }}>
+            <Plus className="w-6 h-6" style={{ color: "var(--k-accent)" }} />
           </div>
-          <h3 className="font-medium text-black mb-2">Brak projektów</h3>
-          <p className="text-gray-500 text-sm mb-6">Zacznij swój pierwszy projekt remontowy</p>
+          <h3 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Brak aktywnych projektów</h3>
+          <p className="text-sm mb-6" style={{ color: "var(--k-text-muted)" }}>
+            Twoja przestrzeń czeka. Stwórz pierwszy projekt i zacznij porządkować remont.
+          </p>
           <Link to={createPageUrl("Projects")}>
-            <Button className="bg-black text-white hover:bg-gray-800">
-              Utwórz projekt
-            </Button>
+            <Button className="btn-primary">Utwórz projekt</Button>
           </Link>
         </div>
       ) : (
-        <div className="space-y-6 md:space-y-8">
-          {projects.map((project) => {
-            const projectDocs = documents ? documents.filter(d => d.project_id === project.id) : [];
-            const actualCost = projectDocs.reduce((sum, doc) => sum + (doc.amount || 0), 0);
-            const budgetUsage = project.budget > 0 ? (actualCost / project.budget) * 100 : 0;
-            
-            let budgetColor = 'bg-green-500';
-            if (budgetUsage > 75) budgetColor = 'bg-orange-500';
-            if (budgetUsage > 100) budgetColor = 'bg-red-500';
-
-            return (
-              <Link
-                key={project.id}
-                to={`${createPageUrl('Projects')}?id=${project.id}`}
-                className="block group hover:bg-gray-50 rounded-lg p-4 -m-4 transition-colors cursor-pointer"
-              >
-                <div>
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-medium text-black text-base md:text-lg mb-1">
-                        {project.name}
-                      </h3>
-                      <p className="text-sm text-gray-500 capitalize">
-                        {project.type.replace(/_/g, ' ')}
-                      </p>
+        <>
+          {/* Mobile carousel (md:hidden) */}
+          <div className="md:hidden -mx-2">
+            <div className="flex gap-3 overflow-x-auto px-2 pb-3 snap-x snap-mandatory scrollbar-hide">
+              {projects.map((project) => {
+                const projectDocs = documents ? documents.filter(d => d.project_id === project.id) : [];
+                const actualCost = projectDocs.reduce((sum, doc) => sum + (doc.amount || 0), 0);
+                const budgetUsage = project.budget > 0 ? (actualCost / project.budget) * 100 : 0;
+                return (
+                  <Link
+                    key={project.id}
+                    to={`${createPageUrl('Projects')}?id=${project.id}`}
+                    className="flex-shrink-0 w-64 snap-start apple-blur rounded-2xl p-4 apple-shadow block"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="font-semibold text-sm leading-tight pr-2" style={{ color: "var(--k-text)" }}>{project.name}</h3>
+                      <Badge style={statusConfig[project.status]?.style} className="border-0 text-xs flex-shrink-0">{statusConfig[project.status]?.label}</Badge>
                     </div>
-                    <Badge style={statusConfig[project.status]?.style} className="border-0 text-xs font-medium">
-                      {statusConfig[project.status]?.label}
-                    </Badge>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs text-gray-500">
-                        {project.current_phase?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Planning'}
-                      </span>
-                      <span className="text-xs font-medium text-gray-700">
-                        {project.progress_percentage || 0}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-100 rounded-full h-1">
-                      <div 
-                        className="bg-black rounded-full h-1 transition-all duration-300" 
-                        style={{ width: `${project.progress_percentage || 0}%` }}
-                      />
-                    </div>
-                  </div>
-                  
-                  {project.budget > 0 && (
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-gray-500">
-                          Budżet: {actualCost.toLocaleString('pl-PL')} zł / {project.budget.toLocaleString('pl-PL')} zł
-                        </span>
-                        <span className={`text-xs font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-gray-700'}`}>
-                          {budgetUsage.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-100 rounded-full h-1">
-                        <div 
-                          className={`${budgetColor} rounded-full h-1 transition-all duration-300`} 
-                          style={{ width: `${Math.min(budgetUsage, 100)}%` }}
+                    {project.budget > 0 && (
+                      <>
+                        <div className="flex justify-between text-xs mb-1" style={{ color: "var(--k-text-muted)" }}>
+                          <span>{actualCost.toLocaleString('pl-PL')} zł</span>
+                          <span>{project.budget.toLocaleString('pl-PL')} zł</span>
+                        </div>
+                        <div className="w-full rounded-full h-1.5" style={{ backgroundColor: "var(--k-border)" }}>
+                          <div
+                            className="rounded-full h-1.5 transition-all"
+                            style={{
+                              width: `${Math.min(budgetUsage, 100)}%`,
+                              backgroundColor: budgetUsage > 100 ? "var(--k-err-color)" : budgetUsage > 75 ? "#f59e0b" : "var(--k-accent)"
+                            }}
+                          />
+                        </div>
+                      </>
+                    )}
+                    <div className="mt-3">
+                      <div className="w-full rounded-full h-1" style={{ backgroundColor: "var(--k-border)" }}>
+                        <div
+                          className="rounded-full h-1"
+                          style={{ width: `${project.progress_percentage || 0}%`, backgroundColor: "var(--k-accent)" }}
                         />
                       </div>
+                      <p className="text-xs mt-1" style={{ color: "var(--k-text-subtle)" }}>{project.progress_percentage || 0}% ukończono</p>
                     </div>
-                  )}
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Desktop lista (hidden md:block) */}
+          <div className="hidden md:block">
+            <div className="space-y-6 md:space-y-8">
+              {projects.map((project) => {
+                const projectDocs = documents ? documents.filter(d => d.project_id === project.id) : [];
+                const actualCost = projectDocs.reduce((sum, doc) => sum + (doc.amount || 0), 0);
+                const budgetUsage = project.budget > 0 ? (actualCost / project.budget) * 100 : 0;
+
+                let budgetBarColor = "var(--k-accent)";
+                if (budgetUsage > 75) budgetBarColor = "#f59e0b";
+                if (budgetUsage > 100) budgetBarColor = "var(--k-err-color)";
+
+                return (
+                  <Link
+                    key={project.id}
+                    to={`${createPageUrl('Projects')}?id=${project.id}`}
+                    className="block group rounded-lg p-4 -m-4 transition-colors cursor-pointer"
+                    style={{ }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--k-bg-hover)"}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = ""}
+                  >
+                    <div>
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-medium text-base md:text-lg mb-1" style={{ color: "var(--k-text)" }}>
+                            {project.name}
+                          </h3>
+                          <p className="text-sm capitalize" style={{ color: "var(--k-text-muted)" }}>
+                            {project.type.replace(/_/g, ' ')}
+                          </p>
+                        </div>
+                        <Badge style={statusConfig[project.status]?.style} className="border-0 text-xs font-medium">
+                          {statusConfig[project.status]?.label}
+                        </Badge>
+                      </div>
+
+                      <div className="mb-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>
+                            {project.current_phase?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Planning'}
+                          </span>
+                          <span className="text-xs font-medium" style={{ color: "var(--k-text)" }}>
+                            {project.progress_percentage || 0}%
+                          </span>
+                        </div>
+                        <div className="w-full rounded-full h-1" style={{ backgroundColor: "var(--k-border)" }}>
+                          <div
+                            className="rounded-full h-1 transition-all duration-300"
+                            style={{ width: `${project.progress_percentage || 0}%`, backgroundColor: "var(--k-accent)" }}
+                          />
+                        </div>
+                      </div>
+
+                      {project.budget > 0 && (
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>
+                              Budżet: {actualCost.toLocaleString('pl-PL')} zł / {project.budget.toLocaleString('pl-PL')} zł
+                            </span>
+                            <span className="text-xs font-medium" style={{ color: budgetUsage > 100 ? "var(--k-err-color)" : "var(--k-text)" }}>
+                              {budgetUsage.toFixed(0)}%
+                            </span>
+                          </div>
+                          <div className="w-full rounded-full h-1" style={{ backgroundColor: "var(--k-border)" }}>
+                            <div
+                              className="rounded-full h-1 transition-all duration-300"
+                              style={{ width: `${Math.min(budgetUsage, 100)}%`, backgroundColor: budgetBarColor }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

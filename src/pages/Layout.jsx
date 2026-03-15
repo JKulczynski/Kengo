@@ -1,8 +1,9 @@
 
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { User } from "@/api/entities";
+import { Project } from "@/api/entities";
 import {
     Home,
     Upload,
@@ -16,7 +17,12 @@ import {
     Users,
     StickyNote,
     MessageSquare,
-    Palette
+    Palette,
+    Menu,
+    X,
+    ChevronRight,
+    Plus,
+    StickyNote as NoteIcon
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,16 +49,15 @@ const getInitials = (name) => {
 };
 
 const navigationItems = [
-  { title: "Pulpit",          url: createPageUrl("Dashboard"),  icon: Home },
-  { title: "Projekty",        url: createPageUrl("Projects"),   icon: FolderOpen },
-  { title: "Dokumenty",       url: createPageUrl("Documents"),  icon: FileText },
-  { title: "Gwarancje",       url: createPageUrl("Warranties"), icon: ShieldCheck },
-  { title: "Dodaj dokument",  url: createPageUrl("Upload"),     icon: Upload },
-  { title: "Szukaj",          url: createPageUrl("Search"),     icon: Search },
-  { title: "Notatki",         url: "/notes",                    icon: StickyNote },
-  { title: "Asystent",        url: createPageUrl("Assistant"),  icon: MessageSquare },
-  { title: "Zespół",          url: createPageUrl("Team"),       icon: Users },
-  { title: "Profil",          url: createPageUrl("Profile"),    icon: UserIcon },
+  { title: "Pulpit",    url: createPageUrl("Dashboard"),  icon: Home },
+  { title: "Projekty",  url: createPageUrl("Projects"),   icon: FolderOpen },
+  { title: "Dokumenty", url: createPageUrl("Documents"),  icon: FileText },
+  { title: "Gwarancje", url: createPageUrl("Warranties"), icon: ShieldCheck },
+  { title: "Szukaj",    url: createPageUrl("Search"),     icon: Search },
+  { title: "Notatki",   url: "/notes",                    icon: StickyNote },
+  { title: "Asystent",  url: createPageUrl("Assistant"),  icon: MessageSquare },
+  { title: "Zespół",    url: createPageUrl("Team"),       icon: Users },
+  { title: "Profil",    url: createPageUrl("Profile"),    icon: UserIcon },
 ];
 
 // 3 warianty kolorystyczne do testów
@@ -63,12 +68,27 @@ const THEMES = [
   { id: "theme-moegi",  label: "Moegi",      dot: "#2A6B3E", title: "Świeży bambus" },
 ];
 
+// Pozycje w hamburger menu (te których nie ma w bottom nav)
+const drawerItems = [
+  { title: "Dokumenty",      url: createPageUrl("Documents"),  icon: FileText },
+  { title: "Gwarancje",      url: createPageUrl("Warranties"), icon: ShieldCheck },
+  { title: "Szukaj",         url: createPageUrl("Search"),     icon: Search },
+  { title: "Notatki",        url: "/notes",                    icon: StickyNote },
+  { title: "Zespół",         url: createPageUrl("Team"),       icon: Users },
+];
+
 export default function Layout({ children }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [activeTheme, setActiveTheme] = useState("");
   const [showThemePicker, setShowThemePicker] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [globalPlusOpen, setGlobalPlusOpen] = useState(false);
+  const [recentProjects, setRecentProjects] = useState([]);
+  const [betaDismissed, setBetaDismissed] = useState(() => localStorage.getItem('kengo-beta-dismissed') === '1');
+  const plusRef = useRef(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -83,6 +103,41 @@ export default function Layout({ children }) {
     };
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    const loadRecent = async () => {
+      try {
+        const data = await Project.list('-updated_date');
+        setRecentProjects(data.slice(0, 3));
+      } catch (e) {
+        // silent — sidebar sub-items are non-critical
+      }
+    };
+    loadRecent();
+  }, []);
+
+  useEffect(() => {
+    if (!globalPlusOpen) return;
+    const handleClickOutside = (e) => {
+      if (plusRef.current && !plusRef.current.contains(e.target)) {
+        setGlobalPlusOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [globalPlusOpen]);
+
+  // Cmd+K / Ctrl+K — otwiera wyszukiwarkę
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        navigate(createPageUrl('Search'));
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
 
   // Przełączanie motywu — zapisuje w localStorage
   useEffect(() => {
@@ -139,29 +194,96 @@ export default function Layout({ children }) {
           <SidebarContent className="p-2">
             <SidebarGroup>
               <SidebarGroupContent>
+                {/* Global Plus Button */}
+                <div className="px-1 pb-2" ref={plusRef}>
+                  <div className="relative">
+                    <button
+                      onClick={() => setGlobalPlusOpen(p => !p)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
+                      style={{
+                        background: "linear-gradient(135deg, var(--k-accent), var(--k-accent-dark))",
+                        color: "var(--k-accent-text)"
+                      }}
+                    >
+                      <Plus className="w-4 h-4" />
+                      Nowy
+                    </button>
+                    {globalPlusOpen && (
+                      <div
+                        className="absolute top-full left-0 mt-2 w-48 rounded-xl p-1.5 z-50 apple-shadow"
+                        style={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border-md)" }}
+                      >
+                        <Link
+                          to={`${createPageUrl("Projects")}?new=1`}
+                          onClick={() => setGlobalPlusOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm w-full"
+                          style={{ color: "var(--k-text-muted)" }}
+                        >
+                          <FolderOpen className="w-4 h-4 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
+                          Nowy projekt
+                        </Link>
+                        <Link
+                          to={createPageUrl("Upload")}
+                          onClick={() => setGlobalPlusOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm w-full"
+                          style={{ color: "var(--k-text-muted)" }}
+                        >
+                          <Upload className="w-4 h-4 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
+                          Dodaj dokument
+                        </Link>
+                        <Link
+                          to="/notes?new=1"
+                          onClick={() => setGlobalPlusOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm w-full"
+                          style={{ color: "var(--k-text-muted)" }}
+                        >
+                          <StickyNote className="w-4 h-4 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
+                          Szybka notatka
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <SidebarMenu>
                   {navigationItems.map((item) => {
                     const isActive = location.pathname === item.url;
                     return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          asChild
-                          className="mx-1 rounded-lg font-normal"
-                          style={
-                            isActive
-                              ? { backgroundColor: "var(--k-bg-active)", color: "var(--k-accent-dark)" }
-                              : { color: "var(--k-text-muted)" }
-                          }
-                        >
-                          <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
-                            <item.icon
-                              className="w-4 h-4 flex-shrink-0"
-                              style={isActive ? { color: "var(--k-accent)", strokeWidth: 2 } : {}}
-                            />
-                            <span className="text-sm">{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
+                      <React.Fragment key={item.title}>
+                        <SidebarMenuItem>
+                          <SidebarMenuButton
+                            asChild
+                            className="mx-1 rounded-lg font-normal"
+                            style={
+                              isActive
+                                ? { backgroundColor: "var(--k-bg-active)", color: "var(--k-accent-dark)" }
+                                : { color: "var(--k-text-muted)" }
+                            }
+                          >
+                            <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
+                              <item.icon
+                                className="w-4 h-4 flex-shrink-0"
+                                style={isActive ? { color: "var(--k-accent)", strokeWidth: 2 } : {}}
+                              />
+                              <span className="text-sm">{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        {item.title === "Projekty" && recentProjects.length > 0 && recentProjects.map(proj => (
+                          <SidebarMenuItem key={proj.id}>
+                            <SidebarMenuButton asChild className="mx-1 rounded-lg font-normal">
+                              <Link
+                                to={`${createPageUrl("Projects")}?id=${proj.id}`}
+                                className="flex items-center gap-2 pl-8 py-1"
+                                style={{ color: "var(--k-text-subtle)" }}
+                              >
+                                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: "var(--k-border-strong)" }} />
+                                <span className="text-xs truncate">{proj.name}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                      </React.Fragment>
                     );
                   })}
                 </SidebarMenu>
@@ -169,28 +291,37 @@ export default function Layout({ children }) {
             </SidebarGroup>
 
             {/* Beta banner */}
-            <SidebarGroup className="mt-auto p-4">
-              <div
-                className="p-4 rounded-xl text-center"
-                style={{ backgroundColor: "var(--k-accent-light)", border: "1px solid var(--k-border-md)" }}
-              >
-                <h4 className="font-semibold text-sm" style={{ color: "var(--k-accent-dark)" }}>
-                  Wersja Beta
-                </h4>
-                <p className="text-xs mt-1 mb-3" style={{ color: "var(--k-accent-dark)", opacity: 0.75 }}>
-                  Twoja opinia kształtuje Kengo.
-                </p>
-                <button
-                  className="text-xs font-semibold rounded-full px-4 py-1.5"
-                  style={{
-                    background: "linear-gradient(135deg, var(--k-accent), var(--k-accent-dark))",
-                    color: "var(--k-accent-text)"
-                  }}
+            {!betaDismissed && (
+              <SidebarGroup className="mt-auto p-4">
+                <div
+                  className="relative p-4 rounded-xl text-center"
+                  style={{ backgroundColor: "var(--k-accent-light)", border: "1px solid var(--k-border-md)" }}
                 >
-                  Wyślij opinię
-                </button>
-              </div>
-            </SidebarGroup>
+                  <button
+                    onClick={() => { setBetaDismissed(true); localStorage.setItem('kengo-beta-dismissed', '1'); }}
+                    className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded-full opacity-50 hover:opacity-100"
+                    style={{ color: "var(--k-accent-dark)" }}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                  <h4 className="font-semibold text-sm" style={{ color: "var(--k-accent-dark)" }}>
+                    Wersja Beta
+                  </h4>
+                  <p className="text-xs mt-1 mb-3" style={{ color: "var(--k-accent-dark)", opacity: 0.75 }}>
+                    Twoja opinia kształtuje Kengo.
+                  </p>
+                  <button
+                    className="text-xs font-semibold rounded-full px-4 py-1.5"
+                    style={{
+                      background: "linear-gradient(135deg, var(--k-accent), var(--k-accent-dark))",
+                      color: "var(--k-accent-text)"
+                    }}
+                  >
+                    Wyślij opinię
+                  </button>
+                </div>
+              </SidebarGroup>
+            )}
           </SidebarContent>
 
           {/* Stopka — użytkownik + przełącznik motywu */}
@@ -283,23 +414,147 @@ export default function Layout({ children }) {
 
         {/* Główna treść */}
         <main className="flex-1 flex flex-col" style={{ backgroundColor: "var(--k-bg)" }}>
-          {/* Topbar mobilny — tylko logo i trigger */}
+          {/* Topbar mobilny */}
           <header
             className="apple-blur border-b px-4 py-3 md:hidden flex-shrink-0"
             style={{ borderColor: "var(--k-border)" }}
           >
-            <div className="flex items-center gap-3">
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, var(--k-accent-dark), var(--k-accent))" }}
+            <div className="flex items-center justify-between">
+              {/* Hamburger — lewy górny róg */}
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="w-9 h-9 flex items-center justify-center rounded-xl"
+                style={{ color: "var(--k-text-muted)" }}
+                aria-label="Menu"
               >
-                <Hammer className="w-3.5 h-3.5" style={{ color: "var(--k-accent-text)", strokeWidth: 2.5 }} />
+                <Menu className="w-5 h-5" />
+              </button>
+
+              {/* Logo — prawy górny róg */}
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-semibold" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
+                  Kengo
+                </h1>
+                <div
+                  className="w-7 h-7 rounded-lg flex items-center justify-center"
+                  style={{ background: "linear-gradient(135deg, var(--k-accent-dark), var(--k-accent))" }}
+                >
+                  <Hammer className="w-3.5 h-3.5" style={{ color: "var(--k-accent-text)", strokeWidth: 2.5 }} />
+                </div>
               </div>
-              <h1 className="text-base font-semibold" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
-                Kengo
-              </h1>
             </div>
           </header>
+
+          {/* ====== DRAWER MOBILNY ====== */}
+          {drawerOpen && (
+            <div className="md:hidden fixed inset-0 z-[60] flex">
+              {/* Overlay */}
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+                onClick={() => setDrawerOpen(false)}
+              />
+
+              {/* Panel */}
+              <div
+                className="relative w-72 max-w-[85vw] h-full flex flex-col apple-shadow"
+                style={{ backgroundColor: "var(--k-bg-sidebar)" }}
+              >
+                {/* Nagłówek drawera */}
+                <div
+                  className="flex items-center justify-between px-5 py-4 border-b"
+                  style={{ borderColor: "var(--k-border)" }}
+                >
+                  <span className="font-semibold text-sm" style={{ color: "var(--k-text)" }}>Menu</span>
+                  <button
+                    onClick={() => setDrawerOpen(false)}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg"
+                    style={{ color: "var(--k-text-subtle)" }}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Pozycje nawigacji */}
+                <div className="flex-1 overflow-auto py-2 px-3">
+                  {drawerItems.map((item) => {
+                    const isActive = location.pathname === item.url;
+                    return (
+                      <Link
+                        key={item.title}
+                        to={item.url}
+                        onClick={() => setDrawerOpen(false)}
+                        className="flex items-center gap-3 px-3 py-3 rounded-xl mb-0.5"
+                        style={
+                          isActive
+                            ? { backgroundColor: "var(--k-bg-active)", color: "var(--k-accent-dark)" }
+                            : { color: "var(--k-text-muted)" }
+                        }
+                      >
+                        <item.icon
+                          className="w-4.5 h-4.5 flex-shrink-0"
+                          style={{ color: isActive ? "var(--k-accent)" : "var(--k-text-subtle)" }}
+                        />
+                        <span className="text-sm font-medium flex-1">{item.title}</span>
+                        {isActive && <ChevronRight className="w-3.5 h-3.5 opacity-40" />}
+                      </Link>
+                    );
+                  })}
+
+                  {/* Separator */}
+                  <div className="my-3 mx-2 border-t" style={{ borderColor: "var(--k-border)" }} />
+
+                  {/* Motyw */}
+                  <div className="px-3 py-2">
+                    <p className="text-xs mb-2 font-medium" style={{ color: "var(--k-text-subtle)" }}>Motyw</p>
+                    <div className="flex flex-wrap gap-2">
+                      {THEMES.map(t => (
+                        <button
+                          key={t.id}
+                          onClick={() => switchTheme(t.id)}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border"
+                          style={
+                            activeTheme === t.id
+                              ? { backgroundColor: "var(--k-bg-active)", color: "var(--k-accent-dark)", borderColor: "var(--k-accent)" }
+                              : { color: "var(--k-text-muted)", borderColor: "var(--k-border-md)" }
+                          }
+                        >
+                          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: t.dot }} />
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Profil na dole drawera */}
+                <div className="border-t p-4" style={{ borderColor: "var(--k-border)" }}>
+                  <Link
+                    to={createPageUrl("Profile")}
+                    onClick={() => setDrawerOpen(false)}
+                    className="flex items-center gap-3"
+                  >
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: "var(--k-accent-light)" }}
+                    >
+                      <span className="font-semibold text-sm" style={{ color: "var(--k-accent-dark)" }}>
+                        {user ? getInitials(user.full_name) : "?"}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate" style={{ color: "var(--k-text)" }}>
+                        {user?.full_name || "Profil"}
+                      </p>
+                      <p className="text-xs truncate" style={{ color: "var(--k-text-subtle)" }}>
+                        {user?.email || "Ustawienia konta"}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Treść — padding-bottom na mobile żeby nie chować się pod bottom nav */}
           <div className="flex-1 overflow-auto pb-20 md:pb-0">

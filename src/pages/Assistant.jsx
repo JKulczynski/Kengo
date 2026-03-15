@@ -198,27 +198,27 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                     </div>
                 </div>
 
-                {/* Quick Actions */}
-                {messages.length === 0 && (
-                    <div className="grid grid-cols-2 gap-3 mb-6">
+                {/* Quick Actions — chips (zawsze widoczne) */}
+                <div className="overflow-x-auto -mx-4 px-4 mb-6 scrollbar-hide">
+                    <div className="flex gap-2 pb-1" style={{ width: 'max-content' }}>
                         {quickActions.map((action) => (
                             <button
                                 key={action.label}
                                 onClick={() => sendMessage(action.prompt)}
                                 disabled={isLoading}
-                                className="apple-blur rounded-xl p-4 text-left apple-shadow hover:apple-shadow-lg transition-all duration-200 group"
+                                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium whitespace-nowrap apple-blur apple-shadow"
+                                style={{
+                                    border: "1px solid var(--k-border-md)",
+                                    color: "var(--k-text)",
+                                    backgroundColor: "var(--k-bg-surface)"
+                                }}
                             >
-                                <div className="flex items-center gap-2 mb-1">
-                                    <Zap className="w-3.5 h-3.5" style={{ color: "var(--k-accent)" }} />
-                                    <p className="font-medium text-sm" style={{ color: "var(--k-text)" }}>{action.label}</p>
-                                </div>
-                                <p className="text-xs leading-snug line-clamp-2" style={{ color: "var(--k-text-subtle)" }}>
-                                    {action.prompt}
-                                </p>
+                                <Zap className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
+                                {action.label}
                             </button>
                         ))}
                     </div>
-                )}
+                </div>
 
                 {/* Chat */}
                 <div className="apple-blur rounded-2xl apple-shadow flex flex-col" style={{ minHeight: '500px' }}>
