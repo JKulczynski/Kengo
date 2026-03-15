@@ -556,8 +556,8 @@ export default function Layout({ children }) {
             </div>
           )}
 
-          {/* Treść — padding-bottom na mobile żeby nie chować się pod bottom nav */}
-          <div className="flex-1 overflow-auto pb-20 md:pb-0">
+          {/* Treść — flex-col żeby strony mogły używać flex-1 do wypełnienia wysokości */}
+          <div className="flex-1 flex flex-col overflow-auto pb-20 md:pb-0">
             {children}
           </div>
         </main>

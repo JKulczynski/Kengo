@@ -10,8 +10,10 @@ import {
     User,
     Zap
 } from "lucide-react";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
 
-// Unikalny icon Kengo — ensō (otwarte koło) z kompasem wewnątrz
+// Unikalny icon Kengo — ensō z kompasem
 function KengoIcon({ className = "w-6 h-6" }) {
     return (
         <svg className={className} viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -24,8 +26,6 @@ function KengoIcon({ className = "w-6 h-6" }) {
         </svg>
     );
 }
-import { format } from "date-fns";
-import { pl } from "date-fns/locale";
 
 function buildSystemContext(projects, documents) {
     const projectsSummary = projects.map(p => {
@@ -101,9 +101,7 @@ export default function AssistantPage() {
     const [documents, setDocuments] = useState([]);
     const messagesEndRef = useRef(null);
 
-    useEffect(() => {
-        loadUserData();
-    }, []);
+    useEffect(() => { loadUserData(); }, []);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -139,14 +137,9 @@ export default function AssistantPage() {
                 .map(m => `${m.role === 'user' ? 'Użytkownik' : 'Kengo'}: ${m.content}`)
                 .join('\n\n');
 
-            const fullPrompt = `${systemContext}
-
-HISTORIA ROZMOWY:
-${conversationHistory}
-
-Odpowiedz na ostatnią wiadomość użytkownika.`;
-
-            const response = await InvokeLLM({ prompt: fullPrompt });
+            const response = await InvokeLLM({
+                prompt: `${systemContext}\n\nHISTORIA ROZMOWY:\n${conversationHistory}\n\nOdpowiedz na ostatnią wiadomość użytkownika.`
+            });
             setMessages(prev => [...prev, { role: 'assistant', content: response }]);
         } catch (error) {
             console.error("Error calling LLM:", error);
@@ -167,7 +160,7 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
 
     if (isLoadingData) {
         return (
-            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--k-bg)" }}>
+            <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: "var(--k-bg)" }}>
                 <div className="text-center">
                     <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: "var(--k-accent)" }} />
                     <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>Ładuję Twoje dane...</p>
@@ -181,16 +174,27 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
         : 'Zacznij rozmowę — pomogę Ci zorganizować remont';
 
     return (
-        <div style={{ backgroundColor: "var(--k-bg)" }} className="flex flex-col min-h-screen md:min-h-0">
-            <div className="flex flex-col flex-1 max-w-3xl mx-auto w-full px-4 md:px-6 pt-4 md:pt-12 pb-2 md:pb-12">
+        /*
+         * LAYOUT PATTERN dla chat UI:
+         * 1. flex-1 min-h-0 — wypełnia dostępną wysokość (nie więcej)
+         * 2. flex flex-col — układ pionowy
+         * 3. min-h-0 na każdym flex child — pozwala na kurczenie poniżej content size
+         * 4. overflow-y-auto tylko na messages — reszta jest flex-shrink-0
+         */
+        <div
+            className="flex-1 flex flex-col min-h-0"
+            style={{ backgroundColor: "var(--k-bg)" }}
+        >
+            {/* Wrapper z max-width i paddingiem */}
+            <div className="flex flex-col flex-1 min-h-0 w-full max-w-3xl mx-auto px-4 md:px-6 pt-4 md:pt-10 pb-2 md:pb-10">
 
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+                {/* Header — kompaktowy na mobile */}
+                <div className="flex items-center gap-3 mb-3 flex-shrink-0">
                     <div className="icon-box w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center flex-shrink-0">
                         <KengoIcon className="w-5 h-5 md:w-6 md:h-6" />
                     </div>
                     <div>
-                        <h1 className="text-lg md:text-3xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
+                        <h1 className="text-base md:text-3xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
                             Asystent Kengo
                         </h1>
                         <p className="text-xs md:text-sm" style={{ color: "var(--k-text-subtle)" }}>
@@ -199,23 +203,20 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                     </div>
                 </div>
 
-                {/* Chat card */}
-                <div className="apple-blur rounded-2xl apple-shadow flex flex-col flex-1" style={{ minHeight: 0 }}>
+                {/* Karta czatu — wypełnia pozostałą przestrzeń */}
+                <div className="apple-blur rounded-2xl apple-shadow flex flex-col flex-1 min-h-0">
 
-                    {/* Messages area — scrolluje wewnętrznie */}
-                    <div
-                        className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4"
-                        style={{ minHeight: '160px', maxHeight: 'calc(100dvh - 22rem)' }}
-                    >
+                    {/* Wiadomości — jedyny element który scrolluje */}
+                    <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 space-y-4">
                         {messages.length === 0 ? (
-                            <div className="text-center py-8 md:py-16">
-                                <div className="icon-box w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div className="flex flex-col items-center justify-center h-full py-8 text-center">
+                                <div className="icon-box w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-4">
                                     <KengoIcon className="w-6 h-6 md:w-7 md:h-7" />
                                 </div>
                                 <h3 className="text-base font-medium mb-2" style={{ color: "var(--k-text)" }}>
                                     Cześć! Jak mogę pomóc?
                                 </h3>
-                                <p className="text-sm max-w-sm mx-auto" style={{ color: "var(--k-text-subtle)" }}>
+                                <p className="text-sm max-w-xs" style={{ color: "var(--k-text-subtle)" }}>
                                     Pytaj o projekty, budżet, gwarancje — znam Twoje dane i odpowiem konkretnie.
                                 </p>
                             </div>
@@ -240,9 +241,9 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Chips — poziomy scroll nad inputem */}
+                    {/* Chipsy — poziomy scroll, nie scrolluje strona */}
                     <div
-                        className="overflow-x-auto scrollbar-hide px-4 pt-3 flex-shrink-0"
+                        className="flex-shrink-0 overflow-x-auto scrollbar-hide px-3 pt-2"
                         style={{ borderTop: "1px solid var(--k-border)" }}
                     >
                         <div className="flex gap-2 pb-2" style={{ width: 'max-content' }}>
@@ -265,9 +266,9 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                         </div>
                     </div>
 
-                    {/* Input */}
-                    <div className="p-3 md:p-4 flex-shrink-0">
-                        <div className="flex gap-2 md:gap-3">
+                    {/* Input — zawsze na dole karty */}
+                    <div className="flex-shrink-0 p-3 md:p-4">
+                        <div className="flex gap-2">
                             <Input
                                 value={inputMessage}
                                 onChange={(e) => setInputMessage(e.target.value)}
@@ -279,7 +280,7 @@ Odpowiedz na ostatnią wiadomość użytkownika.`;
                             <Button
                                 onClick={() => sendMessage()}
                                 disabled={isLoading || !inputMessage.trim()}
-                                className="btn-primary rounded-xl px-3 md:px-4 flex-shrink-0"
+                                className="btn-primary rounded-xl px-3 flex-shrink-0"
                             >
                                 <Send className="w-4 h-4" />
                             </Button>
