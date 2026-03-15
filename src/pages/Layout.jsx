@@ -556,8 +556,8 @@ export default function Layout({ children }) {
             </div>
           )}
 
-          {/* Treść — flex-col żeby strony mogły używać flex-1 do wypełnienia wysokości */}
-          <div className="flex-1 flex flex-col overflow-auto pb-20 md:pb-0">
+          {/* Treść — height:0 + flex-1 wymusza obliczalną wysokość (trick dla flex chat UI) */}
+          <div className="flex-1 flex flex-col overflow-auto pb-20 md:pb-0" style={{ height: 0 }}>
             {children}
           </div>
         </main>
