@@ -83,15 +83,21 @@ export default function ProjectsPage() {
   };
 
   const handleFormSubmit = async (projectData) => {
+    const clean = {
+      ...projectData,
+      start_date: projectData.start_date || null,
+      target_completion: projectData.target_completion || null,
+      budget: projectData.budget || null,
+    };
     try {
       if (editingProject) {
-        await Project.update(editingProject.id, projectData);
+        await Project.update(editingProject.id, clean);
         setIsFormOpen(false);
         setEditingProject(null);
         await loadData();
         toast.success('Projekt zaktualizowany');
       } else {
-        await Project.create(projectData);
+        await Project.create(clean);
         setIsFormOpen(false);
         setEditingProject(null);
         await loadData();
@@ -99,7 +105,7 @@ export default function ProjectsPage() {
       }
     } catch (error) {
       console.error("Error saving project:", error);
-      toast.error('Coś poszło nie tak. Spróbuj ponownie.');
+      toast.error(`Błąd: ${error.message}`);
     }
   };
 
