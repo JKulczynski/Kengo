@@ -108,7 +108,7 @@ export default function Layout({ children }) {
     const loadRecent = async () => {
       try {
         const data = await Project.list('-updated_date');
-        setRecentProjects(data.slice(0, 3));
+        setRecentProjects(data);
       } catch (e) {
         // silent — sidebar sub-items are non-critical
       }
