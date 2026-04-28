@@ -143,20 +143,26 @@ const api = {
 
   integrations: {
     Core: {
-      InvokeLLM: async () => ({ ok: true, message: "LLM not configured yet" }),
+      InvokeLLM: async ({ prompt, file_urls, response_json_schema }) => {
+        const { data, error } = await supabase.functions.invoke("invoke-llm", {
+          body: { prompt, file_urls, response_json_schema },
+        });
+        if (error) throw error;
+        return data;
+      },
       SendEmail: async () => ({ ok: true }),
-      UploadFile: async (file) => {
+      UploadFile: async ({ file }) => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
         const path = `${user.id}/${Date.now()}-${file.name}`;
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
           .from("documents")
           .upload(path, file);
         if (error) throw error;
         const { data: { publicUrl } } = supabase.storage
           .from("documents")
           .getPublicUrl(path);
-        return { ok: true, url: publicUrl, path };
+        return { file_url: publicUrl, path };
       },
       GenerateImage: async () => ({ ok: true }),
       ExtractDataFromUploadedFile: async () => ({ ok: true }),
