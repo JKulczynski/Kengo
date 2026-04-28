@@ -20,6 +20,7 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
   const [isCameraReady, setIsCameraReady] = React.useState(false);
   const [isMobile] = React.useState(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
   const fileInputRef = React.useRef(null);
+  const mobileCameraRef = React.useRef(null);
 
   const startCamera = async () => {
     try {
@@ -122,10 +123,22 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
           </div>
 
           {/* Camera Capture */}
-          <div 
-            className="group cursor-pointer" 
-            onClick={() => setShowCameraDialog(true)}
+          <div
+            className="group cursor-pointer"
+            onClick={() => isMobile ? mobileCameraRef.current?.click() : setShowCameraDialog(true)}
           >
+            <input
+              ref={mobileCameraRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) onCameraCapture(file);
+                e.target.value = "";
+              }}
+            />
             <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-8 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200">
               <div className="text-center">
                 <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 dark:bg-gray-900 rounded-xl flex items-center justify-center">

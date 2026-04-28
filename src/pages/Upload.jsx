@@ -77,7 +77,9 @@ export default function UploadPage() {
   };
 
   const handleCameraCapture = (file) => {
+    const index = files.length;
     addFiles([file]);
+    setTimeout(() => processFile(file, index), 100);
   };
 
   const addFiles = (newFiles) => {
