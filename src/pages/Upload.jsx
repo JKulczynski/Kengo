@@ -156,7 +156,13 @@ export default function UploadPage() {
   const handleSaveDocument = async (documentData) => {
     setIsProcessing(true);
     try {
-      await Document.create(documentData);
+      await Document.create({
+        ...documentData,
+        project_id: documentData.project_id || null,
+        amount: documentData.amount || null,
+        date: documentData.date || null,
+        warranty_end_date: documentData.warranty_end_date || null,
+      });
       const fileIndex = files.findIndex(f => f.name === currentPreview.file_name);
       if (fileIndex !== -1) {
         removeFile(fileIndex);
