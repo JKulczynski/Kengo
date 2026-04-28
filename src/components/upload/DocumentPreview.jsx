@@ -1,5 +1,13 @@
 
 import React, { useState } from 'react';
+import { Document as PdfDocument, Page as PdfPage, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -149,10 +157,18 @@ export default function DocumentPreview({
         </CardHeader>
         
         <CardContent className="p-6">
-          <div className="aspect-[3/4] bg-slate-100 rounded-lg overflow-hidden mb-4">
-            {extractedData.file_url && (
-              <img 
-                src={extractedData.file_url} 
+          <div className="aspect-[3/4] bg-slate-100 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
+            {extractedData.file_url && extractedData.file_url.toLowerCase().includes('.pdf') ? (
+              <PdfDocument
+                file={extractedData.file_url}
+                loading={<div className="text-sm text-slate-400">Ładowanie PDF...</div>}
+                error={<div className="text-sm text-slate-400">Nie można załadować PDF</div>}
+              >
+                <PdfPage pageNumber={1} width={320} />
+              </PdfDocument>
+            ) : (
+              <img
+                src={extractedData.file_url}
                 alt="Dokument"
                 className="w-full h-full object-contain"
               />
