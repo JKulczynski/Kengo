@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Hammer } from "lucide-react";
+import { Hammer, Eye, EyeOff } from "lucide-react";
 import { api } from "@/api/apiClient";
 
 export default function Login({ onLogin }) {
@@ -10,9 +10,21 @@ export default function Login({ onLogin }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const validate = () => {
+    if (mode === "register" && !fullName.trim()) return "Podaj imię i nazwisko.";
+    if (!email.trim()) return "Podaj adres email.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Podaj prawidłowy adres email.";
+    if (!password) return "Podaj hasło.";
+    if (password.length < 6) return "Hasło musi mieć co najmniej 6 znaków.";
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationError = validate();
+    if (validationError) { setError(validationError); return; }
     setError(null);
     setLoading(true);
     try {
@@ -148,20 +160,28 @@ export default function Login({ onLogin }) {
                 >
                   Hasło
                 </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  minLength={6}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-                  style={{
-                    backgroundColor: "var(--k-bg)",
-                    border: "1px solid var(--k-border-md)",
-                    color: "var(--k-text)",
-                  }}
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-3 py-2.5 pr-10 rounded-xl text-sm outline-none"
+                    style={{
+                      backgroundColor: "var(--k-bg)",
+                      border: "1px solid var(--k-border-md)",
+                      color: "var(--k-text)",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(p => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    style={{ color: "var(--k-text-muted)" }}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               {error && (
