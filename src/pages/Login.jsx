@@ -14,6 +14,7 @@ export default function Login({ onLogin }) {
 
   const validate = () => {
     if (mode === "register" && !fullName.trim()) return "Podaj imię i nazwisko.";
+    if (mode === "register" && !/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s\-']+$/.test(fullName.trim())) return "Imię i nazwisko może zawierać tylko litery.";
     if (!email.trim()) return "Podaj adres email.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Podaj prawidłowy adres email.";
     if (!password) return "Podaj hasło.";
