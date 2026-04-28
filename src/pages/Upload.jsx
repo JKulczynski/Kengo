@@ -173,7 +173,7 @@ export default function UploadPage() {
         navigate(createPageUrl("Dashboard"));
       }
     } catch (error) {
-      setError("Błąd zapisu dokumentu. Spróbuj ponownie.");
+      setError(`Błąd zapisu: ${error.message}`);
     }
     setIsProcessing(false);
   };
