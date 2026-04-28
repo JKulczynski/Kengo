@@ -33,7 +33,11 @@ export default function Login({ onLogin }) {
         await api.auth.login(email, password);
         onLogin();
       } else {
-        await api.auth.register(email, password, fullName);
+        const data = await api.auth.register(email, password, fullName);
+        if (data.user?.identities?.length === 0) {
+          setError("Konto z tym adresem email już istnieje.");
+          return;
+        }
         setRegistered(true);
       }
     } catch (err) {
