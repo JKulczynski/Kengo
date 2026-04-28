@@ -10,6 +10,12 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
+const TYPE_LABELS = {
+  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
+  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
+  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
+};
+
 const statusConfig = {
   planning:    { label: "Planowanie", style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
   in_progress: { label: "W trakcie",  style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
@@ -73,7 +79,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                 return (
                   <Link
                     key={project.id}
-                    to={`${createPageUrl('Projects')}?id=${project.id}`}
+                    to={`/project/${project.id}`}
                     className="flex-shrink-0 w-64 snap-start apple-blur rounded-2xl p-4 apple-shadow block"
                   >
                     <div className="flex items-start justify-between mb-3">
@@ -127,7 +133,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                 return (
                   <Link
                     key={project.id}
-                    to={`${createPageUrl('Projects')}?id=${project.id}`}
+                    to={`/project/${project.id}`}
                     className="block group rounded-lg p-4 -m-4 transition-colors cursor-pointer"
                     style={{ }}
                     onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--k-bg-hover)"}
@@ -139,8 +145,8 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                           <h3 className="font-medium text-base md:text-lg mb-1" style={{ color: "var(--k-text)" }}>
                             {project.name}
                           </h3>
-                          <p className="text-sm capitalize" style={{ color: "var(--k-text-muted)" }}>
-                            {project.type.replace(/_/g, ' ')}
+                          <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>
+                            {TYPE_LABELS[project.type] || project.type.replace(/_/g, ' ')}
                           </p>
                         </div>
                         <Badge style={statusConfig[project.status]?.style} className="border-0 text-xs font-medium">
@@ -151,7 +157,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                       <div className="mb-4">
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>
-                            {project.current_phase?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Planning'}
+                            {project.current_phase?.replace(/_/g, ' ') || 'Planowanie'}
                           </span>
                           <span className="text-xs font-medium" style={{ color: "var(--k-text)" }}>
                             {project.progress_percentage || 0}%

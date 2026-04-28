@@ -49,8 +49,8 @@ Deno.serve(async (req) => {
     content.push({ type: "text", text: prompt });
 
     const systemPrompt = response_json_schema
-      ? "Respond ONLY with valid JSON matching the schema. No markdown, no explanation."
-      : "You are Kengo, a helpful renovation assistant. Respond in Polish.";
+      ? "Respond ONLY with valid JSON matching the schema. No markdown, no explanation. All text values (notes, titles, descriptions) must be in Polish."
+      : "You are Kengo, a helpful renovation assistant. Respond in Polish. Do not use emojis.";
 
     const message = await client.messages.create({
       model: "claude-opus-4-7",

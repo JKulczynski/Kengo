@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, LayoutGrid, List, ArrowLeft, Calendar, DollarSign, Users, FileText, ExternalLink, Crown, Edit, Eye } from "lucide-react";
+import { Plus, LayoutGrid, List, ArrowLeft, Calendar, DollarSign, Users, FileText, ExternalLink, Crown, Edit, Eye, Trash2 } from "lucide-react";
 import { toast } from 'sonner';
 import { AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { format } from 'date-fns';
 
@@ -34,6 +34,12 @@ const typeIcons = {
   other: FileText
 };
 
+const TYPE_LABELS = {
+  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
+  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
+  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
+};
+
 const roleIcons = {
   owner: Crown,
   editor: Edit,
@@ -41,6 +47,7 @@ const roleIcons = {
 };
 
 export default function ProjectsPage() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [members, setMembers] = useState([]);
@@ -138,12 +145,7 @@ export default function ProjectsPage() {
   };
 
   const handleProjectClick = (project) => {
-    const projectDocs = documents.filter(d => d.project_id === project.id);
-    const projectMembers = members.filter(m => m.project_id === project.id);
-    
-    setSelectedProject(project);
-    setSelectedProjectDocs(projectDocs);
-    setSelectedProjectMembers(projectMembers);
+    navigate(`/project/${project.id}`);
   };
 
   const backToList = () => {
@@ -174,13 +176,21 @@ export default function ProjectsPage() {
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
                 {selectedProject.name}
               </h1>
-              <p className="mt-1 capitalize" style={{ color: "var(--k-text-muted)" }}>
-                {selectedProject.type?.replace(/_/g, ' ')} • {selectedProject.current_phase?.replace(/_/g, ' ') || 'Planning'}
+              <p className="mt-1" style={{ color: "var(--k-text-muted)" }}>
+                {TYPE_LABELS[selectedProject.type] || selectedProject.type?.replace(/_/g, ' ')}
               </p>
             </div>
-            <Badge style={statusConfig[selectedProject.status]?.style} className="border-0 font-medium hidden sm:block">
-              {statusConfig[selectedProject.status]?.label}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge style={statusConfig[selectedProject.status]?.style} className="border-0 font-medium hidden sm:block">
+                {statusConfig[selectedProject.status]?.label}
+              </Badge>
+              <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full" onClick={() => handleEdit(selectedProject)} style={{ color: "var(--k-text)" }}>
+                <Edit className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full" onClick={() => openDeleteDialog(selectedProject)} style={{ color: "var(--k-err-color)" }}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Project Overview Cards */}
@@ -225,7 +235,14 @@ export default function ProjectsPage() {
                   </div>
                   <div>
                     <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Zespół</p>
-                    <p className="font-medium" style={{ color: "var(--k-text)" }}>{selectedProjectMembers.length + 1} członków</p>
+                    <p className="font-medium" style={{ color: "var(--k-text)" }}>
+                      {(() => {
+                        const n = selectedProjectMembers.length + 1;
+                        if (n === 1) return '1 członek';
+                        if (n >= 2 && n <= 4) return `${n} członków`;
+                        return `${n} członków`;
+                      })()}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -329,7 +346,7 @@ export default function ProjectsPage() {
                               <div className="flex items-center gap-4 text-sm mt-1" style={{ color: "var(--k-text-muted)" }}>
                                 {doc.vendor && <span>Vendor: {doc.vendor}</span>}
                                 {doc.amount && <span className="text-green-600">{doc.amount.toLocaleString('pl-PL')} zł</span>}
-                                {doc.date && <span>{format(new Date(doc.date), 'MMM d, yyyy')}</span>}
+                                {doc.date && <span>{format(new Date(doc.date), 'dd.MM.yyyy')}</span>}
                               </div>
                             </div>
                             <a 
@@ -374,7 +391,7 @@ export default function ProjectsPage() {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium" style={{ color: "var(--k-text)" }}>
-                          {selectedProject.created_by === currentUser?.email ? 'You' : selectedProject.created_by}
+                          {selectedProject.created_by === currentUser?.email ? 'Ty' : selectedProject.created_by}
                         </h4>
                         <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>Właściciel projektu</p>
                       </div>
@@ -391,7 +408,7 @@ export default function ProjectsPage() {
                           </div>
                           <div className="flex-1">
                             <h4 className="font-medium" style={{ color: "var(--k-text)" }}>
-                              {member.user_email === currentUser?.email ? 'You' : member.user_email}
+                              {member.user_email === currentUser?.email ? 'Ty' : member.user_email}
                             </h4>
                             <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>
                               Zaproszony przez {member.invited_by}
@@ -428,7 +445,7 @@ export default function ProjectsPage() {
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span style={{ color: "var(--k-text-muted)" }}>Typ:</span>
-                            <span className="capitalize" style={{ color: "var(--k-text)" }}>{selectedProject.type?.replace(/_/g, ' ')}</span>
+                            <span style={{ color: "var(--k-text)" }}>{TYPE_LABELS[selectedProject.type] || selectedProject.type?.replace(/_/g, ' ')}</span>
                           </div>
                           <div className="flex justify-between">
                             <span style={{ color: "var(--k-text-muted)" }}>Status:</span>

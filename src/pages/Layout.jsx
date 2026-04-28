@@ -273,7 +273,7 @@ export default function Layout({ children }) {
                           <SidebarMenuItem key={proj.id}>
                             <SidebarMenuButton asChild className="mx-1 rounded-lg font-normal">
                               <Link
-                                to={`${createPageUrl("Projects")}?id=${proj.id}`}
+                                to={`/project/${proj.id}`}
                                 className="flex items-center gap-2 pl-8 py-1"
                                 style={{ color: "var(--k-text-subtle)" }}
                               >

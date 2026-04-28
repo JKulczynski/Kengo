@@ -45,6 +45,7 @@ function PagesContent() {
             <Route path="/Documents"     element={<Documents />} />
             <Route path="/Assistant"     element={<Assistant />} />
             <Route path="/ProjectDetail" element={<ProjectDetail />} />
+            <Route path="/project/:projectId" element={<ProjectDetail />} />
             <Route path="/Team"          element={<Team />} />
             <Route path="/notes"         element={<Notes />} />
           </Routes>
