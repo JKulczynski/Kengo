@@ -18,6 +18,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
 
+const TYPE_LABELS = {
+  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
+  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
+  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
+};
+
 const statusConfig = {
   planning:    { icon: Clock,        label: "Planowanie", style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
   in_progress: { icon: PlayCircle,   label: "W trakcie",  style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
@@ -77,7 +83,7 @@ const GridView = ({ project, onEdit, onDelete }) => (
         </DropdownMenu>
       </div>
       <h3 className="font-semibold text-lg text-black mb-2">{project.name}</h3>
-      <p className="text-sm text-gray-500 capitalize mb-4">{project.type.replace(/_/g, ' ')}</p>
+      <p className="text-sm text-gray-500 capitalize mb-4">{TYPE_LABELS[project.type] || project.type.replace(/_/g, ' ')}</p>
       
       <div className="flex justify-between items-center mb-2">
         <span className="text-xs text-gray-500">Postęp</span>
@@ -113,7 +119,7 @@ const ListView = ({ project, onEdit, onDelete }) => {
         </div>
         <div>
           <h3 className="font-semibold text-lg text-black">{project.name}</h3>
-          <p className="text-sm text-gray-500 capitalize">{project.type.replace(/_/g, ' ')}</p>
+          <p className="text-sm text-gray-500 capitalize">{TYPE_LABELS[project.type] || project.type.replace(/_/g, ' ')}</p>
         </div>
       </div>
       <div className="hidden md:flex items-center gap-6">
