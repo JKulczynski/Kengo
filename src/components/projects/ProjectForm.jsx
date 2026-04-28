@@ -103,9 +103,10 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
               type="number"
               inputMode="decimal"
               min="0"
-              value={formData.budget}
-              onChange={e => handleChange('budget', parseFloat(e.target.value) || 0)}
+              value={formData.budget || ''}
               placeholder="25000"
+              onFocus={e => e.target.select()}
+              onChange={e => handleChange('budget', parseFloat(e.target.value) || 0)}
             />
           </div>
 
