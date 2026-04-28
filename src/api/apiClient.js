@@ -1,113 +1,177 @@
-// src/api/apiClient.js
-// Lokalny klient API dla MVP.
-// DEV: mocki (żeby działało bez backendu).
-// PROD: dopóki nie mamy backendu — też jedziemy na mockach (żeby dało się demo pokazać na Vercel).
+import { createClient } from "@supabase/supabase-js";
 
-function makeEntityMock(entityName) {
-  const store = [];
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
+// Parsuje sort string: '-updated_date' → { column: 'updated_date', ascending: false }
+function parseSort(sortBy) {
+  if (!sortBy) return null;
+  const desc = sortBy.startsWith("-");
+  return { column: desc ? sortBy.slice(1) : sortBy, ascending: !desc };
+}
+
+function makeEntity(tableName) {
   return {
-    list: async () => store,
-    get: async (id) => store.find((x) => x.id === id) ?? null,
+    list: async (sortBy) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      let q = supabase.from(tableName).select("*").eq("user_id", user.id);
+      const sort = parseSort(sortBy);
+      if (sort) q = q.order(sort.column, { ascending: sort.ascending });
+
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
+    },
+
+    get: async (id) => {
+      const { data, error } = await supabase
+        .from(tableName)
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
 
     filter: async (query = {}) => {
-      const hasWarrantyFilter =
-        query?.warranty_end_date &&
-        typeof query.warranty_end_date === "object" &&
-        "$ne" in query.warranty_end_date;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
 
-      if (hasWarrantyFilter) {
-        const neValue = query.warranty_end_date.$ne;
-        return store.filter(
-          (x) => x.warranty_end_date !== neValue && x.warranty_end_date != null
-        );
+      let q = supabase.from(tableName).select("*").eq("user_id", user.id);
+
+      for (const [key, value] of Object.entries(query)) {
+        if (value && typeof value === "object" && "$ne" in value) {
+          if (value.$ne === null) {
+            q = q.not(key, "is", null);
+          } else {
+            q = q.neq(key, value.$ne);
+          }
+        } else {
+          q = q.eq(key, value);
+        }
       }
 
-      return store;
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
     },
 
     create: async (data) => {
-      const item = {
-        id: crypto?.randomUUID ? crypto.randomUUID() : `mock-${Date.now()}`,
-        ...data,
-        __mock: true,
-        entityName,
-      };
-      store.push(item);
-      return item;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: created, error } = await supabase
+        .from(tableName)
+        .insert({ ...data, user_id: user.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return created;
     },
 
     update: async (id, data) => {
-      const idx = store.findIndex((x) => x.id === id);
-      if (idx === -1) {
-        const item = { id, ...data, __mock: true, entityName };
-        store.push(item);
-        return item;
-      }
-      store[idx] = { ...store[idx], ...data, __mock: true, entityName };
-      return store[idx];
+      const { data: updated, error } = await supabase
+        .from(tableName)
+        .update(data)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return updated;
     },
 
     delete: async (id) => {
-      const idx = store.findIndex((x) => x.id === id);
-      if (idx !== -1) store.splice(idx, 1);
-      return { ok: true, __mock: true, entityName };
+      const { error } = await supabase
+        .from(tableName)
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
+      return { ok: true };
     },
   };
 }
 
-// Jeśli kiedyś podepniemy backend, wrzucimy np. VITE_API_BASE_URL.
-// Dopóki tego nie ma — produkcja ma działać na mockach, żeby demo było dostępne.
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const api = {
+  entities: {
+    Project: makeEntity("projects"),
+    Document: makeEntity("documents"),
+    ProjectMember: makeEntity("project_members"),
+    Note: makeEntity("notes"),
+  },
 
-// Wymuszenie mocków (opcjonalne) – env z Vercela / lokalnie.
-const forcedMock =
-  String(import.meta.env.VITE_USE_MOCK_API || "").toLowerCase() === "true";
-
-// Logika:
-// - w DEV zawsze mocki
-// - w PROD: mocki, jeśli nie mamy backendu (brak VITE_API_BASE_URL) albo jeśli forcedMock=true
-const useMockApi = import.meta.env.DEV || forcedMock || !apiBaseUrl;
-
-let api;
-
-if (useMockApi) {
-  api = {
-    entities: {
-      Project: makeEntityMock("Project"),
-      Document: makeEntityMock("Document"),
-      ProjectMember: makeEntityMock("ProjectMember"),
-      Note: makeEntityMock("Note"),
+  auth: {
+    me: async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) return null;
+      // Próbuj pobrać profil z tabeli profiles
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+      return profile
+        ? { id: user.id, email: user.email, ...profile }
+        : { id: user.id, email: user.email, full_name: user.email };
     },
 
-    auth: {
-      me: async () => ({ id: "dev-user", email: "dev@local", __mock: true }),
-      login: async () => ({ ok: true, __mock: true }),
-      logout: async () => ({ ok: true, __mock: true }),
+    login: async (email, password) => {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      return data;
     },
 
-    integrations: {
-      Core: {
-        InvokeLLM: async () => ({
-          ok: true,
-          __mock: true,
-          message: "LLM not configured in MVP",
-        }),
-        SendEmail: async () => ({ ok: true, __mock: true }),
-        UploadFile: async () => ({ ok: true, __mock: true }),
-        GenerateImage: async () => ({ ok: true, __mock: true }),
-        ExtractDataFromUploadedFile: async () => ({ ok: true, __mock: true }),
-        CreateFileSignedUrl: async () => ({ ok: true, __mock: true }),
-        UploadPrivateFile: async () => ({ ok: true, __mock: true }),
+    register: async (email, password, fullName) => {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: fullName } },
+      });
+      if (error) throw error;
+      return data;
+    },
+
+    logout: async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      return { ok: true };
+    },
+  },
+
+  integrations: {
+    Core: {
+      InvokeLLM: async () => ({ ok: true, message: "LLM not configured yet" }),
+      SendEmail: async () => ({ ok: true }),
+      UploadFile: async (file) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not authenticated");
+        const path = `${user.id}/${Date.now()}-${file.name}`;
+        const { data, error } = await supabase.storage
+          .from("documents")
+          .upload(path, file);
+        if (error) throw error;
+        const { data: { publicUrl } } = supabase.storage
+          .from("documents")
+          .getPublicUrl(path);
+        return { ok: true, url: publicUrl, path };
       },
+      GenerateImage: async () => ({ ok: true }),
+      ExtractDataFromUploadedFile: async () => ({ ok: true }),
+      CreateFileSignedUrl: async (path) => {
+        const { data, error } = await supabase.storage
+          .from("documents")
+          .createSignedUrl(path, 3600);
+        if (error) throw error;
+        return { url: data.signedUrl };
+      },
+      UploadPrivateFile: async () => ({ ok: true }),
     },
+  },
 
-    __mock: true,
-  };
-} else {
-  // Tu docelowo podpinamy prawdziwy backend (np. własny API).
-  // Na dziś: jeśli ktoś ustawi VITE_API_BASE_URL, to tutaj dopisujemy fetch klienta.
-  throw new Error("Backend mode enabled but client not implemented yet.");
-}
+  supabase,
+};
 
-export { api };
+export { api, supabase };
