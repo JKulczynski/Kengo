@@ -17,7 +17,7 @@ import {
     ChevronRight
 } from "lucide-react";
 import { differenceInDays, parseISO, isValid } from "date-fns";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from "recharts";
 
 import ActiveProjects from "../components/dashboard/ActiveProjects";
 import RecentDocuments from "../components/dashboard/RecentDocuments";
@@ -50,7 +50,7 @@ export default function Dashboard() {
   };
 
   const totalSpent = documents.reduce((sum, doc) => sum + (doc.amount || 0), 0);
-  const activeProjects = projects.filter(p => p.status === 'in_progress').length;
+  const activeProjects = projects.filter(p => p.status !== 'completed' && p.status !== 'on_hold').length;
   const isEmpty = !isLoading && projects.length === 0;
 
   // Compute reminders
@@ -352,6 +352,85 @@ export default function Dashboard() {
                       <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>Przekroczono</span>
                     </div>
                   </div>
+                </div>
+              );
+            })()}
+
+            {/* Wykresy: kategorie + miesięczne */}
+            {documents.length > 0 && (() => {
+              const CATEGORY_LABELS = {
+                materials: "Materiały", labor: "Robocizna", permits: "Pozwolenia",
+                appliances: "AGD", fixtures: "Armatura", tools: "Narzędzia",
+                utilities: "Media", insurance: "Ubezpieczenie", other: "Inne",
+              };
+              const COLORS = ["#6b7f5e","#8fa67a","#b3c99a","#d4e2c4","#a89f7a","#c9bfa0","#7a8fa8","#a0b3c9","#c4d0dc"];
+
+              const categoryData = Object.entries(
+                documents.reduce((acc, doc) => {
+                  if (!doc.amount) return acc;
+                  const key = doc.category || 'other';
+                  acc[key] = (acc[key] || 0) + doc.amount;
+                  return acc;
+                }, {})
+              ).map(([key, value]) => ({ name: CATEGORY_LABELS[key] || key, value: Math.round(value) }))
+               .filter(d => d.value > 0)
+               .sort((a, b) => b.value - a.value);
+
+              const monthlyData = Object.entries(
+                documents.reduce((acc, doc) => {
+                  if (!doc.amount || !doc.date) return acc;
+                  const month = doc.date.slice(0, 7);
+                  acc[month] = (acc[month] || 0) + doc.amount;
+                  return acc;
+                }, {})
+              ).sort(([a], [b]) => a.localeCompare(b))
+               .slice(-6)
+               .map(([month, total]) => ({
+                 name: new Date(month + '-01').toLocaleDateString('pl-PL', { month: 'short', year: '2-digit' }),
+                 Wydatki: Math.round(total),
+               }));
+
+              return (
+                <div className="grid md:grid-cols-2 gap-6 mb-8">
+                  {categoryData.length > 0 && (
+                    <div className="apple-blur rounded-2xl apple-shadow p-6">
+                      <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
+                        Wydatki wg kategorii
+                      </h3>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <PieChart>
+                          <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
+                            {categoryData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                          </Pie>
+                          <Tooltip
+                            contentStyle={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border-md)", borderRadius: "0.75rem", fontSize: 12, fontFamily: "inherit" }}
+                            formatter={(val) => `${val.toLocaleString('pl-PL')} zł`}
+                          />
+                          <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "var(--k-text-muted)" }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+
+                  {monthlyData.length > 0 && (
+                    <div className="apple-blur rounded-2xl apple-shadow p-6">
+                      <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
+                        Wydatki miesięczne
+                      </h3>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={monthlyData} barCategoryGap="40%">
+                          <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--k-text-muted)", fontFamily: "inherit" }} axisLine={false} tickLine={false} />
+                          <YAxis hide />
+                          <Tooltip
+                            contentStyle={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border-md)", borderRadius: "0.75rem", fontSize: 12, fontFamily: "inherit" }}
+                            formatter={(val) => `${val.toLocaleString('pl-PL')} zł`}
+                            cursor={{ fill: "var(--k-bg-hover)" }}
+                          />
+                          <Bar dataKey="Wydatki" radius={[4, 4, 0, 0]} fill="var(--k-accent)" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
                 </div>
               );
             })()}
