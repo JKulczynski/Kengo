@@ -5,7 +5,7 @@ import { ExtractDataFromUploadedFile, UploadFile, InvokeLLM } from "@/api/integr
 import { Button } from "@/components/ui/button";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { toast } from "sonner";
 
@@ -15,6 +15,8 @@ import DocumentPreview from "../components/upload/DocumentPreview";
 
 export default function UploadPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const preselectedProjectId = searchParams.get('project_id');
   const [files, setFiles] = useState([]);
   const [projects, setProjects] = useState([]);
   const [dragActive, setDragActive] = useState(false);
@@ -268,6 +270,7 @@ Extract: vendor name, total amount (number), date (YYYY-MM-DD format), renovatio
             <DocumentPreview
               extractedData={currentPreview}
               projects={projects}
+              preselectedProjectId={preselectedProjectId}
               onSave={handleSaveDocument}
               onCancel={cancelPreview}
               isProcessing={isProcessing}

@@ -391,7 +391,7 @@ export default function ProjectDetailPage() {
             <Card className="apple-blur apple-shadow">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-black">Wydatki projektu</CardTitle>
-                <Link to={createPageUrl("Upload")}>
+                <Link to={`${createPageUrl("Upload")}?project_id=${projectId}`}>
                   <Button size="sm" className="btn-primary">
                     <Plus className="w-4 h-4 mr-1" />
                     Dodaj dokument
@@ -404,7 +404,7 @@ export default function ProjectDetailPage() {
                     <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                     <h3 className="font-medium text-black mb-2">Brak dokumentów</h3>
                     <p className="text-gray-500 mb-4">Dodaj pierwszy dokument do projektu</p>
-                    <Link to={createPageUrl("Upload")}>
+                    <Link to={`${createPageUrl("Upload")}?project_id=${projectId}`}>
                       <Button className="btn-primary">Dodaj dokument</Button>
                     </Link>
                   </div>
@@ -551,7 +551,7 @@ export default function ProjectDetailPage() {
                     <Card className="apple-blur apple-shadow">
                       <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle className="text-black">Zdjęcia ({photos.length})</CardTitle>
-                        <Link to={createPageUrl("Upload")}>
+                        <Link to={`${createPageUrl("Upload")}?project_id=${projectId}`}>
                           <Button size="sm" variant="outline">
                             <Plus className="w-4 h-4 mr-1" />
                             Dodaj zdjęcie
@@ -589,7 +589,7 @@ export default function ProjectDetailPage() {
                     <Card className="apple-blur apple-shadow">
                       <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle className="text-black">Pliki ({files.length})</CardTitle>
-                        <Link to={createPageUrl("Upload")}>
+                        <Link to={`${createPageUrl("Upload")}?project_id=${projectId}`}>
                           <Button size="sm" variant="outline">
                             <Plus className="w-4 h-4 mr-1" />
                             Dodaj plik
@@ -651,9 +651,9 @@ export default function ProjectDetailPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-black truncate">
-                          {project.created_by === currentUser?.email
-                            ? `Ty (${currentUser.email})`
-                            : project.created_by || 'Nieznany'}
+                          {!project.created_by || project.created_by === currentUser?.email
+                            ? `Ty (${currentUser?.email || ''})`
+                            : project.created_by}
                         </h4>
                         <p className="text-sm text-gray-500">Właściciel projektu</p>
                       </div>

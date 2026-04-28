@@ -80,12 +80,13 @@ const PHASE_LABELS = {
   final_touches: "Wykończenie",
 };
 
-export default function DocumentPreview({ 
-  extractedData, 
+export default function DocumentPreview({
+  extractedData,
   projects,
+  preselectedProjectId,
   onSave,
   onCancel,
-  isProcessing 
+  isProcessing
 }) {
   const [editedData, setEditedData] = useState({
     title: extractedData.title || '',
@@ -94,9 +95,9 @@ export default function DocumentPreview({
     vendor: extractedData.vendor || '',
     amount: extractedData.amount || '',
     date: extractedData.date || format(new Date(), 'yyyy-MM-dd'),
-    warranty_end_date: extractedData.warranty_end_date || '', // New warranty_end_date field
+    warranty_end_date: extractedData.warranty_end_date || '',
     phase: extractedData.phase || 'design',
-    project_id: '',
+    project_id: preselectedProjectId || '',
     tags: extractedData.tags || [],
     notes: extractedData.notes || '',
     file_url: extractedData.file_url,
