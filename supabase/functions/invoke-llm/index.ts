@@ -5,6 +5,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function toBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunk = 8192;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -17,44 +27,33 @@ Deno.serve(async (req) => {
       apiKey: Deno.env.get("ANTHROPIC_API_KEY"),
     });
 
-    // Buduj content — tekst + ewentualne obrazy
-    const content: Anthropic.MessageParam["content"] = [];
+    const content: any[] = [];
 
     if (file_urls && file_urls.length > 0) {
       for (const url of file_urls) {
-        // Pobierz plik i zakoduj jako base64
         const response = await fetch(url);
         const buffer = await response.arrayBuffer();
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-        const contentType = response.headers.get("content-type") || "image/jpeg";
+        const base64 = toBase64(buffer);
+        const rawContentType = response.headers.get("content-type") || "image/jpeg";
+        const contentType = rawContentType.split(";")[0].trim();
 
         if (contentType.includes("pdf")) {
-          content.push({
-            type: "document",
-            source: { type: "base64", media_type: "application/pdf", data: base64 },
-          } as any);
+          content.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } });
         } else {
-          content.push({
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: contentType as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
-              data: base64,
-            },
-          });
+          const mediaType = contentType.startsWith("image/") ? contentType : "image/jpeg";
+          content.push({ type: "image", source: { type: "base64", media_type: mediaType, data: base64 } });
         }
       }
     }
 
     content.push({ type: "text", text: prompt });
 
-    // Jeśli oczekujemy JSON — dodaj instrukcję
     const systemPrompt = response_json_schema
-      ? "Respond ONLY with valid JSON matching the provided schema. No markdown, no explanation."
+      ? "Respond ONLY with valid JSON matching the schema. No markdown, no explanation."
       : "You are Kengo, a helpful renovation assistant. Respond in Polish.";
 
     const message = await client.messages.create({
-      model: "claude-haiku-4-5",
+      model: "claude-opus-4-7",
       max_tokens: 1024,
       system: systemPrompt,
       messages: [{ role: "user", content }],
@@ -62,17 +61,14 @@ Deno.serve(async (req) => {
 
     const responseText = message.content[0].type === "text" ? message.content[0].text : "";
 
-    // Jeśli JSON schema — parsuj odpowiedź
     if (response_json_schema) {
       try {
-        const parsed = JSON.parse(responseText);
-        return new Response(JSON.stringify(parsed), {
+        return new Response(JSON.stringify(JSON.parse(responseText)), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       } catch {
-        return new Response(JSON.stringify({ error: "Invalid JSON from model", raw: responseText }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        return new Response(JSON.stringify({ error: "Invalid JSON", raw: responseText }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
     }
@@ -82,8 +78,7 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

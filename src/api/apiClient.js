@@ -154,10 +154,32 @@ const api = {
       UploadFile: async ({ file }) => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
+
+        const compressedFile = await new Promise((resolve) => {
+          if (file.type === "application/pdf") { resolve(file); return; }
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            const MAX = 1600;
+            let { width, height } = img;
+            if (width > MAX || height > MAX) {
+              if (width > height) { height = Math.round((height / width) * MAX); width = MAX; }
+              else { width = Math.round((width / height) * MAX); height = MAX; }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width; canvas.height = height;
+            canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+            canvas.toBlob((blob) => resolve(new File([blob], file.name, { type: "image/jpeg" })), "image/jpeg", 0.85);
+          };
+          img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+          img.src = url;
+        });
+
         const path = `${user.id}/${Date.now()}-${file.name}`;
         const { error } = await supabase.storage
           .from("documents")
-          .upload(path, file);
+          .upload(path, compressedFile);
         if (error) throw error;
         const { data: { publicUrl } } = supabase.storage
           .from("documents")
