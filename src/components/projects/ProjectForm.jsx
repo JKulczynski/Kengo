@@ -121,18 +121,6 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
             </div>
           </div>
 
-          {project && (
-            <div>
-              <Label>Postęp: {formData.progress_percentage}%</Label>
-              <Slider
-                value={[formData.progress_percentage]}
-                onValueChange={([value]) => handleChange('progress_percentage', value)}
-                max={100}
-                step={1}
-              />
-            </div>
-          )}
-
           <DialogFooter className="pt-4">
             <DialogClose asChild>
               <Button type="button" variant="outline" className="border-gray-200 dark:border-gray-700">Anuluj</Button>
