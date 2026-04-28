@@ -51,6 +51,12 @@ const typeIcons = {
   other: FileText
 };
 
+const TYPE_LABELS = {
+  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
+  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
+  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
+};
+
 const categoryLabels = {
   materials:  "Materiały",
   labor:      "Robocizna",
@@ -196,8 +202,8 @@ export default function ProjectDetailPage() {
             <h1 className="text-2xl md:text-3xl font-semibold text-black tracking-tight">
               {project.name}
             </h1>
-            <p className="text-gray-500 mt-1 capitalize">
-              {project.type?.replace(/_/g, ' ')} • {project.current_phase?.replace(/_/g, ' ') || 'Planning'}
+            <p className="text-gray-500 mt-1">
+              {TYPE_LABELS[project.type] || project.type?.replace(/_/g, ' ')}
             </p>
           </div>
           <Badge style={statusConfig[project.status]?.style} className="border-0 font-medium hidden sm:block">
@@ -247,7 +253,9 @@ export default function ProjectDetailPage() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Zespół</p>
-                  <p className="font-medium text-black">{members.length + 1} osób</p>
+                  <p className="font-medium text-black">
+                    {(() => { const n = members.length + 1; return n === 1 ? '1 osoba' : n < 5 ? `${n} osoby` : `${n} osób`; })()}
+                  </p>
                 </div>
               </div>
             </CardContent>
