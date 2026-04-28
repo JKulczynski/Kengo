@@ -34,6 +34,8 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { toast } from 'sonner';
+import ProjectForm from '@/components/projects/ProjectForm';
+import DeleteConfirmationDialog from '@/components/projects/DeleteConfirmationDialog';
 
 const statusConfig = {
   planning:    { label: "Planowanie", style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
@@ -79,6 +81,8 @@ export default function ProjectDetailPage() {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [documents, setDocuments] = useState([]);
   const [members, setMembers] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -156,6 +160,33 @@ export default function ProjectDetailPage() {
     }
   };
 
+  const handleEditSubmit = async (projectData) => {
+    const clean = {
+      ...projectData,
+      start_date: projectData.start_date || null,
+      target_completion: projectData.target_completion || null,
+      budget: projectData.budget || null,
+    };
+    try {
+      await Project.update(projectId, clean);
+      setShowEditForm(false);
+      await loadProjectData();
+      toast.success('Projekt zaktualizowany');
+    } catch (error) {
+      toast.error(`Błąd: ${error.message}`);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await Project.delete(projectId);
+      toast.success('Projekt usunięty');
+      navigate(createPageUrl('Projects'));
+    } catch (error) {
+      toast.error('Coś poszło nie tak. Spróbuj ponownie.');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -193,7 +224,7 @@ export default function ProjectDetailPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(createPageUrl("Dashboard"))}
+            onClick={() => navigate(createPageUrl("Projects"))}
             className="hover:bg-gray-100 text-black"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -206,9 +237,17 @@ export default function ProjectDetailPage() {
               {TYPE_LABELS[project.type] || project.type?.replace(/_/g, ' ')}
             </p>
           </div>
-          <Badge style={statusConfig[project.status]?.style} className="border-0 font-medium hidden sm:block">
-            {statusConfig[project.status]?.label}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge style={statusConfig[project.status]?.style} className="border-0 font-medium hidden sm:block">
+              {statusConfig[project.status]?.label}
+            </Badge>
+            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full text-black" onClick={() => setShowEditForm(true)}>
+              <Edit className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full" style={{ color: "var(--k-err-color)" }} onClick={() => setShowDeleteConfirm(true)}>
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Project Overview */}
@@ -602,6 +641,19 @@ export default function ProjectDetailPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <ProjectForm
+        isOpen={showEditForm}
+        onClose={() => setShowEditForm(false)}
+        onSubmit={handleEditSubmit}
+        project={project}
+      />
+      <DeleteConfirmationDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConfirm}
+        projectName={project?.name}
+      />
     </div>
   );
 }
