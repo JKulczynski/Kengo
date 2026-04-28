@@ -221,7 +221,7 @@ Extract: vendor name, total amount (number), date (YYYY-MM-DD format), renovatio
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(createPageUrl("Dashboard"))}
+            onClick={() => preselectedProjectId ? navigate(`/project/${preselectedProjectId}`) : navigate(createPageUrl("Projects"))}
             className="hover:bg-gray-100"
           >
             <ArrowLeft className="w-4 h-4" />

@@ -136,7 +136,7 @@ export default function ProjectDetailPage() {
     if (!newTaskText.trim()) return;
     setAddingTask(true);
     try {
-      await Note.create({ project_id: projectId, content: newTaskText.trim(), note_type: 'text' });
+      await Note.create({ project_id: projectId, content: newTaskText.trim() });
       setNewTaskText("");
       await loadProjectData();
     } catch (e) {
@@ -614,7 +614,7 @@ export default function ProjectDetailPage() {
                                   <div className="flex-1 min-w-0">
                                     <p className="font-medium text-black text-sm truncate">{doc.title}</p>
                                     <p className="text-xs text-gray-500 mt-0.5">
-                                      {doc.type} • {doc.date ? format(new Date(doc.date), 'dd.MM.yyyy') : '—'}
+                                      {categoryLabels[doc.type] || doc.type} • {doc.date ? format(new Date(doc.date), 'dd.MM.yyyy') : '—'}
                                     </p>
                                   </div>
                                   {doc.file_url && (
