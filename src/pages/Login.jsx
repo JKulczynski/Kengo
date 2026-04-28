@@ -139,11 +139,10 @@ export default function Login({ onLogin }) {
                   Email
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="jan@example.com"
-                  required
                   className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
                   style={{
                     backgroundColor: "var(--k-bg)",
