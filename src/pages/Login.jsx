@@ -36,7 +36,12 @@ export default function Login({ onLogin }) {
         setRegistered(true);
       }
     } catch (err) {
-      setError(err.message || "Błąd logowania");
+      const msg = err.message || "";
+      if (msg.includes("Invalid login credentials")) setError("Nieprawidłowy email lub hasło.");
+      else if (msg.includes("Email not confirmed")) setError("Potwierdź adres email przed logowaniem.");
+      else if (msg.includes("User already registered")) setError("Konto z tym emailem już istnieje.");
+      else if (msg.includes("Password should be")) setError("Hasło musi mieć co najmniej 6 znaków.");
+      else setError("Wystąpił błąd. Spróbuj ponownie.");
     } finally {
       setLoading(false);
     }
