@@ -90,6 +90,9 @@ export default function ProjectDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [newTaskText, setNewTaskText] = useState("");
   const [addingTask, setAddingTask] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("editor");
+  const [inviting, setInviting] = useState(false);
 
   const loadProjectData = useCallback(async () => {
     setIsLoading(true);
@@ -157,6 +160,42 @@ export default function ProjectDetailPage() {
       setTasks(prev => prev.filter(t => t.id !== taskId));
     } catch (e) {
       toast.error("Nie udało się usunąć zadania.");
+    }
+  };
+
+  const handleInviteMember = async () => {
+    if (!inviteEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail)) {
+      toast.error("Podaj prawidłowy adres email.");
+      return;
+    }
+    if (inviteEmail === currentUser?.email) {
+      toast.error("Nie możesz zaprosić samego siebie.");
+      return;
+    }
+    setInviting(true);
+    try {
+      await ProjectMember.create({
+        project_id: projectId,
+        user_email: inviteEmail.trim().toLowerCase(),
+        role: inviteRole,
+        invited_by: currentUser?.email,
+      });
+      setInviteEmail("");
+      await loadProjectData();
+      toast.success(`Zaproszono ${inviteEmail}`);
+    } catch (e) {
+      toast.error("Nie udało się dodać osoby.");
+    }
+    setInviting(false);
+  };
+
+  const handleRemoveMember = async (memberId, memberEmail) => {
+    try {
+      await ProjectMember.delete(memberId);
+      setMembers(prev => prev.filter(m => m.id !== memberId));
+      toast.success(`Usunięto ${memberEmail}`);
+    } catch (e) {
+      toast.error("Nie udało się usunąć osoby.");
     }
   };
 
@@ -598,46 +637,92 @@ export default function ProjectDetailPage() {
 
           {/* === ZESPÓŁ === */}
           <TabsContent value="team">
-            <Card className="apple-blur apple-shadow">
-              <CardHeader>
-                <CardTitle className="text-black">Członkowie zespołu</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 rounded-lg bg-white border">
-                    <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center">
-                      <Crown className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-black">
-                        {project.created_by === currentUser?.email ? 'Ty' : project.created_by}
-                      </h4>
-                      <p className="text-sm text-gray-500">Właściciel projektu</p>
-                    </div>
-                    <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }}>Właściciel</Badge>
-                  </div>
-                  {members.map((member) => {
-                    const RoleIcon = roleIcons[member.role];
-                    return (
-                      <div key={member.id} className="flex items-center gap-4 p-4 rounded-lg bg-white border">
-                        <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center">
-                          <RoleIcon className="w-5 h-5" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-black">
-                            {member.user_email === currentUser?.email ? 'Ty' : member.user_email}
-                          </h4>
-                          <p className="text-sm text-gray-500">Zaproszony przez {member.invited_by}</p>
-                        </div>
-                        <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }}>
-                          {member.role === 'editor' ? 'Edytor' : member.role === 'viewer' ? 'Obserwator' : member.role}
-                        </Badge>
+            <div className="space-y-4">
+              <Card className="apple-blur apple-shadow">
+                <CardHeader>
+                  <CardTitle className="text-black">Członkowie zespołu</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {/* Owner */}
+                    <div className="flex items-center gap-4 p-4 rounded-lg bg-white border">
+                      <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Crown className="w-5 h-5" />
                       </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-black truncate">
+                          {project.created_by === currentUser?.email
+                            ? `Ty (${currentUser.email})`
+                            : project.created_by || 'Nieznany'}
+                        </h4>
+                        <p className="text-sm text-gray-500">Właściciel projektu</p>
+                      </div>
+                      <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0 flex-shrink-0">Właściciel</Badge>
+                    </div>
+
+                    {/* Members */}
+                    {members.map((member) => {
+                      const RoleIcon = roleIcons[member.role] || Eye;
+                      return (
+                        <div key={member.id} className="flex items-center gap-4 p-4 rounded-lg bg-white border">
+                          <div className="icon-box w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <RoleIcon className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-black truncate">
+                              {member.user_email === currentUser?.email ? `Ty (${member.user_email})` : member.user_email}
+                            </h4>
+                            <p className="text-sm text-gray-500">Zaproszony przez {member.invited_by}</p>
+                          </div>
+                          <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0 flex-shrink-0">
+                            {member.role === 'editor' ? 'Edytor' : member.role === 'viewer' ? 'Obserwator' : member.role}
+                          </Badge>
+                          <button
+                            onClick={() => handleRemoveMember(member.id, member.user_email)}
+                            className="flex-shrink-0 text-gray-300 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Invite form */}
+              <Card className="apple-blur apple-shadow">
+                <CardHeader>
+                  <CardTitle className="text-black text-base">Zaproś osobę</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-2 flex-wrap">
+                    <Input
+                      type="text"
+                      placeholder="adres@email.com"
+                      value={inviteEmail}
+                      onChange={e => setInviteEmail(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleInviteMember()}
+                      className="flex-1 min-w-[180px]"
+                    />
+                    <select
+                      value={inviteRole}
+                      onChange={e => setInviteRole(e.target.value)}
+                      className="px-3 py-2 rounded-lg border text-sm"
+                      style={{ borderColor: "var(--k-border-md)", backgroundColor: "var(--k-bg)", color: "var(--k-text)" }}
+                    >
+                      <option value="editor">Edytor</option>
+                      <option value="viewer">Obserwator</option>
+                    </select>
+                    <Button onClick={handleInviteMember} disabled={inviting || !inviteEmail.trim()} className="btn-primary">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Zaproś
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-2">Edytor może edytować projekt. Obserwator tylko przegląda.</p>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
