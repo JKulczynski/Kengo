@@ -363,7 +363,7 @@ export default function Dashboard() {
                 appliances: "AGD", fixtures: "Armatura", tools: "Narzędzia",
                 utilities: "Media", insurance: "Ubezpieczenie", other: "Inne",
               };
-              const COLORS = ["#6b7f5e","#8fa67a","#b3c99a","#d4e2c4","#a89f7a","#c9bfa0","#7a8fa8","#a0b3c9","#c4d0dc"];
+              const PIE_OPACITIES = [1, 0.82, 0.66, 0.52, 0.40, 0.30, 0.22, 0.16, 0.10];
 
               const categoryData = Object.entries(
                 documents.reduce((acc, doc) => {
@@ -400,7 +400,7 @@ export default function Dashboard() {
                       <ResponsiveContainer width="100%" height={200}>
                         <PieChart>
                           <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
-                            {categoryData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                            {categoryData.map((_, i) => <Cell key={i} fill="var(--k-accent)" fillOpacity={PIE_OPACITIES[i] ?? 0.1} />)}
                           </Pie>
                           <Tooltip
                             contentStyle={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border-md)", borderRadius: "0.75rem", fontSize: 12, fontFamily: "inherit" }}
