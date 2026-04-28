@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ProjectMember } from '@/api/entities';
 import { Project } from '@/api/entities';
 import { User } from '@/api/entities';
-import { SendEmail } from '@/api/integrations';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -141,50 +140,48 @@ export default function TeamPage() {
   };
 
   const sendInvitation = async () => {
-    if (!inviteEmail.trim() || !inviteProject) return;
-    
+    if (!inviteEmail.trim()) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail)) {
+      toast.error("Podaj prawidłowy adres email.");
+      return;
+    }
+    if (inviteEmail === currentUser?.email) {
+      toast.error("Nie możesz zaprosić samego siebie.");
+      return;
+    }
+
     setIsInviting(true);
     try {
-      // Sprawdź czy użytkownik już jest w tym projekcie
-      const existingMember = members.find(m => 
-        m.user_email === inviteEmail && 
-        m.project_id === inviteProject
-      );
-      
-      if (existingMember) {
-        toast.error("Ten użytkownik już jest członkiem tego projektu.");
-        return;
+      const projectsToInvite = inviteProject === 'all' || !inviteProject
+        ? projects
+        : [projects.find(p => p.id === inviteProject)].filter(Boolean);
+
+      let added = 0;
+      for (const project of projectsToInvite) {
+        const already = members.find(m => m.user_email === inviteEmail && m.project_id === project.id);
+        if (already) continue;
+        await ProjectMember.create({
+          project_id: project.id,
+          user_email: inviteEmail.trim().toLowerCase(),
+          role: inviteRole,
+          invited_by: currentUser?.email,
+        });
+        added++;
       }
 
-      const project = projects.find(p => p.id === inviteProject);
-      
-      await ProjectMember.create({
-        project_id: inviteProject,
-        user_email: inviteEmail,
-        role: inviteRole,
-        invited_by: currentUser.email,
-        status: 'pending',
-        permissions: getPermissionsForRole(inviteRole)
-      });
-
-      // Wyślij email z zaproszeniem
-      await SendEmail({
-        to: inviteEmail,
-        subject: `Zaproszenie do projektu: ${project.name}`,
-        body: `Witaj!\n\n${currentUser.full_name} zaprosił Cię do współpracy nad projektem remontowym "${project.name}" w aplikacji Kengo.\n\nTwoja rola: ${getRoleDisplayName(inviteRole)}\n\nZaloguj się do aplikacji Kengo, aby dołączyć do projektu.\n\nPozdrawiam,\nZespół Kengo`
-      });
-
-      // Reset form
       setInviteEmail('');
-      setInviteRole('viewer');
+      setInviteRole('editor');
       setInviteProject('');
 
-      toast.success("Zaproszenie zostało wysłane.");
+      if (added === 0) {
+        toast.warning("Ta osoba jest już we wszystkich wybranych projektach.");
+      } else {
+        toast.success(`Dodano ${inviteEmail} do ${added === 1 ? '1 projektu' : `${added} projektów`}.`);
+      }
       await loadData();
-
     } catch (error) {
-      console.error("Error sending invitation:", error);
-      toast.error("Wystąpił błąd podczas wysyłania zaproszenia.");
+      console.error("Error inviting member:", error);
+      toast.error("Nie udało się dodać osoby.");
     }
     setIsInviting(false);
   };
@@ -366,7 +363,7 @@ export default function TeamPage() {
                             
                             <div>
                               <h3 className="font-semibold text-black">
-                                {member.user_email === currentUser?.email ? 'You' : member.user_email}
+                                {member.user_email === currentUser?.email ? 'Ty' : member.user_email}
                               </h3>
                               <p className="text-sm text-gray-500">
                                 {getProjectName(member.project_id)}
@@ -461,12 +458,13 @@ export default function TeamPage() {
                 </div>
 
                 <div>
-                  <Label>Projekt</Label>
+                  <Label>Projekt <span className="text-gray-400 font-normal">(opcjonalnie)</span></Label>
                   <Select value={inviteProject} onValueChange={setInviteProject}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Wybierz projekt" />
+                      <SelectValue placeholder="Wszystkie projekty" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="all">Wszystkie projekty</SelectItem>
                       {projects.map(project => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.name}
@@ -483,16 +481,15 @@ export default function TeamPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="viewer">Przeglądający – może przeglądać projekty i dokumenty</SelectItem>
                       <SelectItem value="editor">Edytor – może edytować projekty i dokumenty</SelectItem>
-                      <SelectItem value="owner">Właściciel – pełna kontrola nad projektem</SelectItem>
+                      <SelectItem value="viewer">Przeglądający – może tylko przeglądać</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <Button 
+                <Button
                   onClick={sendInvitation}
-                  disabled={isInviting || !inviteEmail.trim() || !inviteProject}
+                  disabled={isInviting || !inviteEmail.trim()}
                   className="btn-primary w-full"
                 >
                   {isInviting ? (
