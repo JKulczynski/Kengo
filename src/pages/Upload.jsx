@@ -104,7 +104,32 @@ export default function UploadPage() {
       const { file_url } = await UploadFile({ file });
       
       const aiResult = await InvokeLLM({
-        prompt: `Analyze this document and extract key information. Determine if it's an invoice, receipt, contract, permit, or other document type. Extract vendor name, amount, date, and any relevant renovation-related details. Also suggest which renovation phase this might relate to.`,
+        prompt: `Analyze this renovation document and extract all key information in Polish.
+
+TYPE - choose exactly one:
+- "invoice" = faktura VAT
+- "receipt" = paragon fiskalny
+- "contract" = umowa z wykonawcą
+- "permit" = pozwolenie na budowę/remont
+- "blueprint" = projekt techniczny, rysunek
+- "photo" = zdjęcie postępu prac
+- "warranty" = karta gwarancyjna
+- "manual" = instrukcja obsługi
+- "estimate" = kosztorys, wycena
+- "other" = tylko jeśli żadne powyższe nie pasuje
+
+CATEGORY - choose exactly one based on what was purchased:
+- "materials" = farby, płytki, drewno, materiały budowlane
+- "labor" = robocizna, usługi wykonawcy
+- "permits" = opłaty urzędowe, pozwolenia
+- "appliances" = AGD, sprzęt elektroniczny
+- "fixtures" = armatura, baterie, kabiny, wanny
+- "tools" = narzędzia
+- "utilities" = media, prąd, woda, gaz
+- "insurance" = ubezpieczenie
+- "other" = tylko jeśli żadne powyższe nie pasuje
+
+Extract: vendor name, total amount (number), date (YYYY-MM-DD format), renovation phase, relevant tags, and a brief note in Polish.`,
         file_urls: [file_url],
         response_json_schema: {
           type: "object",
