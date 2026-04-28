@@ -18,7 +18,7 @@ function makeEntity(tableName) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      let q = supabase.from(tableName).select("*").eq("user_id", user.id);
+      let q = supabase.from(tableName).select("*");
       const sort = parseSort(sortBy);
       if (sort) q = q.order(sort.column, { ascending: sort.ascending });
 
@@ -41,7 +41,7 @@ function makeEntity(tableName) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      let q = supabase.from(tableName).select("*").eq("user_id", user.id);
+      let q = supabase.from(tableName).select("*");
 
       for (const [key, value] of Object.entries(query)) {
         if (value && typeof value === "object" && "$ne" in value) {
