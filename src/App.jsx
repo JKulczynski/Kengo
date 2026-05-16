@@ -1,13 +1,16 @@
 import "./App.css";
 import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Pages from "@/pages/index.jsx";
 import Login from "@/pages/Login.jsx";
+import PrivacyPolicy from "@/pages/PrivacyPolicy.jsx";
+import TermsOfService from "@/pages/TermsOfService.jsx";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { supabase } from "@/api/apiClient";
 
-function App() {
-  const [session, setSession] = useState(undefined); // undefined = loading
+function AuthenticatedApp() {
+  const [session, setSession] = useState(undefined);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -53,6 +56,18 @@ function App() {
       <Toaster />
       <SonnerToaster richColors position="top-right" />
     </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/*" element={<AuthenticatedApp />} />
+      </Routes>
+    </Router>
   );
 }
 

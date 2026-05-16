@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import Layout from "./Layout.jsx";
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
 // Code splitting — każda strona ładuje się osobno
 const Dashboard    = React.lazy(() => import('./Dashboard'));
@@ -56,9 +56,5 @@ function PagesContent() {
 }
 
 export default function Pages() {
-  return (
-    <Router>
-      <PagesContent />
-    </Router>
-  );
+  return <PagesContent />;
 }
