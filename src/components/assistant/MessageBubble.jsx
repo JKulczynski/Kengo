@@ -145,7 +145,7 @@ export default function MessageBubble({ message }) {
                                         );
                                     },
                                     a: ({ children, ...props }) => (
-                                        <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: "var(--k-accent)" }}>{children}</a>
+                                        <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: "var(--k-accent-dark)" }}>{children}</a>
                                     ),
                                     p: ({ children }) => <p className="my-1 leading-relaxed">{children}</p>,
                                     ul: ({ children }) => <ul className="my-1 ml-4 list-disc">{children}</ul>,

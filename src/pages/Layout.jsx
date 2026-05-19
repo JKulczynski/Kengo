@@ -338,7 +338,7 @@ export default function Layout({ children }) {
               >
                 <Palette className="w-3.5 h-3.5" />
                 <span>Motyw:</span>
-                <span style={{ color: "var(--k-accent)", fontWeight: 600 }}>
+                <span style={{ color: "var(--k-accent-dark)", fontWeight: 600 }}>
                   {THEMES.find(t => t.id === activeTheme)?.label ?? "Washi"}
                 </span>
               </button>
@@ -600,7 +600,7 @@ export default function Layout({ children }) {
             >
               <Camera className="w-6 h-6" style={{ color: "var(--k-accent-text)", strokeWidth: 2 }} />
             </div>
-            <span className="text-xs mt-1 font-medium" style={{ color: "var(--k-accent)" }}>Skanuj</span>
+            <span className="text-xs mt-1 font-medium" style={{ color: "var(--k-accent-dark)" }}>Skanuj</span>
           </Link>
 
           {/* Asystent */}

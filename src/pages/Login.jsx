@@ -102,7 +102,7 @@ export default function Login({ onLogin }) {
             </p>
             <button
               className="mt-6 text-sm font-semibold"
-              style={{ color: "var(--k-accent)" }}
+              style={{ color: "var(--k-accent-dark)" }}
               onClick={() => { setMode("login"); setRegistered(false); }}
             >
               Przejdź do logowania
@@ -225,7 +225,7 @@ export default function Login({ onLogin }) {
               {mode === "login" ? "Nie masz konta?" : "Masz już konto?"}{" "}
               <button
                 className="font-semibold"
-                style={{ color: "var(--k-accent)" }}
+                style={{ color: "var(--k-accent-dark)" }}
                 onClick={() =>
                   setMode(mode === "login" ? "register" : "login")
                 }

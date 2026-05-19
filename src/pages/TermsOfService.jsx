@@ -4,7 +4,7 @@ export default function TermsOfService() {
       <div className="max-w-2xl mx-auto px-6 py-16">
 
         <div className="mb-12">
-          <p className="text-sm font-medium tracking-widest uppercase mb-4" style={{ color: "var(--k-accent)" }}>
+          <p className="text-sm font-medium tracking-widest uppercase mb-4" style={{ color: "var(--k-accent-dark)" }}>
             Kengo
           </p>
           <h1 className="text-3xl font-light mb-2" style={{ color: "var(--k-text)" }}>
@@ -116,7 +116,7 @@ export default function TermsOfService() {
         </div>
 
         <div className="mt-16 pt-8 border-t" style={{ borderColor: "var(--k-border)" }}>
-          <a href="/" className="text-sm" style={{ color: "var(--k-accent)" }}>
+          <a href="/" className="text-sm" style={{ color: "var(--k-accent-dark)" }}>
             Wróc do aplikacji
           </a>
         </div>
