@@ -22,7 +22,7 @@ input:-webkit-autofill:focus {
 :root {
   /* Ikony — monochromatyczne, zgodne z motywem */
   --k-icon-bg:    rgba(136, 144, 120, 0.13);
-  --k-icon-color: #707C74;
+  --k-icon-color: #5C6860;
   /* Ikony semantyczne (status) */
   --k-ok-bg:      rgba(112, 124, 116, 0.12);
   --k-ok-color:   #4a6350;
@@ -40,8 +40,8 @@ input:-webkit-autofill:focus {
 
   /* Tekst */
   --k-text:         #333333;          /* Sumi — tusz kaligraficzny */
-  --k-text-muted:   #707C74;          /* Rikyū-nezumi — szarość mistrza herbaty */
-  --k-text-subtle:  #A8B0A4;
+  --k-text-muted:   #5C6860;          /* Rikyū-nezumi — ciemniejszy dla WCAG AA 4.5:1 */
+  --k-text-subtle:  #666E68;          /* subtelny ale czytelny — WCAG AA 4.5:1 */
 
   /* Akcent — kolor mchu Koke */
   --k-accent:       #889078;          /* Koke — mech */
@@ -106,8 +106,8 @@ input:-webkit-autofill:focus {
   --k-bg-active:    rgba(150, 114, 73, 0.10);
 
   --k-text:         #2D2926;          /* Sumi-e — głęboki brąz/grafit */
-  --k-text-muted:   #4A443F;          /* Ciepły ciemny szary */
-  --k-text-subtle:  #7F776F;          /* Wyciszony, ciepły szary */
+  --k-text-muted:   #4A443F;          /* Ciepły ciemny szary — WCAG AA OK */
+  --k-text-subtle:  #6B6460;          /* Wyciszony, ciepły — WCAG AA 4.5:1 */
 
   --k-accent:       #967249;          /* Kurumi — orzech japoński */
   --k-accent-light: rgba(150, 114, 73, 0.12);
@@ -150,8 +150,8 @@ input:-webkit-autofill:focus {
   --k-bg-active:    rgba(215, 208, 183, 0.22);  /* Uguisu tint */
 
   --k-text:         #2E3A46;          /* Ciemny granat */
-  --k-text-muted:   #4B5E70;          /* Kachi-iro — kolor zwycięstwa */
-  --k-text-subtle:  #8A9EAE;
+  --k-text-muted:   #4B5E70;          /* Kachi-iro — WCAG AA OK */
+  --k-text-subtle:  #546474;          /* Ciemniejszy granat — WCAG AA 4.5:1 */
 
   --k-accent:       #4B5E70;          /* Kachi-iro — jako CTA */
   --k-accent-light: rgba(215, 208, 183, 0.28);  /* Uguisu jako bg-active */
@@ -193,8 +193,8 @@ input:-webkit-autofill:focus {
   --k-bg-active:    #E4F2E6;
 
   --k-text:         #111E13;
-  --k-text-muted:   #527A5C;
-  --k-text-subtle:  #96BB9E;
+  --k-text-muted:   #3D6048;          /* ciemniejszy bambus — WCAG AA 4.5:1 */
+  --k-text-subtle:  #4A6A54;          /* subtelna zieleń — WCAG AA 4.5:1 */
 
   --k-accent:       #2A6B3E;
   --k-accent-light: #E4F2E6;

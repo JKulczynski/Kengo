@@ -180,9 +180,9 @@ export default function Layout({ children }) {
                 <Hammer className="w-4 h-4" style={{ color: "var(--k-accent-text)", strokeWidth: 2 }} />
               </div>
               <div>
-                <h2 className="font-semibold text-base" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
+                <p className="font-semibold text-base" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
                   Kengo
-                </h2>
+                </p>
                 <p className="text-xs font-normal" style={{ color: "var(--k-text-subtle)" }}>
                   Asystent remontu
                 </p>
@@ -304,9 +304,9 @@ export default function Layout({ children }) {
                   >
                     <X className="w-3 h-3" />
                   </button>
-                  <h4 className="font-semibold text-sm" style={{ color: "var(--k-accent-dark)" }}>
+                  <p className="font-semibold text-sm" style={{ color: "var(--k-accent-dark)" }}>
                     Wersja Beta
-                  </h4>
+                  </p>
                   <p className="text-xs mt-1 mb-3" style={{ color: "var(--k-accent-dark)", opacity: 0.75 }}>
                     Twoja opinia kształtuje Kengo.
                   </p>
@@ -428,9 +428,9 @@ export default function Layout({ children }) {
                 >
                   <Hammer className="w-3.5 h-3.5" style={{ color: "var(--k-accent-text)", strokeWidth: 2.5 }} />
                 </div>
-                <h1 className="text-base font-semibold" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
+                <p className="text-base font-semibold" style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}>
                   Kengo
-                </h1>
+                </p>
               </div>
 
               {/* Szukaj — prawa strona */}

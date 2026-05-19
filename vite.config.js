@@ -43,6 +43,9 @@ export default defineConfig({
     alias: { '@': path.resolve(__dirname, './src') },
     extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', '.json'],
   },
+  build: {
+    sourcemap: true,
+  },
   optimizeDeps: {
     esbuildOptions: { loader: { '.js': 'jsx' } },
   },

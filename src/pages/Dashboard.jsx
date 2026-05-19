@@ -190,7 +190,7 @@ export default function Dashboard() {
                   <div className="icon-box w-10 h-10 rounded-xl flex items-center justify-center mb-4">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="font-semibold mb-2" style={{ color: "var(--k-text)" }}>{title}</h3>
+                  <h2 className="font-semibold mb-2 text-base" style={{ color: "var(--k-text)" }}>{title}</h2>
                   <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>{desc}</p>
                 </div>
               ))}
@@ -303,7 +303,7 @@ export default function Dashboard() {
 
               return (
                 <div className="apple-blur rounded-2xl apple-shadow p-6 mb-8">
-                  <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
+                  <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                     Budżet projektów
                   </h3>
                   <ResponsiveContainer width="100%" height={160}>
@@ -394,7 +394,7 @@ export default function Dashboard() {
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
                   {categoryData.length > 0 && (
                     <div className="apple-blur rounded-2xl apple-shadow p-6">
-                      <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
+                      <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                         Wydatki wg kategorii
                       </h3>
                       <ResponsiveContainer width="100%" height={200}>
@@ -414,7 +414,7 @@ export default function Dashboard() {
 
                   {monthlyData.length > 0 && (
                     <div className="apple-blur rounded-2xl apple-shadow p-6">
-                      <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
+                      <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                         Wydatki miesięczne
                       </h3>
                       <ResponsiveContainer width="100%" height={200}>
