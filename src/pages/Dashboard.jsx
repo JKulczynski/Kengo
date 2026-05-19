@@ -305,7 +305,7 @@ export default function Dashboard() {
                 <div className="apple-blur rounded-2xl apple-shadow p-6 mb-8">
                   <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                     Budżet projektów
-                  </h3>
+                  </h2>
                   <ResponsiveContainer width="100%" height={160}>
                     <BarChart data={chartData} barGap={4} barCategoryGap="30%">
                       <XAxis
@@ -396,7 +396,7 @@ export default function Dashboard() {
                     <div className="apple-blur rounded-2xl apple-shadow p-6">
                       <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                         Wydatki wg kategorii
-                      </h3>
+                      </h2>
                       <ResponsiveContainer width="100%" height={200}>
                         <PieChart>
                           <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
@@ -416,7 +416,7 @@ export default function Dashboard() {
                     <div className="apple-blur rounded-2xl apple-shadow p-6">
                       <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                         Wydatki miesięczne
-                      </h3>
+                      </h2>
                       <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={monthlyData} barCategoryGap="40%">
                           <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--k-text-muted)", fontFamily: "inherit" }} axisLine={false} tickLine={false} />
