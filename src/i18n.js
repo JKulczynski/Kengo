@@ -4,7 +4,20 @@ import pl from '@/locales/pl.json';
 import en from '@/locales/en.json';
 
 const STORAGE_KEY = 'kengo_language';
-const savedLanguage = (typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY)) || 'pl';
+
+function resolveInitialLanguage() {
+  if (typeof window === 'undefined') return 'pl';
+
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang === 'pl' || urlLang === 'en') {
+    localStorage.setItem(STORAGE_KEY, urlLang);
+    return urlLang;
+  }
+
+  return localStorage.getItem(STORAGE_KEY) || 'pl';
+}
+
+const savedLanguage = resolveInitialLanguage();
 
 i18n
   .use(initReactI18next)
