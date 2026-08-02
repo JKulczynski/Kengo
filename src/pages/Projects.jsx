@@ -13,6 +13,7 @@ import { AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { format } from 'date-fns';
+import { trackProductEvent } from "@/lib/analytics";
 
 import ProjectForm from "../components/projects/ProjectForm";
 import ProjectCard from "../components/projects/ProjectCard";
@@ -105,6 +106,7 @@ export default function ProjectsPage() {
         toast.success('Projekt zaktualizowany');
       } else {
         await Project.create(clean);
+        trackProductEvent('projekt_utworzony', { typ: clean.type });
         setIsFormOpen(false);
         setEditingProject(null);
         await loadData();

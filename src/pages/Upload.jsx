@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { toast } from "sonner";
+import { trackProductEvent } from "@/lib/analytics";
 
 import FileUploadZone from "../components/upload/FileUploadZone";
 import ProcessingQueue from "../components/upload/ProcessingQueue";
@@ -167,7 +168,8 @@ Extract: vendor name, total amount (number), date (YYYY-MM-DD format), renovatio
         file_name: file.name,
         ai_extracted_data: aiResult
       });
-      
+      trackProductEvent('dokument_zeskanowany', { typ: aiResult?.type });
+
     } catch (error) {
       setError(`Błąd przetwarzania ${file.name}: ${error.message}`);
       removeFile(index);

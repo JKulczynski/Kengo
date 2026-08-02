@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
+import { trackProductEvent } from "@/lib/analytics";
 
 // Unikalny icon Kengo — ensō z kompasem
 function KengoIcon({ className = "w-6 h-6" }) {
@@ -141,6 +142,7 @@ export default function AssistantPage() {
                 prompt: `${systemContext}\n\nHISTORIA ROZMOWY:\n${conversationHistory}\n\nOdpowiedz na ostatnią wiadomość użytkownika.`
             });
             setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+            trackProductEvent('asystent_uzyty');
         } catch (error) {
             console.error("Error calling LLM:", error);
             setMessages(prev => [...prev, {

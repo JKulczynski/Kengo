@@ -101,6 +101,7 @@ const api = {
     Document: makeEntity("documents"),
     ProjectMember: makeEntity("project_members"),
     Note: makeEntity("notes"),
+    AnalyticsEvent: makeEntity("analytics_events"),
   },
 
   auth: {

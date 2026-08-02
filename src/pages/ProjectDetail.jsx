@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { createPageUrl } from '@/utils';
+import { trackProductEvent } from '@/lib/analytics';
 import {
     ArrowLeft,
     Calendar,
@@ -182,6 +183,7 @@ export default function ProjectDetailPage() {
       });
       setInviteEmail("");
       await loadProjectData();
+      trackProductEvent('czlonek_zaproszony', { rola: inviteRole });
       toast.success(`Zaproszono ${inviteEmail}`);
     } catch (e) {
       toast.error("Nie udało się dodać osoby.");

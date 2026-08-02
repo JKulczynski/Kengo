@@ -1,6 +1,7 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import Layout from "./Layout.jsx";
 import { Route, Routes, useLocation } from 'react-router-dom';
+import { trackPageView } from '@/lib/analytics';
 
 // Code splitting — każda strona ładuje się osobno
 const Dashboard    = React.lazy(() => import('./Dashboard'));
@@ -29,6 +30,10 @@ function PageLoader() {
 
 function PagesContent() {
   const location = useLocation();
+
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
 
   return (
     <Layout>
