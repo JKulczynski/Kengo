@@ -192,6 +192,9 @@ Extract: vendor name, total amount (number), date (YYYY-MM-DD format), renovatio
         date: documentData.date || null,
         warranty_end_date: documentData.warranty_end_date || null,
       });
+      if (documentData.warranty_end_date) {
+        trackProductEvent('gwarancja_dodana');
+      }
       const fileIndex = files.findIndex(f => f.name === currentPreview.file_name);
       if (fileIndex !== -1) {
         removeFile(fileIndex);

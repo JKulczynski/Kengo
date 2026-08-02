@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, StickyNote, Mic } from "lucide-react";
+import { trackProductEvent } from "@/lib/analytics";
 import NoteCard from "../components/notes/NoteCard";
 import VoiceRecorder from "../components/notes/VoiceRecorder";
 
@@ -77,6 +78,7 @@ export default function Notes() {
         project_id: form.project_id || null,
         created_date: new Date().toISOString(),
       });
+      trackProductEvent('notatka_dodana');
       setDialogOpen(false);
       await loadData();
     } catch (err) {

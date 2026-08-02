@@ -8,6 +8,7 @@ import TermsOfService from "@/pages/TermsOfService.jsx";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { supabase } from "@/api/apiClient";
+import CookieConsent from "@/components/CookieConsent";
 
 function AuthenticatedApp() {
   const [session, setSession] = useState(undefined);
@@ -62,6 +63,7 @@ function AuthenticatedApp() {
 function App() {
   return (
     <Router>
+      <CookieConsent />
       <Routes>
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
