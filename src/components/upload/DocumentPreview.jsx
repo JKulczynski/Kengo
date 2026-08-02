@@ -1,5 +1,6 @@
 
 import React, { useState, Suspense, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const PdfPreview = lazy(() => import('./PdfPreview'));
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -9,10 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { 
-    Save, 
-    X, 
-    FileText, 
+import {
+    Save,
+    X,
+    FileText,
     Eye,
     Sparkles,
     ExternalLink,
@@ -29,56 +30,16 @@ const DOCUMENT_TYPES = [
   "photo", "warranty", "manual", "estimate", "other"
 ];
 
-const DOCUMENT_TYPE_LABELS = {
-  invoice: "Faktura",
-  receipt: "Paragon",
-  contract: "Umowa",
-  permit: "Pozwolenie",
-  blueprint: "Projekt techniczny",
-  photo: "Zdjęcie",
-  warranty: "Gwarancja",
-  manual: "Instrukcja",
-  estimate: "Kosztorys",
-  other: "Inne",
-};
-
 const CATEGORIES = [
   "materials", "labor", "permits", "appliances", "fixtures",
   "tools", "utilities", "insurance", "other"
 ];
-
-const CATEGORY_LABELS = {
-  materials: "Materiały",
-  labor: "Robocizna",
-  permits: "Pozwolenia",
-  appliances: "Sprzęt AGD",
-  fixtures: "Armatura",
-  tools: "Narzędzia",
-  utilities: "Media",
-  insurance: "Ubezpieczenie",
-  other: "Inne",
-};
 
 const PHASES = [
   "design", "permits", "demolition", "structural", "electrical",
   "plumbing", "insulation", "drywall", "flooring", "painting",
   "fixtures", "final_touches"
 ];
-
-const PHASE_LABELS = {
-  design: "Projekt",
-  permits: "Pozwolenia",
-  demolition: "Rozbiórka",
-  structural: "Konstrukcja",
-  electrical: "Elektryka",
-  plumbing: "Hydraulika",
-  insulation: "Izolacja",
-  drywall: "Płyty gipsowe",
-  flooring: "Podłogi",
-  painting: "Malowanie",
-  fixtures: "Montaż",
-  final_touches: "Wykończenie",
-};
 
 export default function DocumentPreview({
   extractedData,
@@ -88,6 +49,48 @@ export default function DocumentPreview({
   onCancel,
   isProcessing
 }) {
+  const { t } = useTranslation();
+
+  const DOCUMENT_TYPE_LABELS = {
+    invoice: t("common.documentTypes.invoice"),
+    receipt: t("common.documentTypes.receipt"),
+    contract: t("common.documentTypes.contract"),
+    permit: t("common.documentTypes.permit"),
+    blueprint: t("common.documentTypes.blueprint"),
+    photo: t("common.documentTypes.photo"),
+    warranty: t("common.documentTypes.warranty"),
+    manual: t("common.documentTypes.manual"),
+    estimate: t("common.documentTypes.estimate"),
+    other: t("common.documentTypes.other"),
+  };
+
+  const CATEGORY_LABELS = {
+    materials: t("common.categories.materials"),
+    labor: t("common.categories.labor"),
+    permits: t("common.categories.permits"),
+    appliances: t("common.categories.appliances"),
+    fixtures: t("common.categories.fixtures"),
+    tools: t("common.categories.tools"),
+    utilities: t("common.categories.utilities"),
+    insurance: t("common.categories.insurance"),
+    other: t("common.categories.other"),
+  };
+
+  const PHASE_LABELS = {
+    design: t("upload.phases.design"),
+    permits: t("upload.phases.permits"),
+    demolition: t("upload.phases.demolition"),
+    structural: t("upload.phases.structural"),
+    electrical: t("upload.phases.electrical"),
+    plumbing: t("upload.phases.plumbing"),
+    insulation: t("upload.phases.insulation"),
+    drywall: t("upload.phases.drywall"),
+    flooring: t("upload.phases.flooring"),
+    painting: t("upload.phases.painting"),
+    fixtures: t("upload.phases.fixtures"),
+    final_touches: t("upload.phases.final_touches"),
+  };
+
   const [editedData, setEditedData] = useState({
     title: extractedData.title || '',
     type: extractedData.type || 'other',
@@ -138,7 +141,7 @@ export default function DocumentPreview({
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-slate-600" />
-              Podgląd dokumentu
+              {t("upload.preview.documentPreview")}
             </div>
             <a
               href={extractedData.file_url}
@@ -154,22 +157,22 @@ export default function DocumentPreview({
         <CardContent className="p-6">
           <div className="aspect-[3/4] bg-slate-100 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
             {extractedData.file_url && extractedData.file_url.toLowerCase().includes('.pdf') ? (
-              <Suspense fallback={<div className="text-sm text-slate-400">Ładowanie PDF...</div>}>
+              <Suspense fallback={<div className="text-sm text-slate-400">{t("upload.preview.loadingPdf")}</div>}>
                 <PdfPreview url={extractedData.file_url} />
               </Suspense>
             ) : (
               <img
                 src={extractedData.file_url}
-                alt="Dokument"
+                alt={t("upload.preview.documentAlt")}
                 className="w-full h-full object-contain"
               />
             )}
           </div>
-          
+
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-4 h-4 text-amber-500" />
             <span className="text-sm font-medium text-slate-700">
-              AI odczytało {Object.keys(extractedData.ai_extracted_data || {}).length} pól
+              {t("upload.preview.aiExtracted", { count: Object.keys(extractedData.ai_extracted_data || {}).length })}
             </span>
           </div>
         </CardContent>
@@ -180,29 +183,29 @@ export default function DocumentPreview({
         <CardHeader className="border-b border-slate-100">
           <CardTitle className="flex items-center gap-2">
             <Eye className="w-5 h-5 text-slate-600" />
-            Sprawdź i edytuj dane
+            {t("upload.preview.reviewData")}
           </CardTitle>
         </CardHeader>
-        
+
         <CardContent className="p-6 space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
             <div>
               <Label htmlFor="title" className="text-sm font-semibold text-slate-700">
-                Tytuł dokumentu
+                {t("upload.preview.titleLabel")}
               </Label>
               <Input
                 id="title"
                 value={editedData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="Wpisz tytuł dokumentu"
+                placeholder={t("upload.preview.titlePlaceholder")}
                 className="mt-1"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-semibold text-slate-700">Typ</Label>
+                <Label className="text-sm font-semibold text-slate-700">{t("upload.preview.typeLabel")}</Label>
                 <Select
                   value={editedData.type}
                   onValueChange={(value) => handleInputChange('type', value)}
@@ -221,7 +224,7 @@ export default function DocumentPreview({
               </div>
 
               <div>
-                <Label className="text-sm font-semibold text-slate-700">Kategoria</Label>
+                <Label className="text-sm font-semibold text-slate-700">{t("upload.preview.categoryLabel")}</Label>
                 <Select
                   value={editedData.category}
                   onValueChange={(value) => handleInputChange('category', value)}
@@ -246,12 +249,12 @@ export default function DocumentPreview({
             <div>
               <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
                 <Building className="w-3 h-3" />
-                Dostawca
+                {t("upload.preview.vendorLabel")}
               </Label>
               <Input
                 value={editedData.vendor}
                 onChange={(e) => handleInputChange('vendor', e.target.value)}
-                placeholder="Nazwa dostawcy"
+                placeholder={t("upload.preview.vendorPlaceholder")}
                 className="mt-1"
               />
             </div>
@@ -259,7 +262,7 @@ export default function DocumentPreview({
             <div>
               <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
                 <DollarSign className="w-3 h-3" />
-                Kwota
+                {t("upload.preview.amountLabel")}
               </Label>
               <Input
                 type="number"
@@ -275,16 +278,16 @@ export default function DocumentPreview({
           {/* Project & Phase */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm font-semibold text-slate-700">Projekt</Label>
+              <Label className="text-sm font-semibold text-slate-700">{t("upload.preview.projectLabel")}</Label>
               <Select
                 value={editedData.project_id}
                 onValueChange={(value) => handleInputChange('project_id', value)}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Wybierz projekt (opcjonalnie)" />
+                  <SelectValue placeholder={t("upload.preview.projectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={null}>Bez projektu</SelectItem>
+                  <SelectItem value={null}>{t("common.noProject")}</SelectItem>
                   {projects.map((project) => (
                     <SelectItem key={project.id} value={project.id}>
                       {project.name}
@@ -295,7 +298,7 @@ export default function DocumentPreview({
             </div>
 
             <div>
-              <Label className="text-sm font-semibold text-slate-700">Etap</Label>
+              <Label className="text-sm font-semibold text-slate-700">{t("upload.preview.phaseLabel")}</Label>
               <Select
                 value={editedData.phase}
                 onValueChange={(value) => handleInputChange('phase', value)}
@@ -319,7 +322,7 @@ export default function DocumentPreview({
             <div>
               <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                Data
+                {t("upload.preview.dateLabel")}
               </Label>
               <Input
                 type="date"
@@ -331,14 +334,14 @@ export default function DocumentPreview({
             <div>
               <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3" />
-                Gwarancja do
+                {t("upload.preview.warrantyLabel")}
               </Label>
               <Input
                 type="date"
                 value={editedData.warranty_end_date || ''}
                 onChange={(e) => handleInputChange('warranty_end_date', e.target.value)}
                 className="mt-1"
-                placeholder="Opcjonalnie"
+                placeholder={t("upload.preview.warrantyPlaceholder")}
               />
             </div>
           </div>
@@ -347,24 +350,24 @@ export default function DocumentPreview({
           <div>
             <Label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
               <Tag className="w-3 h-3" />
-              Tagi
+              {t("upload.preview.tagsLabel")}
             </Label>
             <div className="mt-1 space-y-2">
               <div className="flex gap-2">
                 <Input
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
-                  placeholder="Dodaj tagi..."
+                  placeholder={t("upload.preview.tagsPlaceholder")}
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag(tagInput))}
                   className="flex-1"
                 />
-                <Button 
+                <Button
                   type="button"
                   variant="outline"
                   onClick={() => addTag(tagInput)}
                   disabled={!tagInput.trim()}
                 >
-                  Dodaj
+                  {t("upload.preview.addTag")}
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -384,17 +387,17 @@ export default function DocumentPreview({
 
           {/* Notes */}
           <div>
-            <Label className="text-sm font-semibold text-slate-700">Notatki</Label>
+            <Label className="text-sm font-semibold text-slate-700">{t("upload.preview.notesLabel")}</Label>
             <Textarea
               value={editedData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="Dodatkowe informacje o dokumencie..."
+              placeholder={t("upload.preview.notesPlaceholder")}
               rows={3}
               className="mt-1"
             />
           </div>
         </CardContent>
-        
+
         <CardFooter className="flex justify-end gap-3 border-t border-slate-100 p-6">
           <Button
             variant="outline"
@@ -402,7 +405,7 @@ export default function DocumentPreview({
             disabled={isProcessing}
           >
             <X className="w-4 h-4 mr-2" />
-            Anuluj
+            {t("common.cancel")}
           </Button>
           <Button
             onClick={() => onSave(editedData)}
@@ -410,7 +413,7 @@ export default function DocumentPreview({
             className="renovation-gradient"
           >
             <Save className="w-4 h-4 mr-2" />
-            {isProcessing ? 'Zapisuję...' : 'Zapisz dokument'}
+            {isProcessing ? t("upload.preview.saving") : t("upload.preview.saveDocument")}
           </Button>
         </CardFooter>
       </Card>

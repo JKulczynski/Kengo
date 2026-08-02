@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Note } from "@/api/entities";
 import { Project } from "@/api/entities";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ const EMPTY_FORM = {
 };
 
 export default function Notes() {
+  const { t } = useTranslation();
   const [notes, setNotes] = useState([]);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +60,7 @@ export default function Notes() {
       setProjects(projectsData);
     } catch (err) {
       console.error("Błąd ładowania notatek:", err);
-      setError("Nie udało się załadować notatek.");
+      setError(t("notes.errorLoad"));
     }
     setIsLoading(false);
   };
@@ -114,10 +116,10 @@ export default function Notes() {
         <div className="flex items-start justify-between mb-8 md:mb-12 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-semibold text-black tracking-tight">
-              Notatki
+              {t("notes.header.title")}
             </h1>
             <p className="text-base text-gray-500 font-normal mt-2">
-              Szybkie notatki tekstowe i głosowe
+              {t("notes.header.subtitle")}
             </p>
           </div>
           <Button
@@ -125,7 +127,7 @@ export default function Notes() {
             className="bg-black hover:bg-gray-800 text-white rounded-xl px-5 py-2.5 text-sm font-medium shrink-0"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Nowa notatka
+            {t("notes.newNote")}
           </Button>
         </div>
 
@@ -133,7 +135,7 @@ export default function Notes() {
           <div className="mb-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between">
             <p className="text-red-600 text-sm">{error}</p>
             <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
-              Spróbuj ponownie
+              {t("common.tryAgain")}
             </Button>
           </div>
         )}
@@ -168,17 +170,17 @@ export default function Notes() {
               <StickyNote className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-xl font-medium text-black mb-2">
-              Brak notatek
+              {t("notes.empty.title")}
             </h3>
             <p className="text-gray-500 mb-6 text-sm">
-              Dodaj pierwszą notatkę tekstową lub głosową
+              {t("notes.empty.desc")}
             </p>
             <Button
               onClick={openDialog}
               className="bg-black hover:bg-gray-800 text-white rounded-xl"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Nowa notatka
+              {t("notes.newNote")}
             </Button>
           </div>
         )}
@@ -189,20 +191,20 @@ export default function Notes() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-black font-semibold">
-              Nowa notatka
+              {t("notes.dialog.title")}
             </DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-2">
             <Input
-              placeholder="Tytuł (opcjonalnie)"
+              placeholder={t("notes.dialog.titlePlaceholder")}
               value={form.title}
               onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
               className="rounded-xl"
             />
 
             <Textarea
-              placeholder="Treść notatki..."
+              placeholder={t("notes.dialog.contentPlaceholder")}
               value={form.content}
               onChange={(e) =>
                 setForm((p) => ({ ...p, content: e.target.value }))
@@ -223,10 +225,10 @@ export default function Notes() {
                 }
               >
                 <SelectTrigger className="rounded-xl">
-                  <SelectValue placeholder="Powiąż z projektem (opcjonalnie)" />
+                  <SelectValue placeholder={t("notes.dialog.projectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Bez projektu</SelectItem>
+                  <SelectItem value="none">{t("common.noProject")}</SelectItem>
                   {projects.map((proj) => (
                     <SelectItem key={proj.id} value={proj.id}>
                       {proj.name}
@@ -244,7 +246,7 @@ export default function Notes() {
                 className="flex items-center gap-2 text-sm text-blue-500 font-medium hover:text-blue-600 transition-colors"
               >
                 <Mic className="w-4 h-4" />
-                {showVoice ? "Ukryj nagrywanie" : "Nagraj głosowo"}
+                {showVoice ? t("notes.dialog.hideRecording") : t("notes.dialog.recordVoice")}
               </button>
 
               {showVoice && (
@@ -256,7 +258,7 @@ export default function Notes() {
                   {form.audio_url && (
                     <div className="mt-3">
                       <p className="text-xs text-gray-500 mb-1">
-                        Nagrana audio:
+                        {t("notes.dialog.recordedAudio")}
                       </p>
                       <audio
                         controls
@@ -277,14 +279,14 @@ export default function Notes() {
               onClick={() => setDialogOpen(false)}
               className="rounded-xl"
             >
-              Anuluj
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={handleSave}
               disabled={isSaving || (!form.content.trim() && !form.audio_url)}
               className="bg-black hover:bg-gray-800 text-white rounded-xl"
             >
-              {isSaving ? "Zapisuję..." : "Zapisz notatkę"}
+              {isSaving ? t("notes.dialog.saving") : t("notes.dialog.save")}
             </Button>
           </DialogFooter>
         </DialogContent>

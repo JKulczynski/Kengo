@@ -1,12 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-    FileText, 
-    Image, 
-    X, 
-    Play, 
+import {
+    FileText,
+    Image,
+    X,
+    Play,
     Loader2,
     CheckCircle2,
     Zap
@@ -14,6 +15,7 @@ import {
 import { motion } from "framer-motion";
 
 export default function ProcessingQueue({ files, processing, removeFile, processFile }) {
+  const { t } = useTranslation();
   const getFileIcon = (file) => {
     return file.type === "application/pdf" ? FileText : Image;
   };
@@ -27,7 +29,7 @@ export default function ProcessingQueue({ files, processing, removeFile, process
       <CardHeader className="border-b border-slate-100">
         <CardTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
           <Zap className="w-5 h-5 text-amber-500" />
-          Kolejka do przetworzenia ({files.length})
+          {t("upload.queue.title", { count: files.length })}
         </CardTitle>
       </CardHeader>
       
@@ -71,7 +73,7 @@ export default function ProcessingQueue({ files, processing, removeFile, process
                         : { backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)", borderColor: "var(--k-border-md)" }
                       }
                     >
-                      {file.type === "application/pdf" ? "PDF" : "Obraz"}
+                      {file.type === "application/pdf" ? t("upload.queue.pdf") : t("upload.queue.image")}
                     </Badge>
                   </div>
                 </div>
@@ -80,7 +82,7 @@ export default function ProcessingQueue({ files, processing, removeFile, process
                   {isProcessing ? (
                     <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800">
                       <Loader2 className="w-3 h-3 animate-spin" />
-                      <span className="text-xs font-medium">Analizuję...</span>
+                      <span className="text-xs font-medium">{t("upload.queue.analyzing")}</span>
                     </div>
                   ) : (
                     <Button
@@ -90,7 +92,7 @@ export default function ProcessingQueue({ files, processing, removeFile, process
                       className="renovation-gradient text-xs"
                     >
                       <Play className="w-3 h-3 mr-1" />
-                      Analizuj
+                      {t("upload.queue.analyze")}
                     </Button>
                   )}
                   
@@ -118,12 +120,12 @@ export default function ProcessingQueue({ files, processing, removeFile, process
           {processing.some(p => p) ? (
             <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              AI analizuje...
+              {t("upload.queue.analyzingAll")}
             </>
           ) : (
             <>
               <Zap className="w-5 h-5 mr-2" />
-              Analizuj następny dokument
+              {t("upload.queue.analyzeNext")}
             </>
           )}
         </Button>

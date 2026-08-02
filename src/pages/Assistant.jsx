@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Project } from "@/api/entities";
 import { Document } from "@/api/entities";
 import { InvokeLLM } from "@/api/integrations";
@@ -11,7 +12,6 @@ import {
     Zap
 } from "lucide-react";
 import { format } from "date-fns";
-import { pl } from "date-fns/locale";
 import { trackProductEvent } from "@/lib/analytics";
 
 // Unikalny icon Kengo — ensō z kompasem
@@ -28,33 +28,49 @@ function KengoIcon({ className = "w-6 h-6" }) {
     );
 }
 
-function buildSystemContext(projects, documents) {
+function buildSystemContext(projects, documents, t) {
+    const none = t("assistant.systemPrompt.none");
     const projectsSummary = projects.map(p => {
         const projectDocs = documents.filter(d => d.project_id === p.id);
         const spent = projectDocs.reduce((sum, d) => sum + (d.amount || 0), 0);
-        return `- Projekt: "${p.name}" | Status: ${p.status} | Budżet: ${(p.budget || 0).toLocaleString('pl-PL')} zł | Wydano: ${spent.toLocaleString('pl-PL')} zł | Typ: ${p.type || 'brak'} | Opis: ${p.description || 'brak'} | Termin: ${p.target_completion || 'brak'}`;
+        return t("assistant.systemPrompt.projectLine", {
+            name: p.name,
+            status: p.status,
+            budget: (p.budget || 0).toLocaleString('pl-PL'),
+            spent: spent.toLocaleString('pl-PL'),
+            type: p.type || none,
+            description: p.description || none,
+            deadline: p.target_completion || none,
+        });
     }).join('\n');
 
     const documentsSummary = documents.slice(0, 60).map(d =>
-        `- Dokument: "${d.title}" | Typ: ${d.type} | Dostawca: ${d.vendor || 'brak'} | Kwota: ${d.amount ? `${d.amount.toLocaleString('pl-PL')} zł` : 'brak'} | Data: ${d.date || 'brak'} | Gwarancja do: ${d.warranty_end_date || 'brak'}`
+        t("assistant.systemPrompt.documentLine", {
+            title: d.title,
+            type: d.type,
+            vendor: d.vendor || none,
+            amount: d.amount ? `${d.amount.toLocaleString('pl-PL')} zł` : none,
+            date: d.date || none,
+            warranty: d.warranty_end_date || none,
+        })
     ).join('\n');
 
-    return `Jesteś Kengo — ciepłym, pomocnym asystentem remontowym. Pomagasz użytkownikowi zarządzać jego projektami remontowymi.
+    return `${t("assistant.systemPrompt.intro")}
 
-DANE UŻYTKOWNIKA:
+${t("assistant.systemPrompt.userData")}
 
-Projekty (${projects.length}):
-${projectsSummary || 'Brak projektów'}
+${t("assistant.systemPrompt.projectsLabel", { count: projects.length })}
+${projectsSummary || t("assistant.systemPrompt.noProjects")}
 
-Dokumenty (${documents.length}):
-${documentsSummary || 'Brak dokumentów'}
+${t("assistant.systemPrompt.documentsLabel", { count: documents.length })}
+${documentsSummary || t("assistant.systemPrompt.noDocuments")}
 
-ZASADY:
-- Odpowiadaj po polsku, ciepło i konkretnie
-- Opieraj się na danych użytkownika — nie wymyślaj
-- Gdy czegoś brakuje, sugeruj jak to uzupełnić w aplikacji
-- Formatuj odpowiedzi czytelnie (listy, podsumowania)
-- Nie udawaj, że masz więcej danych niż masz`;
+${t("assistant.systemPrompt.rulesTitle")}
+- ${t("assistant.systemPrompt.rule1")}
+- ${t("assistant.systemPrompt.rule2")}
+- ${t("assistant.systemPrompt.rule3")}
+- ${t("assistant.systemPrompt.rule4")}
+- ${t("assistant.systemPrompt.rule5")}`;
 }
 
 function MessageBubble({ message }) {
@@ -85,15 +101,17 @@ function MessageBubble({ message }) {
     );
 }
 
-const quickActions = [
-    { label: "Moje projekty", prompt: "Podsumuj moje projekty — co jest aktywne, jaki jest budżet i co wymaga uwagi?" },
-    { label: "Analiza wydatków", prompt: "Przeanalizuj moje wydatki i powiedz, gdzie idzie najwięcej pieniędzy." },
-    { label: "Gwarancje", prompt: "Które gwarancje wygasają wkrótce? Daj mi przegląd." },
-    { label: "Co dalej?", prompt: "Patrząc na moje projekty — co powinienem zrobić teraz, żeby posunąć prace do przodu?" },
-    { label: "Ile wydałem?", prompt: "Ile łącznie wydałem na wszystkie projekty? Podsumuj według kategorii." },
-];
-
 export default function AssistantPage() {
+    const { t } = useTranslation();
+
+    const quickActions = [
+        { label: t("assistant.quickActions.myProjects.label"), prompt: t("assistant.quickActions.myProjects.prompt") },
+        { label: t("assistant.quickActions.expenseAnalysis.label"), prompt: t("assistant.quickActions.expenseAnalysis.prompt") },
+        { label: t("assistant.quickActions.warranties.label"), prompt: t("assistant.quickActions.warranties.prompt") },
+        { label: t("assistant.quickActions.whatsNext.label"), prompt: t("assistant.quickActions.whatsNext.prompt") },
+        { label: t("assistant.quickActions.howMuchSpent.label"), prompt: t("assistant.quickActions.howMuchSpent.prompt") },
+    ];
+
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -133,13 +151,13 @@ export default function AssistantPage() {
         setIsLoading(true);
 
         try {
-            const systemContext = buildSystemContext(projects, documents);
+            const systemContext = buildSystemContext(projects, documents, t);
             const conversationHistory = [...messages, userMsg]
-                .map(m => `${m.role === 'user' ? 'Użytkownik' : 'Kengo'}: ${m.content}`)
+                .map(m => `${m.role === 'user' ? t("assistant.systemPrompt.userRole") : t("assistant.systemPrompt.assistantRole")}: ${m.content}`)
                 .join('\n\n');
 
             const response = await InvokeLLM({
-                prompt: `${systemContext}\n\nHISTORIA ROZMOWY:\n${conversationHistory}\n\nOdpowiedz na ostatnią wiadomość użytkownika.`
+                prompt: `${systemContext}\n\n${t("assistant.systemPrompt.historyLabel")}\n${conversationHistory}\n\n${t("assistant.systemPrompt.finalInstruction")}`
             });
             setMessages(prev => [...prev, { role: 'assistant', content: response }]);
             trackProductEvent('asystent_uzyty');
@@ -147,7 +165,7 @@ export default function AssistantPage() {
             console.error("Error calling LLM:", error);
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: 'Przepraszam, coś poszło nie tak. Spróbuj ponownie za chwilę.'
+                content: t("assistant.errorMessage")
             }]);
         }
         setIsLoading(false);
@@ -165,15 +183,17 @@ export default function AssistantPage() {
             <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: "var(--k-bg)" }}>
                 <div className="text-center">
                     <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: "var(--k-accent)" }} />
-                    <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>Ładuję Twoje dane...</p>
+                    <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>{t("assistant.loadingData")}</p>
                 </div>
             </div>
         );
     }
 
     const subtitle = projects.length > 0
-        ? `${projects.length} ${projects.length === 1 ? 'projekt' : 'projekty'} · ${documents.length} dokumentów`
-        : 'Zacznij rozmowę — pomogę Ci zorganizować remont';
+        ? (projects.length === 1
+            ? t("assistant.subtitleWithProjectsOne", { count: projects.length, docs: documents.length })
+            : t("assistant.subtitleWithProjectsOther", { count: projects.length, docs: documents.length }))
+        : t("assistant.subtitleEmpty");
 
     return (
         /*
@@ -197,7 +217,7 @@ export default function AssistantPage() {
                     </div>
                     <div>
                         <h1 className="text-base md:text-3xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
-                            Asystent Kengo
+                            {t("assistant.title")}
                         </h1>
                         <p className="text-xs md:text-sm" style={{ color: "var(--k-text-subtle)" }}>
                             {subtitle}
@@ -216,10 +236,10 @@ export default function AssistantPage() {
                                     <KengoIcon className="w-6 h-6 md:w-7 md:h-7" />
                                 </div>
                                 <h3 className="text-base font-medium mb-2" style={{ color: "var(--k-text)" }}>
-                                    Cześć! Jak mogę pomóc?
+                                    {t("assistant.welcomeTitle")}
                                 </h3>
                                 <p className="text-sm max-w-xs" style={{ color: "var(--k-text-subtle)" }}>
-                                    Pytaj o projekty, budżet, gwarancje — znam Twoje dane i odpowiem konkretnie.
+                                    {t("assistant.welcomeDesc")}
                                 </p>
                             </div>
                         ) : (
@@ -275,7 +295,7 @@ export default function AssistantPage() {
                                 value={inputMessage}
                                 onChange={(e) => setInputMessage(e.target.value)}
                                 onKeyDown={handleKeyPress}
-                                placeholder="Zadaj pytanie..."
+                                placeholder={t("assistant.inputPlaceholder")}
                                 className="flex-1 rounded-xl"
                                 disabled={isLoading}
                             />
@@ -293,7 +313,7 @@ export default function AssistantPage() {
                                 className="text-xs mt-2 ml-1"
                                 style={{ color: "var(--k-text-subtle)" }}
                             >
-                                Wyczyść rozmowę
+                                {t("assistant.clearConversation")}
                             </button>
                         )}
                     </div>

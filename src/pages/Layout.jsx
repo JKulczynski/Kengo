@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { createPageUrl } from "@/utils";
+import { setLanguage } from "@/i18n";
 import { User } from "@/api/entities";
 import { Project } from "@/api/entities";
 import {
@@ -48,38 +50,40 @@ const getInitials = (name) => {
     return name[0].toUpperCase();
 };
 
-const navigationItems = [
-  { title: "Pulpit",    url: createPageUrl("Dashboard"),  icon: Home },
-  { title: "Projekty",  url: createPageUrl("Projects"),   icon: FolderOpen },
-  { title: "Dokumenty", url: createPageUrl("Documents"),  icon: FileText },
-  { title: "Gwarancje", url: createPageUrl("Warranties"), icon: ShieldCheck },
-  { title: "Szukaj",    url: createPageUrl("Search"),     icon: Search },
-  { title: "Notatki",   url: "/notes",                    icon: StickyNote },
-  { title: "Asystent",  url: createPageUrl("Assistant"),  icon: MessageSquare },
-  { title: "Zespół",    url: createPageUrl("Team"),       icon: Users },
-  { title: "Profil",    url: createPageUrl("Profile"),    icon: UserIcon },
-];
-
-// 3 warianty kolorystyczne do testów
-const THEMES = [
-  { id: "",             label: "Karesansui", dot: "#889078", title: "Ogród kamienny" },
-  { id: "theme-ukiyo",  label: "Ukiyo",      dot: "#967249", title: "Unoszący się świat" },
-  { id: "theme-aizome", label: "Aizome",     dot: "#4B5E70", title: "Tradycyjne indygo" },
-  { id: "theme-moegi",  label: "Moegi",      dot: "#2A6B3E", title: "Świeży bambus" },
-];
-
-// Pozycje w hamburger menu (te których nie ma w bottom nav)
-const drawerItems = [
-  { title: "Dokumenty",      url: createPageUrl("Documents"),  icon: FileText },
-  { title: "Gwarancje",      url: createPageUrl("Warranties"), icon: ShieldCheck },
-  { title: "Szukaj",         url: createPageUrl("Search"),     icon: Search },
-  { title: "Notatki",        url: "/notes",                    icon: StickyNote },
-  { title: "Zespół",         url: createPageUrl("Team"),       icon: Users },
-];
-
 export default function Layout({ children }) {
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const navigationItems = [
+    { title: t("nav.dashboard"),  url: createPageUrl("Dashboard"),  icon: Home },
+    { title: t("nav.projects"),   url: createPageUrl("Projects"),   icon: FolderOpen },
+    { title: t("nav.documents"),  url: createPageUrl("Documents"),  icon: FileText },
+    { title: t("nav.warranties"), url: createPageUrl("Warranties"), icon: ShieldCheck },
+    { title: t("nav.search"),     url: createPageUrl("Search"),     icon: Search },
+    { title: t("nav.notes"),     url: "/notes",                    icon: StickyNote },
+    { title: t("nav.assistant"), url: createPageUrl("Assistant"),  icon: MessageSquare },
+    { title: t("nav.team"),      url: createPageUrl("Team"),       icon: Users },
+    { title: t("nav.profile"),   url: createPageUrl("Profile"),    icon: UserIcon },
+  ];
+
+  // 3 warianty kolorystyczne do testów (nazwy własne motywów pozostają niezmienione)
+  const THEMES = [
+    { id: "",             label: "Karesansui", dot: "#889078", title: t("layout.theme.titles.karesansui") },
+    { id: "theme-ukiyo",  label: "Ukiyo",      dot: "#967249", title: t("layout.theme.titles.ukiyo") },
+    { id: "theme-aizome", label: "Aizome",     dot: "#4B5E70", title: t("layout.theme.titles.aizome") },
+    { id: "theme-moegi",  label: "Moegi",      dot: "#2A6B3E", title: t("layout.theme.titles.moegi") },
+  ];
+
+  // Pozycje w hamburger menu (te których nie ma w bottom nav)
+  const drawerItems = [
+    { title: t("nav.documents"),  url: createPageUrl("Documents"),  icon: FileText },
+    { title: t("nav.warranties"), url: createPageUrl("Warranties"), icon: ShieldCheck },
+    { title: t("nav.search"),     url: createPageUrl("Search"),     icon: Search },
+    { title: t("nav.notes"),      url: "/notes",                    icon: StickyNote },
+    { title: t("nav.team"),       url: createPageUrl("Team"),       icon: Users },
+  ];
+
   const [user, setUser] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [activeTheme, setActiveTheme] = useState("");
@@ -184,7 +188,7 @@ export default function Layout({ children }) {
                   Kengo
                 </p>
                 <p className="text-xs font-normal" style={{ color: "var(--k-text-subtle)" }}>
-                  Asystent remontu
+                  {t("layout.tagline")}
                 </p>
               </div>
             </div>
@@ -206,7 +210,7 @@ export default function Layout({ children }) {
                       }}
                     >
                       <Plus className="w-4 h-4" />
-                      Nowy
+                      {t("layout.quickAdd.button")}
                     </button>
                     {globalPlusOpen && (
                       <div
@@ -220,7 +224,7 @@ export default function Layout({ children }) {
                           style={{ color: "var(--k-text-muted)" }}
                         >
                           <FolderOpen className="w-4 h-4 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
-                          Nowy projekt
+                          {t("layout.quickAdd.newProject")}
                         </Link>
                         <Link
                           to={createPageUrl("Upload")}
@@ -229,7 +233,7 @@ export default function Layout({ children }) {
                           style={{ color: "var(--k-text-muted)" }}
                         >
                           <Upload className="w-4 h-4 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
-                          Dodaj dokument
+                          {t("layout.quickAdd.addDocument")}
                         </Link>
                         <Link
                           to="/notes?new=1"
@@ -238,7 +242,7 @@ export default function Layout({ children }) {
                           style={{ color: "var(--k-text-muted)" }}
                         >
                           <StickyNote className="w-4 h-4 flex-shrink-0" style={{ color: "var(--k-accent)" }} />
-                          Szybka notatka
+                          {t("layout.quickAdd.quickNote")}
                         </Link>
                       </div>
                     )}
@@ -269,7 +273,7 @@ export default function Layout({ children }) {
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
-                        {item.title === "Projekty" && recentProjects.length > 0 && recentProjects.map(proj => (
+                        {item.url === createPageUrl("Projects") && recentProjects.length > 0 && recentProjects.map(proj => (
                           <SidebarMenuItem key={proj.id}>
                             <SidebarMenuButton asChild className="mx-1 rounded-lg font-normal">
                               <Link
@@ -305,10 +309,10 @@ export default function Layout({ children }) {
                     <X className="w-3 h-3" />
                   </button>
                   <p className="font-semibold text-sm" style={{ color: "var(--k-accent-dark)" }}>
-                    Wersja Beta
+                    {t("layout.beta.title")}
                   </p>
                   <p className="text-xs mt-1 mb-3" style={{ color: "var(--k-accent-dark)", opacity: 0.75 }}>
-                    Twoja opinia kształtuje Kengo.
+                    {t("layout.beta.text")}
                   </p>
                   <button
                     className="text-xs font-semibold rounded-full px-4 py-1.5"
@@ -317,7 +321,7 @@ export default function Layout({ children }) {
                       color: "var(--k-accent-text)"
                     }}
                   >
-                    Wyślij opinię
+                    {t("layout.beta.cta")}
                   </button>
                 </div>
               </SidebarGroup>
@@ -337,9 +341,9 @@ export default function Layout({ children }) {
                 style={{ color: "var(--k-text-subtle)" }}
               >
                 <Palette className="w-3.5 h-3.5" />
-                <span>Motyw:</span>
+                <span>{t("layout.theme.label")}</span>
                 <span style={{ color: "var(--k-accent-dark)", fontWeight: 600 }}>
-                  {THEMES.find(t => t.id === activeTheme)?.label ?? "Washi"}
+                  {THEMES.find(theme => theme.id === activeTheme)?.label ?? t("layout.theme.fallback")}
                 </span>
               </button>
 
@@ -348,29 +352,50 @@ export default function Layout({ children }) {
                   className="absolute bottom-full left-0 mb-2 w-48 rounded-xl p-2 z-50 apple-shadow"
                   style={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border-md)" }}
                 >
-                  {THEMES.map(t => (
+                  {THEMES.map(theme => (
                     <button
-                      key={t.id}
-                      onClick={() => switchTheme(t.id)}
+                      key={theme.id}
+                      onClick={() => switchTheme(theme.id)}
                       className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-sm"
                       style={
-                        activeTheme === t.id
+                        activeTheme === theme.id
                           ? { backgroundColor: "var(--k-bg-active)", color: "var(--k-accent-dark)" }
                           : { color: "var(--k-text-muted)" }
                       }
                     >
                       <span
                         className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: t.dot }}
+                        style={{ backgroundColor: theme.dot }}
                       />
                       <div>
-                        <div className="font-medium text-xs">{t.label}</div>
-                        <div className="text-xs opacity-60">{t.title}</div>
+                        <div className="font-medium text-xs">{theme.label}</div>
+                        <div className="text-xs opacity-60">{theme.title}</div>
                       </div>
                     </button>
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Przełącznik języka PL/EN */}
+            <div className="flex items-center gap-2 px-2 text-xs" style={{ color: "var(--k-text-subtle)" }}>
+              <span>{t("layout.language.label")}:</span>
+              <div className="flex rounded-lg overflow-hidden border" style={{ borderColor: "var(--k-border-md)" }}>
+                {["pl", "en"].map((lng) => (
+                  <button
+                    key={lng}
+                    onClick={() => setLanguage(lng)}
+                    className="px-2 py-0.5 text-xs font-semibold uppercase"
+                    style={
+                      i18n.language === lng
+                        ? { backgroundColor: "var(--k-accent)", color: "var(--k-accent-text)" }
+                        : { color: "var(--k-text-muted)" }
+                    }
+                  >
+                    {lng}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Profil */}
@@ -398,7 +423,7 @@ export default function Layout({ children }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate" style={{ color: "var(--k-text)" }}>
-                      {user.full_name || "Użytkownik"}
+                      {user.full_name || t("layout.defaultUserName")}
                     </p>
                     <p className="text-xs truncate" style={{ color: "var(--k-text-subtle)" }}>
                       {user.email}
@@ -406,7 +431,7 @@ export default function Layout({ children }) {
                   </div>
                 </>
               ) : (
-                <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>Nie zalogowano</p>
+                <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>{t("layout.notLoggedIn")}</p>
               )}
             </Link>
           </SidebarFooter>
@@ -438,7 +463,7 @@ export default function Layout({ children }) {
                 to={createPageUrl("Search")}
                 className="w-9 h-9 flex items-center justify-center rounded-xl"
                 style={{ color: "var(--k-text-muted)" }}
-                aria-label="Szukaj"
+                aria-label={t("nav.search")}
               >
                 <Search className="w-5 h-5" />
               </Link>
@@ -465,7 +490,7 @@ export default function Layout({ children }) {
                   className="flex items-center justify-between px-5 py-4 border-b"
                   style={{ borderColor: "var(--k-border)" }}
                 >
-                  <span className="font-semibold text-sm" style={{ color: "var(--k-text)" }}>Menu</span>
+                  <span className="font-semibold text-sm" style={{ color: "var(--k-text)" }}>{t("layout.drawer.menu")}</span>
                   <button
                     onClick={() => setDrawerOpen(false)}
                     className="w-7 h-7 flex items-center justify-center rounded-lg"
@@ -506,21 +531,21 @@ export default function Layout({ children }) {
 
                   {/* Motyw */}
                   <div className="px-3 py-2">
-                    <p className="text-xs mb-2 font-medium" style={{ color: "var(--k-text-subtle)" }}>Motyw</p>
+                    <p className="text-xs mb-2 font-medium" style={{ color: "var(--k-text-subtle)" }}>{t("layout.theme.mobileLabel")}</p>
                     <div className="flex flex-wrap gap-2">
-                      {THEMES.map(t => (
+                      {THEMES.map(theme => (
                         <button
-                          key={t.id}
-                          onClick={() => switchTheme(t.id)}
+                          key={theme.id}
+                          onClick={() => switchTheme(theme.id)}
                           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border"
                           style={
-                            activeTheme === t.id
+                            activeTheme === theme.id
                               ? { backgroundColor: "var(--k-bg-active)", color: "var(--k-accent-dark)", borderColor: "var(--k-accent)" }
                               : { color: "var(--k-text-muted)", borderColor: "var(--k-border-md)" }
                           }
                         >
-                          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: t.dot }} />
-                          {t.label}
+                          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: theme.dot }} />
+                          {theme.label}
                         </button>
                       ))}
                     </div>
@@ -544,10 +569,10 @@ export default function Layout({ children }) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm truncate" style={{ color: "var(--k-text)" }}>
-                        {user?.full_name || "Profil"}
+                        {user?.full_name || t("layout.profileFallback")}
                       </p>
                       <p className="text-xs truncate" style={{ color: "var(--k-text-subtle)" }}>
-                        {user?.email || "Ustawienia konta"}
+                        {user?.email || t("layout.accountSettings")}
                       </p>
                     </div>
                   </Link>
@@ -575,7 +600,7 @@ export default function Layout({ children }) {
           <MobileNavItem
             to={createPageUrl("Dashboard")}
             icon={Home}
-            label="Pulpit"
+            label={t("nav.dashboard")}
             active={location.pathname === createPageUrl("Dashboard") || location.pathname === "/"}
           />
 
@@ -583,7 +608,7 @@ export default function Layout({ children }) {
           <MobileNavItem
             to={createPageUrl("Projects")}
             icon={FolderOpen}
-            label="Projekty"
+            label={t("nav.projects")}
             active={location.pathname === createPageUrl("Projects")}
           />
 
@@ -600,14 +625,14 @@ export default function Layout({ children }) {
             >
               <Camera className="w-6 h-6" style={{ color: "var(--k-accent-text)", strokeWidth: 2 }} />
             </div>
-            <span className="text-xs mt-1 font-medium" style={{ color: "var(--k-accent-dark)" }}>Skanuj</span>
+            <span className="text-xs mt-1 font-medium" style={{ color: "var(--k-accent-dark)" }}>{t("nav.scan")}</span>
           </Link>
 
           {/* Asystent */}
           <MobileNavItem
             to={createPageUrl("Assistant")}
             icon={MessageSquare}
-            label="Asystent"
+            label={t("nav.assistant")}
             active={location.pathname === createPageUrl("Assistant")}
           />
 
@@ -621,7 +646,7 @@ export default function Layout({ children }) {
               style={{ color: "var(--k-text-subtle)", strokeWidth: 1.6 }}
             />
             <span className="text-xs font-medium" style={{ color: "var(--k-text-subtle)" }}>
-              Więcej
+              {t("nav.more")}
             </span>
           </button>
         </div>

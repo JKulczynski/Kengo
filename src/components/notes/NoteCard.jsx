@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { pl } from "date-fns/locale";
+import { useDateLocale } from "@/lib/dateLocale";
 import { Mic, Trash2, FolderOpen } from "lucide-react";
 
 export default function NoteCard({ note, project, onDelete }) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [expanded, setExpanded] = useState(false);
 
   const PREVIEW_LENGTH = 140;
@@ -19,7 +22,7 @@ export default function NoteCard({ note, project, onDelete }) {
         <div className="flex-1 min-w-0">
           <p className="text-xs text-gray-400 mb-1">
             {format(new Date(note.created_date), "d MMM yyyy, HH:mm", {
-              locale: pl,
+              locale: dateLocale,
             })}
           </p>
           {note.title && (
@@ -31,7 +34,7 @@ export default function NoteCard({ note, project, onDelete }) {
           {note.audio_url && (
             <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium" style={{ color: "var(--k-icon-color)", backgroundColor: "var(--k-icon-bg)" }}>
               <Mic className="w-3 h-3" />
-              Audio
+              {t("notes.card.audio")}
             </span>
           )}
           <button
@@ -51,7 +54,7 @@ export default function NoteCard({ note, project, onDelete }) {
               onClick={() => setExpanded(!expanded)}
               className="ml-1 text-blue-500 text-xs font-medium"
             >
-              {expanded ? "mniej" : "więcej"}
+              {expanded ? t("notes.card.less") : t("notes.card.more")}
             </button>
           )}
         </p>

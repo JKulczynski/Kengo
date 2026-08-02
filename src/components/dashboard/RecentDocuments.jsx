@@ -1,19 +1,20 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { 
-    FileText, 
-    Receipt, 
-    Image, 
+import {
+    FileText,
+    Receipt,
+    Image,
     File,
     ArrowUpRight,
     Upload
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-import { pl } from "date-fns/locale";
+import { useDateLocale } from "@/lib/dateLocale";
 
 const typeIcons = {
   invoice: Receipt,
@@ -25,11 +26,14 @@ const typeIcons = {
 };
 
 export default function RecentDocuments({ documents, isLoading }) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
+
   if (isLoading) {
     return (
       <div className="apple-blur rounded-2xl p-6 apple-shadow">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-medium text-black">Dokumenty</h3>
+          <h3 className="font-medium text-black">{t("dashboard.stats.documents")}</h3>
         </div>
         <div className="space-y-4">
           {Array(5).fill(0).map((_, i) => (
@@ -49,8 +53,8 @@ export default function RecentDocuments({ documents, isLoading }) {
   return (
     <div className="apple-blur rounded-2xl p-6 apple-shadow">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="font-medium text-black">Dokumenty</h3>
-        <Link 
+        <h3 className="font-medium text-black">{t("dashboard.stats.documents")}</h3>
+        <Link
           to={createPageUrl("Documents")}
           className="text-gray-500 hover:text-black transition-colors"
         >
@@ -61,7 +65,7 @@ export default function RecentDocuments({ documents, isLoading }) {
       {documents.length === 0 ? (
         <div className="text-center py-12">
           <FileText className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Brak dokumentów</p>
+          <p className="text-gray-500 text-sm">{t("documents.empty.titleNone")}</p>
         </div>
       ) : (
         <Link to={createPageUrl("Documents")}>
@@ -87,7 +91,7 @@ export default function RecentDocuments({ documents, isLoading }) {
                         </span>
                       )}
                       <span className="text-xs text-gray-500">
-                        {format(new Date(doc.created_date), 'd MMM', { locale: pl })}
+                        {format(new Date(doc.created_date), 'd MMM', { locale: dateLocale })}
                       </span>
                     </div>
                   </div>

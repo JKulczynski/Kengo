@@ -1,0 +1,807 @@
+{
+  "common": {
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "tryAgain": "Try again",
+    "clearFilters": "Clear filters",
+    "back": "Back",
+    "you": "You",
+    "notSet": "Not set",
+    "none": "None",
+    "noProject": "No project",
+    "loading": "Loading...",
+    "addDocument": "Add document",
+    "newProject": "New project",
+    "createProject": "Create project",
+    "invitedBy": "Invited by {{name}}",
+    "all": "All",
+    "projectTypes": {
+      "kitchen": "Kitchen",
+      "bathroom": "Bathroom",
+      "living_room": "Living room",
+      "bedroom": "Bedroom",
+      "outdoor": "Outdoor/Garden",
+      "whole_house": "Whole house",
+      "basement": "Basement",
+      "attic": "Attic",
+      "other": "Other"
+    },
+    "projectStatus": {
+      "planning": "Planning",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "on_hold": "On hold"
+    },
+    "categories": {
+      "materials": "Materials",
+      "labor": "Labor",
+      "permits": "Permits",
+      "appliances": "Appliances",
+      "fixtures": "Fixtures",
+      "tools": "Tools",
+      "utilities": "Utilities",
+      "insurance": "Insurance",
+      "other": "Other"
+    },
+    "documentTypes": {
+      "invoice": "Invoice",
+      "receipt": "Receipt",
+      "contract": "Contract",
+      "permit": "Permit",
+      "blueprint": "Blueprint",
+      "photo": "Photo",
+      "warranty": "Warranty",
+      "manual": "Manual",
+      "estimate": "Estimate",
+      "other": "Other"
+    },
+    "roles": {
+      "owner": "Owner",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    }
+  },
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "documents": "Documents",
+    "warranties": "Warranties",
+    "search": "Search",
+    "notes": "Notes",
+    "assistant": "Assistant",
+    "team": "Team",
+    "profile": "Profile",
+    "scan": "Scan",
+    "more": "More"
+  },
+
+  "layout": {
+    "tagline": "Your renovation assistant",
+    "quickAdd": {
+      "button": "New",
+      "newProject": "New project",
+      "addDocument": "Add document",
+      "quickNote": "Quick note"
+    },
+    "beta": {
+      "title": "Beta version",
+      "text": "Your feedback shapes Kengo.",
+      "cta": "Send feedback"
+    },
+    "notLoggedIn": "Not logged in",
+    "defaultUserName": "User",
+    "theme": {
+      "label": "Theme:",
+      "mobileLabel": "Theme",
+      "fallback": "Washi",
+      "titles": {
+        "karesansui": "Stone garden",
+        "ukiyo": "Floating world",
+        "aizome": "Traditional indigo",
+        "moegi": "Fresh bamboo"
+      }
+    },
+    "drawer": {
+      "menu": "Menu"
+    },
+    "profileFallback": "Profile",
+    "accountSettings": "Account settings",
+    "language": {
+      "label": "Language"
+    }
+  },
+
+  "login": {
+    "validation": {
+      "fullNameRequired": "Enter your full name.",
+      "fullNameLettersOnly": "Full name can only contain letters.",
+      "emailRequired": "Enter your email address.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "Password must be at least 6 characters."
+    },
+    "errors": {
+      "accountExists": "An account with this email already exists.",
+      "invalidCredentials": "Invalid email or password.",
+      "emailNotConfirmed": "Please confirm your email address before logging in.",
+      "userAlreadyRegistered": "An account with this email already exists.",
+      "passwordTooShort": "Password must be at least 6 characters.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "registered": {
+      "title": "Check your inbox",
+      "text": "We sent a confirmation link to <strong>{{email}}</strong>. Click it to log in.",
+      "goToLogin": "Go to login"
+    },
+    "heading": {
+      "login": "Log in",
+      "register": "Create account"
+    },
+    "fields": {
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Jane Smith",
+      "email": "Email",
+      "emailPlaceholder": "jane@example.com",
+      "password": "Password"
+    },
+    "submit": {
+      "loading": "...",
+      "login": "Log in",
+      "register": "Create account"
+    },
+    "footer": {
+      "noAccount": "Don't have an account?",
+      "hasAccount": "Already have an account?",
+      "register": "Sign up",
+      "login": "Log in"
+    }
+  },
+
+  "dashboard": {
+    "errorLoad": "Couldn't load your data.",
+    "onboarding": {
+      "welcome": "Welcome to Kengo!",
+      "intro": "Your personal renovation assistant. Start by creating your first project — we'll take it from there together.",
+      "createFirstProject": "Create your first project",
+      "cards": {
+        "projects": { "title": "Projects", "desc": "Track progress, budget, and deadlines for every renovation in one place." },
+        "documents": { "title": "Documents", "desc": "Invoices, receipts, contracts — AI automatically recognizes and sorts them." },
+        "warranties": { "title": "Warranties", "desc": "Never forget a warranty. Get a reminder before it expires." }
+      }
+    },
+    "greeting": "Good morning",
+    "subtitle": "Here's what's happening with your projects",
+    "reminders": {
+      "warrantyOne": "A warranty is expiring soon",
+      "warrantyOther": "{{count}} warranties are expiring soon",
+      "warrantyDescOne": "\"{{title}}\" — check the date",
+      "warrantyDescOther": "Within 30 days. Check the warranty manager.",
+      "budgetOne": "A project went over budget",
+      "budgetOther": "{{count}} projects went over budget",
+      "budgetDescOne": "\"{{name}}\" — check your expenses",
+      "budgetDescOther": "Check the expenses in your project details.",
+      "deadlineTitle": "Upcoming deadline",
+      "deadlineDescOne": "\"{{name}}\" — {{days}} days left",
+      "deadlineDescOther": "{{count}} projects have a deadline within 14 days.",
+      "check": "Check"
+    },
+    "quickActions": {
+      "scanDocument": "Scan document",
+      "newProject": "New project"
+    },
+    "quickActionsCard": {
+      "title": "Quick actions",
+      "scanDesc": "Upload and analyze documents instantly",
+      "searchDesc": "Find anything in your projects",
+      "askAssistant": "Ask the assistant",
+      "askAssistantDesc": "Get renovation advice instantly",
+      "newProjectDesc": "Start planning your renovation"
+    },
+    "stats": {
+      "activeProjects": "Active projects",
+      "totalSpent": "Total spent",
+      "documents": "Documents"
+    },
+    "empty": {
+      "noActiveProjects": "No active projects yet",
+      "noActiveProjectsDesc": "Your space is waiting. Create your first project and start organizing your renovation."
+    },
+    "charts": {
+      "projectBudget": "Project budgets",
+      "budget": "Budget",
+      "spent": "Spent",
+      "overBudget": "Over budget",
+      "expensesByCategory": "Expenses by category",
+      "monthlyExpenses": "Monthly expenses"
+    }
+  },
+
+  "upload": {
+    "errorFilesOnly": "Upload PDF files or images",
+    "errorProcessing": "Error processing {{file}}: {{message}}",
+    "savedSuccess": "Document saved",
+    "errorSave": "Save error: {{message}}",
+    "header": {
+      "title": "Add document",
+      "subtitle": "Add documents to your renovation projects"
+    },
+    "zone": {
+      "title": "Upload documents",
+      "subtitle": "AI will automatically extract and sort your renovation documents",
+      "browseTitle": "Browse files",
+      "browseDesc": "Upload PDFs, photos, or documents",
+      "browseButton": "Choose files",
+      "cameraTitle": "Take a photo",
+      "cameraDesc": "Scan a document with your camera",
+      "cameraButton": "Open camera",
+      "dialogTitle": "Scan document",
+      "startingCamera": "Starting camera...",
+      "takePhoto": "Take photo"
+    },
+    "queue": {
+      "title": "Queue to process ({{count}})",
+      "pdf": "PDF",
+      "image": "Image",
+      "analyzing": "Analyzing...",
+      "analyze": "Analyze",
+      "analyzingAll": "AI is analyzing...",
+      "analyzeNext": "Analyze next document"
+    },
+    "preview": {
+      "documentPreview": "Document preview",
+      "loadingPdf": "Loading PDF...",
+      "pdfError": "Couldn't load the PDF",
+      "documentAlt": "Document",
+      "aiExtracted": "AI extracted {{count}} fields",
+      "reviewData": "Review and edit data",
+      "titleLabel": "Document title",
+      "titlePlaceholder": "Enter document title",
+      "typeLabel": "Type",
+      "categoryLabel": "Category",
+      "vendorLabel": "Vendor",
+      "vendorPlaceholder": "Vendor name",
+      "amountLabel": "Amount",
+      "projectLabel": "Project",
+      "projectPlaceholder": "Choose a project (optional)",
+      "phaseLabel": "Phase",
+      "dateLabel": "Date",
+      "warrantyLabel": "Warranty until",
+      "warrantyPlaceholder": "Optional",
+      "tagsLabel": "Tags",
+      "tagsPlaceholder": "Add tags...",
+      "addTag": "Add",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Additional info about the document...",
+      "saveDocument": "Save document",
+      "saving": "Saving..."
+    },
+    "phases": {
+      "design": "Design",
+      "permits": "Permits",
+      "demolition": "Demolition",
+      "structural": "Structural",
+      "electrical": "Electrical",
+      "plumbing": "Plumbing",
+      "insulation": "Insulation",
+      "drywall": "Drywall",
+      "flooring": "Flooring",
+      "painting": "Painting",
+      "fixtures": "Fixtures",
+      "final_touches": "Final touches"
+    }
+  },
+
+  "projects": {
+    "errorLoad": "Couldn't load your projects.",
+    "toastUpdated": "Project updated",
+    "toastCreated": "Project created",
+    "toastError": "Error: {{message}}",
+    "toastDeleted": "Project deleted",
+    "toastGenericError": "Something went wrong. Please try again.",
+    "header": {
+      "title": "All projects",
+      "subtitle": "Manage your renovation projects"
+    },
+    "empty": {
+      "title": "Create your first project",
+      "desc": "Your renovation space is waiting. Add your first project and start managing your budget, timeline, and documents in one place."
+    },
+    "card": {
+      "progress": "Progress",
+      "budget": "Budget",
+      "percentComplete": "{{pct}}% complete",
+      "budgetLine": "Budget: {{cost}} zł / {{budget}} zł"
+    },
+    "form": {
+      "editProject": "Edit project",
+      "createNewProject": "Create new project",
+      "projectName": "Project name",
+      "projectNamePlaceholder": "e.g. Bathroom renovation",
+      "descriptionPlaceholder": "Short project description",
+      "typeLabel": "Type",
+      "statusLabel": "Status",
+      "budgetLabel": "Budget (zł)",
+      "targetCompletionLabel": "Planned completion",
+      "saveChanges": "Save changes"
+    },
+    "deleteDialog": {
+      "title": "Are you sure?",
+      "description": "This action cannot be undone. This will permanently delete the project \"{{name}}\" and all of its associated documents.",
+      "confirm": "Delete"
+    },
+    "detail": {
+      "startDate": "Start date",
+      "budget": "Budget",
+      "team": "Team",
+      "documents": "Documents",
+      "teamMemberOne": "1 member",
+      "teamMemberFew": "{{count}} members",
+      "teamMemberMany": "{{count}} members",
+      "progressTitle": "Project progress",
+      "budgetUsageTitle": "Budget usage",
+      "tabDocuments": "Documents ({{count}})",
+      "tabTeam": "Team ({{count}})",
+      "tabOverview": "Overview",
+      "projectDocuments": "Project documents",
+      "noDocuments": "No documents yet",
+      "uploadFirstDocument": "Upload your first document to get started",
+      "vendorLabel": "Vendor: {{vendor}}",
+      "teamMembers": "Team members",
+      "projectOwner": "Project owner",
+      "ownerBadge": "Owner",
+      "invitedBy": "Invited by {{name}}",
+      "overviewTitle": "Project overview",
+      "description": "Description",
+      "projectDetails": "Project details",
+      "type": "Type:",
+      "status": "Status:",
+      "progress": "Progress:",
+      "schedule": "Schedule",
+      "startDateColon": "Start date:",
+      "targetCompletion": "Planned completion:"
+    }
+  },
+
+  "projectDetail": {
+    "toastTaskAddError": "Couldn't add the task.",
+    "toastTaskUpdateError": "Couldn't update the task.",
+    "toastTaskDeleteError": "Couldn't delete the task.",
+    "toastEmailInvalid": "Enter a valid email address.",
+    "toastCantInviteSelf": "You can't invite yourself.",
+    "toastMemberAddError": "Couldn't add that person.",
+    "toastInvited": "Invited {{email}}",
+    "toastRemoved": "Removed {{email}}",
+    "toastMemberRemoveError": "Couldn't remove that person.",
+    "toastUpdated": "Project updated",
+    "toastError": "Error: {{message}}",
+    "toastDeleted": "Project deleted",
+    "toastGenericError": "Something went wrong. Please try again.",
+    "notFound": "Project not found",
+    "backToProjects": "Back to projects",
+    "startDate": "Start date",
+    "budget": "Budget",
+    "team": "Team",
+    "documents": "Documents",
+    "teamCountOne": "1 person",
+    "teamCountFew": "{{count}} people",
+    "teamCountMany": "{{count}} people",
+    "budgetRealization": "Budget usage",
+    "tabs": {
+      "finances": "Finances",
+      "schedule": "Schedule",
+      "gallery": "Gallery & Files",
+      "team": "Team ({{count}})"
+    },
+    "finances": {
+      "title": "Project expenses",
+      "noDocuments": "No documents yet",
+      "addFirstDocument": "Add the first document to this project",
+      "total": "Total spent"
+    },
+    "schedule": {
+      "title": "Task schedule",
+      "empty": "No tasks yet. Add your first one.",
+      "addPlaceholder": "Add a task..."
+    },
+    "gallery": {
+      "photosTitle": "Photos ({{count}})",
+      "addPhoto": "Add photo",
+      "noPhotos": "No photos in this project yet",
+      "filesTitle": "Files ({{count}})",
+      "addFile": "Add file",
+      "noFiles": "No files in this project yet"
+    },
+    "team_section": {
+      "title": "Team members",
+      "youWithEmail": "You ({{email}})",
+      "projectOwner": "Project owner",
+      "ownerBadge": "Owner",
+      "invitedBy": "Invited by {{name}}",
+      "roleEditor": "Editor",
+      "roleViewer": "Viewer",
+      "inviteTitle": "Invite someone",
+      "invitePlaceholder": "address@email.com",
+      "invite": "Invite",
+      "inviteHelp": "Editors can edit the project. Viewers can only view it."
+    }
+  },
+
+  "documents": {
+    "dropOverlay": "Drop files to add documents",
+    "header": {
+      "title": "All documents",
+      "subtitle": "Browse and manage your renovation documents"
+    },
+    "filters": {
+      "searchPlaceholder": "Search documents...",
+      "allTypes": "All types",
+      "allCategories": "All categories",
+      "allProjects": "All projects",
+      "resultsCount": "{{filtered}} of {{total}} documents"
+    },
+    "errorLoad": "Couldn't load your documents.",
+    "fields": {
+      "vendor": "Vendor",
+      "amount": "Amount",
+      "date": "Date",
+      "added": "Added"
+    },
+    "open": "Open",
+    "delete": "Delete",
+    "noProjectFallback": "No project",
+    "empty": {
+      "titleNone": "No documents yet",
+      "titleNoResults": "No results",
+      "descNone": "Kengo will help you analyze and sort them — just drop in your first invoice.",
+      "descNoResults": "No results for the selected filters. Clear filters."
+    },
+    "deleteDialog": {
+      "title": "Are you sure?",
+      "description": "This action cannot be undone. This will permanently delete the document titled \"{{title}}\".",
+      "confirm": "Delete"
+    }
+  },
+
+  "warranties": {
+    "status": {
+      "active": "Active",
+      "expired": "Expired",
+      "expiringSoon": "Expiring soon"
+    },
+    "noVendor": "No vendor",
+    "fields": {
+      "project": "Project:",
+      "purchaseDate": "Purchase date:",
+      "warrantyUntil": "Warranty until:",
+      "remaining": "Remaining:"
+    },
+    "daysLeft": "{{days}} days",
+    "viewDocument": "View document",
+    "header": {
+      "title": "Warranty manager",
+      "subtitle": "Track all your product warranties in one place."
+    },
+    "sort": {
+      "placeholder": "Sort...",
+      "asc": "Expiring soonest",
+      "desc": "Expiring latest"
+    },
+    "errorLoad": "Couldn't load your warranties.",
+    "empty": {
+      "title": "No warranties yet",
+      "desc": "When adding a document, enter the warranty end date to track it here."
+    }
+  },
+
+  "team": {
+    "header": {
+      "title": "Team management",
+      "subtitle": "Manage team members and collaborate on renovation projects"
+    },
+    "tabs": {
+      "members": "Members ({{count}})",
+      "invite": "Invite"
+    },
+    "filters": {
+      "searchPlaceholder": "Search by email...",
+      "allProjects": "All projects",
+      "allRoles": "All roles",
+      "resultsCount": "{{filtered}} of {{total}} members"
+    },
+    "roles": {
+      "owner": "Owner",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "inactive": "Inactive"
+    },
+    "invitedBy": "Invited by {{name}}",
+    "unknownProject": "Unknown project",
+    "deleteDialog": {
+      "title": "Remove team member",
+      "description": "Are you sure you want to remove {{email}} from the project {{project}}? This person will lose access to all project documents.",
+      "confirm": "Remove"
+    },
+    "empty": {
+      "title": "No team members yet",
+      "descNone": "Invite team members to start collaborating",
+      "descNoResults": "No results for the selected filters. Clear filters."
+    },
+    "inviteForm": {
+      "cardTitle": "Invite a new team member",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "colleague@example.com",
+      "projectLabel": "Project",
+      "optional": "(optional)",
+      "roleLabel": "Role",
+      "roleEditor": "Editor – can edit projects and documents",
+      "roleViewer": "Viewer – can only view",
+      "sending": "Sending invitation...",
+      "send": "Send invitation"
+    },
+    "toasts": {
+      "emailInvalid": "Enter a valid email address.",
+      "cantInviteSelf": "You can't invite yourself.",
+      "alreadyInAll": "This person is already in all selected projects.",
+      "addedOne": "Added {{email}} to 1 project.",
+      "addedOther": "Added {{email}} to {{count}} projects.",
+      "addError": "Couldn't add that person.",
+      "removed": "Team member removed.",
+      "removeError": "Error removing team member."
+    }
+  },
+
+  "notes": {
+    "errorLoad": "Couldn't load your notes.",
+    "header": {
+      "title": "Notes",
+      "subtitle": "Quick text and voice notes"
+    },
+    "newNote": "New note",
+    "empty": {
+      "title": "No notes yet",
+      "desc": "Add your first text or voice note"
+    },
+    "dialog": {
+      "title": "New note",
+      "titlePlaceholder": "Title (optional)",
+      "contentPlaceholder": "Note content...",
+      "projectPlaceholder": "Link to a project (optional)",
+      "hideRecording": "Hide recording",
+      "recordVoice": "Record voice",
+      "recordedAudio": "Recorded audio:",
+      "save": "Save note",
+      "saving": "Saving..."
+    },
+    "card": {
+      "audio": "Audio",
+      "less": "less",
+      "more": "more"
+    },
+    "voiceRecorder": {
+      "micError": "No microphone access. Check your browser permissions.",
+      "recording": "Recording... tap to stop",
+      "idle": "Tap to record a voice note"
+    }
+  },
+
+  "search": {
+    "errorLoadData": "Couldn't load your project and document data.",
+    "errorSearch": "AI search failed. Try a different query.",
+    "header": {
+      "title": "Search",
+      "subtitle": "Find any project or document instantly."
+    },
+    "bar": {
+      "placeholder": "e.g. kitchen invoices over $500",
+      "button": "Search"
+    },
+    "results": {
+      "noResultsTitle": "No results found",
+      "noResultsDesc": "Try a different or more general search term.",
+      "countOne": "{{count}} result found",
+      "countFew": "{{count}} results found",
+      "countMany": "{{count}} results found",
+      "projects": "Projects",
+      "documents": "Documents"
+    },
+    "suggested": {
+      "heading": "Try these searches",
+      "items": [
+        "Invoices over $1,000",
+        "All contracts",
+        "Kitchen photos",
+        "Bathroom renovation permits",
+        "Completed projects"
+      ]
+    }
+  },
+
+  "assistant": {
+    "systemPrompt": {
+      "intro": "You are Kengo — a warm, helpful renovation assistant. You help the user manage their renovation projects.",
+      "userData": "USER DATA:",
+      "projectsLabel": "Projects ({{count}}):",
+      "noProjects": "No projects",
+      "documentsLabel": "Documents ({{count}}):",
+      "noDocuments": "No documents",
+      "rulesTitle": "RULES:",
+      "rule1": "Reply in English, warmly and specifically",
+      "rule2": "Base your answers on the user's data — don't make things up",
+      "rule3": "When something is missing, suggest how to add it in the app",
+      "rule4": "Format responses clearly (lists, summaries)",
+      "rule5": "Don't pretend you have more data than you do",
+      "projectLine": "- Project: \"{{name}}\" | Status: {{status}} | Budget: {{budget}} | Spent: {{spent}} | Type: {{type}} | Description: {{description}} | Deadline: {{deadline}}",
+      "documentLine": "- Document: \"{{title}}\" | Type: {{type}} | Vendor: {{vendor}} | Amount: {{amount}} | Date: {{date}} | Warranty until: {{warranty}}",
+      "none": "none",
+      "historyLabel": "CONVERSATION HISTORY:",
+      "finalInstruction": "Reply to the user's last message.",
+      "userRole": "User",
+      "assistantRole": "Kengo"
+    },
+    "quickActions": {
+      "myProjects": { "label": "My projects", "prompt": "Summarize my projects — what's active, what's the budget, and what needs attention?" },
+      "expenseAnalysis": { "label": "Expense analysis", "prompt": "Analyze my expenses and tell me where most of the money is going." },
+      "warranties": { "label": "Warranties", "prompt": "Which warranties are expiring soon? Give me an overview." },
+      "whatsNext": { "label": "What's next?", "prompt": "Looking at my projects — what should I do now to move things forward?" },
+      "howMuchSpent": { "label": "How much did I spend?", "prompt": "How much have I spent in total across all projects? Summarize by category." }
+    },
+    "errorMessage": "Sorry, something went wrong. Please try again in a moment.",
+    "loadingData": "Loading your data...",
+    "subtitleWithProjectsOne": "{{count}} project · {{docs}} documents",
+    "subtitleWithProjectsOther": "{{count}} projects · {{docs}} documents",
+    "subtitleEmpty": "Start a conversation — I'll help you organize your renovation",
+    "title": "Kengo Assistant",
+    "welcomeTitle": "Hi! How can I help?",
+    "welcomeDesc": "Ask about projects, budget, warranties — I know your data and can give specific answers.",
+    "inputPlaceholder": "Ask a question...",
+    "clearConversation": "Clear conversation"
+  },
+
+  "profile": {
+    "errorLoad": "Couldn't load your profile.",
+    "header": {
+      "title": "Profile",
+      "subtitle": "Manage your personal information."
+    },
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email"
+    },
+    "editProfile": "Edit profile",
+    "logout": "Log out",
+    "toastUpdated": "Profile updated",
+    "toastUpdateError": "Couldn't update your profile.",
+    "language": {
+      "title": "Language",
+      "subtitle": "Choose the app's interface language."
+    }
+  },
+
+  "cookieConsent": {
+    "text": "We use cookies for traffic analysis (Google Analytics, Microsoft Clarity) to improve Kengo. You can decline without affecting how the app works.",
+    "decline": "Decline",
+    "accept": "Accept"
+  },
+
+  "privacy": {
+    "brand": "Kengo",
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: May 16, 2026",
+    "sections": {
+      "s1": {
+        "title": "1. Data controller",
+        "p1": "The controller of your personal data is Jan Kulczynski, operating under the Kengo brand. Contact: kengo.app.pl@gmail.com"
+      },
+      "s2": {
+        "title": "2. What data we collect",
+        "items": [
+          "Email address — for registration and login",
+          "Renovation project data — names, descriptions, dates you provide",
+          "Documents and files — invoices, warranties, and other files you upload",
+          "Notes — content you enter manually in the app",
+          "Technical data — error logs, device information (anonymous)"
+        ]
+      },
+      "s3": {
+        "title": "3. Purpose and legal basis for processing",
+        "p1": "We process your data solely to provide the Kengo service, specifically to:",
+        "items": [
+          "Enable login and use of the app (basis: performance of a contract — Art. 6(1)(b) GDPR)",
+          "Store project and document data (basis: performance of a contract)",
+          "Improve the app and fix bugs (basis: legitimate interest — Art. 6(1)(f) GDPR)"
+        ]
+      },
+      "s4": {
+        "title": "4. Data storage",
+        "p1": "Data is stored on Supabase servers located in the European Union. Supabase operates in compliance with GDPR and applies appropriate security measures. We keep your data for as long as you use the app, and for up to 30 days after account deletion."
+      },
+      "s5": {
+        "title": "5. Your rights",
+        "p1": "Under GDPR, you have the following rights:",
+        "items": [
+          "The right to access your data",
+          "The right to rectify your data",
+          "The right to erasure (the right to be forgotten)",
+          "The right to restrict processing",
+          "The right to data portability",
+          "The right to object to processing",
+          "The right to lodge a complaint with the data protection authority (in Poland: UODO, uodo.gov.pl)"
+        ]
+      },
+      "s6": {
+        "title": "6. Data sharing",
+        "p1": "We do not sell or share your personal data with third parties for marketing purposes. Data may only be shared with technical subcontractors (Supabase) to the extent necessary for the app to function."
+      },
+      "s7": {
+        "title": "7. Contact",
+        "p1": "For anything related to personal data protection, contact us at: kengo.app.pl@gmail.com"
+      }
+    },
+    "backToApp": "Back to the app"
+  },
+
+  "terms": {
+    "brand": "Kengo",
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: May 16, 2026",
+    "sections": {
+      "s1": {
+        "title": "1. General provisions",
+        "p1": "These Terms of Service set out the rules for using the Kengo app, available at kengo-lilac.vercel.app and on Google Play. The app is operated by Jan Kulczynski (the \"Operator\"). Using the app means you accept these terms."
+      },
+      "s2": {
+        "title": "2. Description of the service",
+        "p1": "Kengo is an app for managing renovation projects. It lets you organize documents, invoices, and warranties, keep notes, and use an AI assistant within a single project. The app is available in a free (limited features) and a premium version."
+      },
+      "s3": {
+        "title": "3. Registration and account",
+        "items": [
+          "Registration requires an email address and creating a password.",
+          "The user is responsible for the security of their password and account.",
+          "One account is assigned to one individual person.",
+          "The Operator reserves the right to delete accounts that violate these terms."
+        ]
+      },
+      "s4": {
+        "title": "4. User obligations",
+        "p1": "The user agrees to:",
+        "items": [
+          "Use the app in accordance with the law and these terms.",
+          "Not upload illegal, offensive content, or content that violates third-party rights.",
+          "Not take actions that could disrupt the app's operation.",
+          "Provide accurate information when registering."
+        ]
+      },
+      "s5": {
+        "title": "5. User data and files",
+        "p1": "The user retains full rights to their data and files uploaded to the app. The Operator does not process them for purposes other than providing the service. See the Privacy Policy for details."
+      },
+      "s6": {
+        "title": "6. Limitation of liability",
+        "p1": "The app is provided \"as is\". The Operator does not guarantee uninterrupted access to the service or that it will be error-free. The Operator is not liable for data loss arising from causes attributable to the user or infrastructure providers. The AI assistant provides supporting information and does not replace advice from specialists."
+      },
+      "s7": {
+        "title": "7. Changes to the terms",
+        "p1": "The Operator reserves the right to change these terms. Users will be informed of significant changes by email at least 14 days in advance. Continued use of the app after that date constitutes acceptance of the new terms."
+      },
+      "s8": {
+        "title": "8. Governing law",
+        "p1": "These terms are governed by Polish law. Any disputes will be resolved by the court with jurisdiction over the Operator's registered office."
+      },
+      "s9": {
+        "title": "9. Contact",
+        "p1": "kengo.app.pl@gmail.com"
+      }
+    },
+    "backToApp": "Back to the app"
+  }
+}

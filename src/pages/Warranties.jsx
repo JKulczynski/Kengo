@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Document } from '@/api/entities';
 import { Project } from '@/api/entities';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion, AnimatePresence } from 'framer-motion';
 
-const WarrantyCard = ({ doc, projectName }) => {
+const WarrantyCard = ({ doc, projectName, t }) => {
   const today = new Date();
 
   // Bezpieczne parsowanie daty
@@ -20,20 +21,20 @@ const WarrantyCard = ({ doc, projectName }) => {
   const daysLeft = differenceInDays(endDate, today);
 
   let status = {
-    label: 'Aktywna',
+    label: t("warranties.status.active"),
     style: { backgroundColor: 'var(--k-ok-bg)', color: 'var(--k-ok-color)' },
     icon: <ShieldCheck className="w-4 h-4" />,
   };
 
   if (daysLeft <= 0) {
     status = {
-      label: 'Wygasła',
+      label: t("warranties.status.expired"),
       style: { backgroundColor: 'var(--k-err-bg)', color: 'var(--k-err-color)' },
       icon: <XCircle className="w-4 h-4" />,
     };
   } else if (daysLeft <= 30) {
     status = {
-      label: 'Wygasa wkrótce',
+      label: t("warranties.status.expiringSoon"),
       style: { backgroundColor: 'var(--k-warn-bg)', color: 'var(--k-warn-color)' },
       icon: <AlertTriangle className="w-4 h-4" />,
     };
@@ -53,7 +54,7 @@ const WarrantyCard = ({ doc, projectName }) => {
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-semibold text-lg" style={{ color: "var(--k-text)" }}>{doc.title}</h3>
-          <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>{doc.vendor || 'Brak dostawcy'}</p>
+          <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>{doc.vendor || t("warranties.noVendor")}</p>
         </div>
         <div className="flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-full" style={status.style}>
           {status.icon}
@@ -63,26 +64,26 @@ const WarrantyCard = ({ doc, projectName }) => {
 
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
-          <span style={{ color: "var(--k-text-subtle)" }}>Projekt:</span>
-          <span className="font-medium" style={{ color: "var(--k-text)" }}>{projectName || 'Brak'}</span>
+          <span style={{ color: "var(--k-text-subtle)" }}>{t("warranties.fields.project")}</span>
+          <span className="font-medium" style={{ color: "var(--k-text)" }}>{projectName || t("common.none")}</span>
         </div>
 
         <div className="flex justify-between">
-          <span style={{ color: "var(--k-text-subtle)" }}>Data zakupu:</span>
+          <span style={{ color: "var(--k-text-subtle)" }}>{t("warranties.fields.purchaseDate")}</span>
           <span className="font-medium" style={{ color: "var(--k-text)" }}>
-            {hasValidPurchaseDate ? format(purchaseDate, 'dd.MM.yyyy') : 'Brak'}
+            {hasValidPurchaseDate ? format(purchaseDate, 'dd.MM.yyyy') : t("common.none")}
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span style={{ color: "var(--k-text-subtle)" }}>Gwarancja do:</span>
+          <span style={{ color: "var(--k-text-subtle)" }}>{t("warranties.fields.warrantyUntil")}</span>
           <span className="font-medium" style={{ color: status.style.color }}>{format(endDate, 'dd.MM.yyyy')}</span>
         </div>
 
         <div className="flex justify-between">
-          <span style={{ color: "var(--k-text-subtle)" }}>Pozostało:</span>
+          <span style={{ color: "var(--k-text-subtle)" }}>{t("warranties.fields.remaining")}</span>
           <span className="font-medium" style={{ color: status.style.color }}>
-            {daysLeft > 0 ? `${daysLeft} dni` : 'Wygasła'}
+            {daysLeft > 0 ? t("warranties.daysLeft", { days: daysLeft }) : t("warranties.status.expired")}
           </span>
         </div>
       </div>
@@ -95,7 +96,7 @@ const WarrantyCard = ({ doc, projectName }) => {
           className="text-xs font-medium mt-4 inline-flex items-center gap-1"
           style={{ color: "var(--k-accent)" }}
         >
-          Zobacz dokument <FileText className="w-3 h-3" />
+          {t("warranties.viewDocument")} <FileText className="w-3 h-3" />
         </a>
       ) : null}
     </motion.div>
@@ -103,6 +104,7 @@ const WarrantyCard = ({ doc, projectName }) => {
 };
 
 export default function WarrantiesPage() {
+  const { t } = useTranslation();
   const [warranties, setWarranties] = useState([]);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -135,7 +137,7 @@ export default function WarrantiesPage() {
         console.error("Error loading warranties:", error);
         setWarranties([]);
         setProjects([]);
-        setError("Nie udało się załadować gwarancji.");
+        setError(t("warranties.errorLoad"));
       }
       setIsLoading(false);
     };
@@ -160,21 +162,21 @@ export default function WarrantiesPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
           <div>
             <h1 className="text-4xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
-              Menedżer gwarancji
+              {t("warranties.header.title")}
             </h1>
             <p className="text-lg font-normal mt-2" style={{ color: "var(--k-text-subtle)" }}>
-              Śledź wszystkie gwarancje produktów w jednym miejscu.
+              {t("warranties.header.subtitle")}
             </p>
           </div>
 
           <div>
             <Select value={sortOrder} onValueChange={setSortOrder}>
               <SelectTrigger className="w-[180px] apple-blur">
-                <SelectValue placeholder="Sortuj..." />
+                <SelectValue placeholder={t("warranties.sort.placeholder")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="asc">Wygasa najwcześniej</SelectItem>
-                <SelectItem value="desc">Wygasa najpóźniej</SelectItem>
+                <SelectItem value="asc">{t("warranties.sort.asc")}</SelectItem>
+                <SelectItem value="desc">{t("warranties.sort.desc")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -184,7 +186,7 @@ export default function WarrantiesPage() {
           <div className="mb-8 p-4 rounded-xl flex items-center justify-between" style={{ backgroundColor: "var(--k-err-bg)", border: "1px solid var(--k-border-md)" }}>
             <p className="text-sm" style={{ color: "var(--k-err-color)" }}>{error}</p>
             <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="ml-4 text-sm">
-              Spróbuj ponownie
+              {t("common.tryAgain")}
             </Button>
           </div>
         )}
@@ -197,7 +199,7 @@ export default function WarrantiesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <AnimatePresence>
               {sortedWarranties.map(doc => (
-                <WarrantyCard key={doc.id} doc={doc} projectName={getProjectName(doc.project_id)} />
+                <WarrantyCard key={doc.id} doc={doc} projectName={getProjectName(doc.project_id)} t={t} />
               ))}
             </AnimatePresence>
           </div>
@@ -207,10 +209,10 @@ export default function WarrantiesPage() {
               <ShieldCheck className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-medium mb-2" style={{ color: "var(--k-text)" }}>
-              Brak gwarancji
+              {t("warranties.empty.title")}
             </h3>
             <p style={{ color: "var(--k-text-subtle)" }}>
-              Podczas dodawania dokumentu wpisz datę końca gwarancji, aby śledzić ją tutaj.
+              {t("warranties.empty.desc")}
             </p>
           </div>
         )}

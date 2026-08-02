@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -11,20 +12,22 @@ import {
     Plus
 } from "lucide-react";
 
-const actions = [
-  { title: "Skanuj dokument",   description: "Wgraj i analizuj dokumenty natychmiast",    icon: Camera,       url: "Upload"     },
-  { title: "Szukaj",            description: "Znajdź cokolwiek w swoich projektach",        icon: Search,       url: "Search"     },
-  { title: "Zapytaj asystenta", description: "Uzyskaj porady remontowe natychmiast",        icon: MessageSquare,url: "Assistant"  },
-  { title: "Nowy projekt",      description: "Zacznij planować swój remont",                icon: Plus,         url: "Projects"   },
-];
-
 export default function QuickActions() {
+  const { t } = useTranslation();
+
+  const actions = [
+    { title: t("dashboard.quickActions.scanDocument"), description: t("dashboard.quickActionsCard.scanDesc"), icon: Camera,       url: "Upload"     },
+    { title: t("nav.search"),                          description: t("dashboard.quickActionsCard.searchDesc"), icon: Search,       url: "Search"     },
+    { title: t("dashboard.quickActionsCard.askAssistant"), description: t("dashboard.quickActionsCard.askAssistantDesc"), icon: MessageSquare,url: "Assistant"  },
+    { title: t("dashboard.quickActions.newProject"),   description: t("dashboard.quickActionsCard.newProjectDesc"), icon: Plus,         url: "Projects"   },
+  ];
+
   return (
     <Card className="shadow-none border-0" style={{ backgroundColor: "var(--k-bg-surface)", border: "1px solid var(--k-border)" }}>
       <CardHeader className="border-b p-4" style={{ borderColor: "var(--k-border)" }}>
         <CardTitle className="text-base font-semibold flex items-center gap-2" style={{ color: "var(--k-text)" }}>
           <Zap className="w-4 h-4" style={{ color: "var(--k-accent)" }} />
-          Szybkie akcje
+          {t("dashboard.quickActionsCard.title")}
         </CardTitle>
       </CardHeader>
 

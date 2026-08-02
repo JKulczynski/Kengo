@@ -1,15 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Zap } from 'lucide-react';
-
-const suggestions = [
-  "Faktury powyżej 1000 zł",
-  "Wszystkie umowy",
-  "Zdjęcia kuchni",
-  "Pozwolenia na remont łazienki",
-  "Ukończone projekty",
-];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,6 +21,9 @@ const itemVariants = {
 };
 
 export default function SuggestedSearches({ onSearch }) {
+  const { t } = useTranslation();
+  const suggestions = t("search.suggested.items", { returnObjects: true });
+
   return (
     <motion.div
       variants={containerVariants}
@@ -37,7 +33,7 @@ export default function SuggestedSearches({ onSearch }) {
     >
       <div className="inline-flex items-center gap-2 mb-6">
         <Zap className="w-5 h-5 text-gray-400" />
-        <h3 className="text-lg font-medium text-black dark:text-white">Spróbuj tych wyszukiwań</h3>
+        <h3 className="text-lg font-medium text-black dark:text-white">{t("search.suggested.heading")}</h3>
       </div>
       <motion.div
         variants={containerVariants}

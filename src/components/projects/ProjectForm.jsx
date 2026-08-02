@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -18,17 +19,6 @@ import { Slider } from "@/components/ui/slider";
 const PROJECT_TYPES = ["kitchen", "bathroom", "living_room", "bedroom", "outdoor", "whole_house", "basement", "attic", "other"];
 const PROJECT_STATUSES = ["planning", "in_progress", "on_hold", "completed"];
 
-const PROJECT_TYPE_LABELS = {
-  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
-  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
-  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
-};
-
-const PROJECT_STATUS_LABELS = {
-  planning: 'Planowanie', in_progress: 'W trakcie',
-  on_hold: 'Wstrzymany', completed: 'Ukończony'
-};
-
 const defaultProject = {
   name: '',
   description: '',
@@ -41,6 +31,19 @@ const defaultProject = {
 };
 
 export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
+  const { t } = useTranslation();
+
+  const PROJECT_TYPE_LABELS = {
+    kitchen: t("common.projectTypes.kitchen"), bathroom: t("common.projectTypes.bathroom"), living_room: t("common.projectTypes.living_room"),
+    bedroom: t("common.projectTypes.bedroom"), outdoor: t("common.projectTypes.outdoor"), whole_house: t("common.projectTypes.whole_house"),
+    basement: t("common.projectTypes.basement"), attic: t("common.projectTypes.attic"), other: t("common.projectTypes.other")
+  };
+
+  const PROJECT_STATUS_LABELS = {
+    planning: t("common.projectStatus.planning"), in_progress: t("common.projectStatus.in_progress"),
+    on_hold: t("common.projectStatus.on_hold"), completed: t("common.projectStatus.completed")
+  };
+
   const [formData, setFormData] = useState(project || defaultProject);
 
   useEffect(() => {
@@ -61,23 +64,23 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
       <DialogContent className="apple-blur sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold tracking-tight">
-            {project ? 'Edytuj projekt' : 'Utwórz nowy projekt'}
+            {project ? t("projects.form.editProject") : t("projects.form.createNewProject")}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div>
-            <Label htmlFor="name">Nazwa projektu</Label>
-            <Input id="name" value={formData.name} onChange={e => handleChange('name', e.target.value)} placeholder="np. Remont łazienki" required />
+            <Label htmlFor="name">{t("projects.form.projectName")}</Label>
+            <Input id="name" value={formData.name} onChange={e => handleChange('name', e.target.value)} placeholder={t("projects.form.projectNamePlaceholder")} required />
           </div>
 
           <div>
-            <Label htmlFor="description">Opis</Label>
-            <Textarea id="description" value={formData.description} onChange={e => handleChange('description', e.target.value)} placeholder="Krótki opis projektu" />
+            <Label htmlFor="description">{t("projects.detail.description")}</Label>
+            <Textarea id="description" value={formData.description} onChange={e => handleChange('description', e.target.value)} placeholder={t("projects.form.descriptionPlaceholder")} />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Typ</Label>
+              <Label>{t("projects.form.typeLabel")}</Label>
               <Select value={formData.type} onValueChange={value => handleChange('type', value)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent className="apple-blur">
@@ -86,7 +89,7 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
               </Select>
             </div>
             <div>
-              <Label>Status</Label>
+              <Label>{t("projects.form.statusLabel")}</Label>
               <Select value={formData.status} onValueChange={value => handleChange('status', value)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent className="apple-blur">
@@ -97,7 +100,7 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
           </div>
 
           <div>
-            <Label htmlFor="budget">Budżet (zł)</Label>
+            <Label htmlFor="budget">{t("projects.form.budgetLabel")}</Label>
             <Input
               id="budget"
               type="number"
@@ -112,20 +115,20 @@ export default function ProjectForm({ isOpen, onClose, onSubmit, project }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="start_date">Data rozpoczęcia</Label>
+              <Label htmlFor="start_date">{t("projects.detail.startDate")}</Label>
               <Input id="start_date" type="date" value={formData.start_date || ''} onChange={e => handleChange('start_date', e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="target_completion">Planowane zakończenie</Label>
+              <Label htmlFor="target_completion">{t("projects.form.targetCompletionLabel")}</Label>
               <Input id="target_completion" type="date" value={formData.target_completion || ''} onChange={e => handleChange('target_completion', e.target.value)} />
             </div>
           </div>
 
           <DialogFooter className="pt-4">
             <DialogClose asChild>
-              <Button type="button" variant="outline" className="border-gray-200 dark:border-gray-700">Anuluj</Button>
+              <Button type="button" variant="outline" className="border-gray-200 dark:border-gray-700">{t("common.cancel")}</Button>
             </DialogClose>
-            <Button type="submit" className="btn-primary">{project ? 'Zapisz zmiany' : 'Utwórz projekt'}</Button>
+            <Button type="submit" className="btn-primary">{project ? t("projects.form.saveChanges") : t("common.createProject")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

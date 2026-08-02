@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import Layout from "./Layout.jsx";
 import { Route, Routes, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { trackPageView } from '@/lib/analytics';
 
 // Code splitting — każda strona ładuje się osobno
@@ -18,11 +19,12 @@ const Notes        = React.lazy(() => import('./Notes'));
 
 // Minimalistyczny loader — pasuje do japońskiego designu
 function PageLoader() {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center min-h-full" style={{ backgroundColor: 'var(--k-bg)' }}>
       <div className="flex flex-col items-center gap-4">
         <div className="w-8 h-8 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--k-border-strong)', borderTopColor: 'var(--k-accent)' }} />
-        <p className="text-sm" style={{ color: 'var(--k-text-subtle)' }}>Ładuję...</p>
+        <p className="text-sm" style={{ color: 'var(--k-text-subtle)' }}>{t('common.loading')}</p>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Project } from "@/api/entities";
 import { Document } from "@/api/entities";
 import { InvokeLLM } from "@/api/integrations";
@@ -11,6 +12,7 @@ import SuggestedSearches from "../components/search/SuggestedSearches";
 import SearchLoadingSkeleton from "../components/search/SearchLoadingSkeleton";
 
 export default function SearchPage() {
+  const { t } = useTranslation();
   const [projects, setProjects] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [query, setQuery] = useState("");
@@ -30,7 +32,7 @@ export default function SearchPage() {
         setDocuments(documentsData);
       } catch (err) {
         console.error("Error loading data for search:", err);
-        setError("Nie udało się załadować danych projektów i dokumentów.");
+        setError(t("search.errorLoadData"));
       }
     };
     loadData();
@@ -92,7 +94,7 @@ export default function SearchPage() {
 
     } catch (err) {
         console.error("AI Search Error:", err);
-        setError("Wyszukiwanie AI nie powiodło się. Spróbuj innego zapytania.");
+        setError(t("search.errorSearch"));
     } finally {
         setIsLoading(false);
     }
@@ -102,9 +104,9 @@ export default function SearchPage() {
     <div className="min-h-full bg-gray-50">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-semibold text-black tracking-tight">Szukaj</h1>
+          <h1 className="text-4xl font-semibold text-black tracking-tight">{t("search.header.title")}</h1>
           <p className="text-lg text-gray-500 mt-2">
-            Znajdź dowolny projekt lub dokument błyskawicznie.
+            {t("search.header.subtitle")}
           </p>
         </header>
 

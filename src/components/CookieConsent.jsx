@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { getConsent, setConsent, loadAnalytics } from "@/lib/consent";
 
 export default function CookieConsent() {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function CookieConsent() {
       style={{ backgroundColor: "var(--k-bg-surface)", borderColor: "var(--k-border-md)" }}
     >
       <p className="text-xs flex-1 text-center sm:text-left" style={{ color: "var(--k-text-muted)" }}>
-        Używamy plików cookie do analizy ruchu (Google Analytics, Microsoft Clarity), żeby ulepszać Kengo. Możesz się nie zgodzić bez wpływu na działanie apki.
+        {t("cookieConsent.text")}
       </p>
       <div className="flex gap-2 flex-shrink-0">
         <button
@@ -40,13 +42,13 @@ export default function CookieConsent() {
           className="text-xs font-medium px-4 py-2 rounded-lg border"
           style={{ color: "var(--k-text-muted)", borderColor: "var(--k-border-md)" }}
         >
-          Odrzuć
+          {t("cookieConsent.decline")}
         </button>
         <button
           onClick={accept}
           className="btn-primary text-xs font-medium px-4 py-2 rounded-lg"
         >
-          Akceptuję
+          {t("cookieConsent.accept")}
         </button>
       </div>
     </div>

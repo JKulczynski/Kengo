@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Document } from "@/api/entities";
 import { Project } from "@/api/entities";
 import { ExtractDataFromUploadedFile, UploadFile, InvokeLLM } from "@/api/integrations";
@@ -15,6 +16,7 @@ import ProcessingQueue from "../components/upload/ProcessingQueue";
 import DocumentPreview from "../components/upload/DocumentPreview";
 
 export default function UploadPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const preselectedProjectId = searchParams.get('project_id');
@@ -59,7 +61,7 @@ export default function UploadPage() {
     );
 
     if (droppedFiles.length === 0) {
-      setError("Wgraj pliki PDF lub obrazy");
+      setError(t("upload.errorFilesOnly"));
       return;
     }
 
@@ -72,7 +74,7 @@ export default function UploadPage() {
     );
 
     if (selectedFiles.length === 0) {
-      setError("Wgraj pliki PDF lub obrazy");
+      setError(t("upload.errorFilesOnly"));
       return;
     }
 
@@ -171,7 +173,7 @@ Extract: vendor name, total amount (number), date (YYYY-MM-DD format), renovatio
       trackProductEvent('dokument_zeskanowany', { typ: aiResult?.type });
 
     } catch (error) {
-      setError(`Błąd przetwarzania ${file.name}: ${error.message}`);
+      setError(t("upload.errorProcessing", { file: file.name, message: error.message }));
       removeFile(index);
     }
 
@@ -200,12 +202,12 @@ Extract: vendor name, total amount (number), date (YYYY-MM-DD format), renovatio
         removeFile(fileIndex);
       }
       setCurrentPreview(null);
-      toast.success("Dokument został zapisany");
+      toast.success(t("upload.savedSuccess"));
       if (files.length <= 1) {
         navigate(createPageUrl("Dashboard"));
       }
     } catch (error) {
-      setError(`Błąd zapisu: ${error.message}`);
+      setError(t("upload.errorSave", { message: error.message }));
     }
     setIsProcessing(false);
   };
@@ -232,8 +234,8 @@ Extract: vendor name, total amount (number), date (YYYY-MM-DD format), renovatio
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-3xl font-semibold text-black tracking-tight">Dodaj dokument</h1>
-            <p className="text-gray-500 mt-1">Dodaj dokumenty do swoich projektów remontowych</p>
+            <h1 className="text-3xl font-semibold text-black tracking-tight">{t("upload.header.title")}</h1>
+            <p className="text-gray-500 mt-1">{t("upload.header.subtitle")}</p>
           </div>
         </div>
 

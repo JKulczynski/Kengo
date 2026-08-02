@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Project } from "@/api/entities";
 import { Document } from "@/api/entities";
 import { ProjectMember } from "@/api/entities";
@@ -19,13 +20,6 @@ import ProjectForm from "../components/projects/ProjectForm";
 import ProjectCard from "../components/projects/ProjectCard";
 import DeleteConfirmationDialog from "../components/projects/DeleteConfirmationDialog";
 
-const statusConfig = {
-  planning:    { label: "Planowanie",  style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
-  in_progress: { label: "W trakcie",   style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
-  completed:   { label: "Ukończony",   style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
-  on_hold:     { label: "Wstrzymany",  style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
-};
-
 const typeIcons = {
   invoice: FileText,
   receipt: FileText,
@@ -35,12 +29,6 @@ const typeIcons = {
   other: FileText
 };
 
-const TYPE_LABELS = {
-  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
-  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
-  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
-};
-
 const roleIcons = {
   owner: Crown,
   editor: Edit,
@@ -48,7 +36,21 @@ const roleIcons = {
 };
 
 export default function ProjectsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const statusConfig = {
+    planning:    { label: t("common.projectStatus.planning"),    style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
+    in_progress: { label: t("common.projectStatus.in_progress"), style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
+    completed:   { label: t("common.projectStatus.completed"),   style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
+    on_hold:     { label: t("common.projectStatus.on_hold"),     style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
+  };
+
+  const TYPE_LABELS = {
+    kitchen: t("common.projectTypes.kitchen"), bathroom: t("common.projectTypes.bathroom"), living_room: t("common.projectTypes.living_room"),
+    bedroom: t("common.projectTypes.bedroom"), outdoor: t("common.projectTypes.outdoor"), whole_house: t("common.projectTypes.whole_house"),
+    basement: t("common.projectTypes.basement"), attic: t("common.projectTypes.attic"), other: t("common.projectTypes.other")
+  };
   const [projects, setProjects] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [members, setMembers] = useState([]);
@@ -85,7 +87,7 @@ export default function ProjectsPage() {
       setCurrentUser(user);
     } catch (error) {
       console.error("Error loading data:", error);
-      setError("Nie udało się załadować projektów.");
+      setError(t("projects.errorLoad"));
     }
     setIsLoading(false);
   };
@@ -103,18 +105,18 @@ export default function ProjectsPage() {
         setIsFormOpen(false);
         setEditingProject(null);
         await loadData();
-        toast.success('Projekt zaktualizowany');
+        toast.success(t("projects.toastUpdated"));
       } else {
         await Project.create(clean);
         trackProductEvent('projekt_utworzony', { typ: clean.type });
         setIsFormOpen(false);
         setEditingProject(null);
         await loadData();
-        toast.success('Projekt utworzony');
+        toast.success(t("projects.toastCreated"));
       }
     } catch (error) {
       console.error("Error saving project:", error);
-      toast.error(`Błąd: ${error.message}`);
+      toast.error(t("projects.toastError", { message: error.message }));
     }
   };
 
@@ -134,10 +136,10 @@ export default function ProjectsPage() {
         setProjectToDelete(null);
         setSelectedProject(null); // Close detail view if deleting current project
         await loadData();
-        toast.success('Projekt usunięty');
+        toast.success(t("projects.toastDeleted"));
       } catch (error) {
         console.error("Error deleting project:", error);
-        toast.error('Coś poszło nie tak. Spróbuj ponownie.');
+        toast.error(t("projects.toastGenericError"));
       }
     }
   };
@@ -204,9 +206,9 @@ export default function ProjectsPage() {
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Data rozpoczęcia</p>
+                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.startDate")}</p>
                     <p className="font-medium" style={{ color: "var(--k-text)" }}>
-                      {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
+                      {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'dd.MM.yyyy') : t("common.notSet")}
                     </p>
                   </div>
                 </div>
@@ -220,7 +222,7 @@ export default function ProjectsPage() {
                     <DollarSign className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Budżet</p>
+                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.budget")}</p>
                     <p className="font-medium" style={{ color: "var(--k-text)" }}>
                       {actualCost.toLocaleString('pl-PL')} zł / {(selectedProject.budget || 0).toLocaleString('pl-PL')} zł
                     </p>
@@ -236,13 +238,13 @@ export default function ProjectsPage() {
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Zespół</p>
+                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.team")}</p>
                     <p className="font-medium" style={{ color: "var(--k-text)" }}>
                       {(() => {
                         const n = selectedProjectMembers.length + 1;
-                        if (n === 1) return '1 członek';
-                        if (n >= 2 && n <= 4) return `${n} członków`;
-                        return `${n} członków`;
+                        if (n === 1) return t("projects.detail.teamMemberOne");
+                        if (n >= 2 && n <= 4) return t("projects.detail.teamMemberFew", { count: n });
+                        return t("projects.detail.teamMemberMany", { count: n });
                       })()}
                     </p>
                   </div>
@@ -257,7 +259,7 @@ export default function ProjectsPage() {
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>Dokumenty</p>
+                    <p className="text-xs" style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.documents")}</p>
                     <p className="font-medium" style={{ color: "var(--k-text)" }}>{selectedProjectDocs.length}</p>
                   </div>
                 </div>
@@ -271,7 +273,7 @@ export default function ProjectsPage() {
             <Card className="apple-blur apple-shadow">
               <CardContent className="p-6">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium" style={{ color: "var(--k-text)" }}>Postęp projektu</h3>
+                  <h3 className="font-medium" style={{ color: "var(--k-text)" }}>{t("projects.detail.progressTitle")}</h3>
                   <span className="text-sm font-medium" style={{ color: "var(--k-text)" }}>
                     {selectedProject.progress_percentage || 0}%
                   </span>
@@ -290,7 +292,7 @@ export default function ProjectsPage() {
               <Card className="apple-blur apple-shadow">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-medium" style={{ color: "var(--k-text)" }}>Wykorzystanie budżetu</h3>
+                    <h3 className="font-medium" style={{ color: "var(--k-text)" }}>{t("projects.detail.budgetUsageTitle")}</h3>
                     <span className="text-sm font-medium" style={{ color: budgetUsage > 100 ? "var(--k-err-color)" : "var(--k-text)" }}>
                       {budgetUsage.toFixed(1)}%
                     </span>
@@ -313,23 +315,23 @@ export default function ProjectsPage() {
           <Tabs defaultValue="documents" className="space-y-6">
             <TabsList className="apple-blur">
               <TabsTrigger value="documents">
-                Dokumenty ({selectedProjectDocs.length})
+                {t("projects.detail.tabDocuments", { count: selectedProjectDocs.length })}
               </TabsTrigger>
               <TabsTrigger value="team">
-                Zespół ({selectedProjectMembers.length + 1})
+                {t("projects.detail.tabTeam", { count: selectedProjectMembers.length + 1 })}
               </TabsTrigger>
               <TabsTrigger value="overview">
-                Przegląd
+                {t("projects.detail.tabOverview")}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="documents">
               <Card className="apple-blur apple-shadow">
                 <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle style={{ color: "var(--k-text)" }}>Dokumenty projektu</CardTitle>
+                  <CardTitle style={{ color: "var(--k-text)" }}>{t("projects.detail.projectDocuments")}</CardTitle>
                   <Link to={createPageUrl("Upload")}>
                     <Button size="sm" className="btn-primary">
-                      Dodaj dokument
+                      {t("common.addDocument")}
                     </Button>
                   </Link>
                 </CardHeader>
@@ -346,7 +348,7 @@ export default function ProjectsPage() {
                             <div className="flex-1">
                               <h4 className="font-medium" style={{ color: "var(--k-text)" }}>{doc.title}</h4>
                               <div className="flex items-center gap-4 text-sm mt-1" style={{ color: "var(--k-text-muted)" }}>
-                                {doc.vendor && <span>Vendor: {doc.vendor}</span>}
+                                {doc.vendor && <span>{t("projects.detail.vendorLabel", { vendor: doc.vendor })}</span>}
                                 {doc.amount && <span className="text-green-600">{doc.amount.toLocaleString('pl-PL')} zł</span>}
                                 {doc.date && <span>{format(new Date(doc.date), 'dd.MM.yyyy')}</span>}
                               </div>
@@ -366,11 +368,11 @@ export default function ProjectsPage() {
                   ) : (
                     <div className="text-center py-12">
                       <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: "var(--k-text-subtle)" }} />
-                      <h3 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Brak dokumentów</h3>
-                      <p className="mb-4" style={{ color: "var(--k-text-muted)" }}>Wgraj pierwszy dokument, aby zacząć</p>
+                      <h3 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>{t("projects.detail.noDocuments")}</h3>
+                      <p className="mb-4" style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.uploadFirstDocument")}</p>
                       <Link to={createPageUrl("Upload")}>
                         <Button className="btn-primary">
-                          Dodaj dokument
+                          {t("common.addDocument")}
                         </Button>
                       </Link>
                     </div>
@@ -382,7 +384,7 @@ export default function ProjectsPage() {
             <TabsContent value="team">
               <Card className="apple-blur apple-shadow">
                 <CardHeader>
-                  <CardTitle style={{ color: "var(--k-text)" }}>Członkowie zespołu</CardTitle>
+                  <CardTitle style={{ color: "var(--k-text)" }}>{t("projects.detail.teamMembers")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -393,11 +395,11 @@ export default function ProjectsPage() {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium" style={{ color: "var(--k-text)" }}>
-                          {selectedProject.created_by === currentUser?.email ? 'Ty' : selectedProject.created_by}
+                          {selectedProject.created_by === currentUser?.email ? t("common.you") : selectedProject.created_by}
                         </h4>
-                        <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>Właściciel projektu</p>
+                        <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.projectOwner")}</p>
                       </div>
-                      <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0">Właściciel</Badge>
+                      <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0">{t("projects.detail.ownerBadge")}</Badge>
                     </div>
 
                     {/* Team Members */}
@@ -410,10 +412,10 @@ export default function ProjectsPage() {
                           </div>
                           <div className="flex-1">
                             <h4 className="font-medium" style={{ color: "var(--k-text)" }}>
-                              {member.user_email === currentUser?.email ? 'Ty' : member.user_email}
+                              {member.user_email === currentUser?.email ? t("common.you") : member.user_email}
                             </h4>
                             <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>
-                              Zaproszony przez {member.invited_by}
+                              {t("projects.detail.invitedBy", { name: member.invited_by })}
                             </p>
                           </div>
                           <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0">
@@ -430,49 +432,49 @@ export default function ProjectsPage() {
             <TabsContent value="overview">
               <Card className="apple-blur apple-shadow">
                 <CardHeader>
-                  <CardTitle style={{ color: "var(--k-text)" }}>Przegląd projektu</CardTitle>
+                  <CardTitle style={{ color: "var(--k-text)" }}>{t("projects.detail.overviewTitle")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
                     {selectedProject.description && (
                       <div>
-                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Opis</h4>
+                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>{t("projects.detail.description")}</h4>
                         <p style={{ color: "var(--k-text-muted)" }}>{selectedProject.description}</p>
                       </div>
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Szczegóły projektu</h4>
+                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>{t("projects.detail.projectDetails")}</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span style={{ color: "var(--k-text-muted)" }}>Typ:</span>
+                            <span style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.type")}</span>
                             <span style={{ color: "var(--k-text)" }}>{TYPE_LABELS[selectedProject.type] || selectedProject.type?.replace(/_/g, ' ')}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span style={{ color: "var(--k-text-muted)" }}>Status:</span>
+                            <span style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.status")}</span>
                             <span style={{ color: "var(--k-text)" }}>{statusConfig[selectedProject.status]?.label || selectedProject.status}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span style={{ color: "var(--k-text-muted)" }}>Postęp:</span>
+                            <span style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.progress")}</span>
                             <span style={{ color: "var(--k-text)" }}>{selectedProject.progress_percentage || 0}%</span>
                           </div>
                         </div>
                       </div>
 
                       <div>
-                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Harmonogram</h4>
+                        <h4 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>{t("projects.detail.schedule")}</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span style={{ color: "var(--k-text-muted)" }}>Data rozpoczęcia:</span>
+                            <span style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.startDateColon")}</span>
                             <span style={{ color: "var(--k-text)" }}>
-                              {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
+                              {selectedProject.start_date ? format(new Date(selectedProject.start_date), 'dd.MM.yyyy') : t("common.notSet")}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span style={{ color: "var(--k-text-muted)" }}>Planowane zakończenie:</span>
+                            <span style={{ color: "var(--k-text-muted)" }}>{t("projects.detail.targetCompletion")}</span>
                             <span style={{ color: "var(--k-text)" }}>
-                              {selectedProject.target_completion ? format(new Date(selectedProject.target_completion), 'dd.MM.yyyy') : 'Nie ustawiono'}
+                              {selectedProject.target_completion ? format(new Date(selectedProject.target_completion), 'dd.MM.yyyy') : t("common.notSet")}
                             </span>
                           </div>
                         </div>
@@ -496,10 +498,10 @@ export default function ProjectsPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
-              Wszystkie projekty
+              {t("projects.header.title")}
             </h1>
             <p className="text-base md:text-lg font-normal mt-2" style={{ color: "var(--k-text-muted)" }}>
-              Zarządzaj swoimi projektami remontowymi
+              {t("projects.header.subtitle")}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -516,17 +518,17 @@ export default function ProjectsPage() {
               className="btn-primary rounded-lg text-sm font-medium"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Nowy projekt
+              {t("common.newProject")}
             </Button>
           </div>
         </div>
-        
+
         {/* Projects Grid/List */}
         {error && (
           <div className="mb-8 p-4 rounded-xl flex items-center justify-between" style={{ backgroundColor: "var(--k-err-bg)", border: "1px solid var(--k-border-md)" }}>
             <p className="text-sm" style={{ color: "var(--k-err-color)" }}>{error}</p>
             <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
-              Spróbuj ponownie
+              {t("common.tryAgain")}
             </Button>
           </div>
         )}
@@ -566,16 +568,16 @@ export default function ProjectsPage() {
                 <Plus className="w-8 h-8" style={{ color: "var(--k-accent)" }} />
               </div>
               <h3 className="text-xl font-medium mb-2" style={{ color: "var(--k-text)" }}>
-                Utwórz swój pierwszy projekt
+                {t("projects.empty.title")}
               </h3>
               <p className="mb-6 max-w-md mx-auto" style={{ color: "var(--k-text-muted)" }}>
-                Twoja przestrzeń remontowa czeka. Dodaj pierwszy projekt i zacznij zarządzać budżetem, harmonogramem i dokumentami w jednym miejscu.
+                {t("projects.empty.desc")}
               </p>
               <Button
                 onClick={() => setIsFormOpen(true)}
                 className="btn-primary rounded-lg text-sm font-medium"
               >
-                Utwórz projekt
+                {t("common.createProject")}
               </Button>
             </div>
           )}

@@ -1,7 +1,9 @@
 import React, { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Mic, Square, AlertCircle } from "lucide-react";
 
 export default function VoiceRecorder({ onTranscript, onAudioReady }) {
+  const { t } = useTranslation();
   const [isRecording, setIsRecording] = useState(false);
   const [liveText, setLiveText] = useState("");
   const [micError, setMicError] = useState(false);
@@ -88,7 +90,7 @@ export default function VoiceRecorder({ onTranscript, onAudioReady }) {
       {micError && (
         <div className="flex items-center gap-2 text-red-600 bg-red-50 rounded-lg px-3 py-2 text-sm w-full">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span>Brak dostępu do mikrofonu. Sprawdź uprawnienia w przeglądarce.</span>
+          <span>{t("notes.voiceRecorder.micError")}</span>
         </div>
       )}
       <button
@@ -109,8 +111,8 @@ export default function VoiceRecorder({ onTranscript, onAudioReady }) {
 
       <p className="text-xs text-gray-500 text-center">
         {isRecording
-          ? "Nagrywam... dotknij aby zatrzymać"
-          : "Dotknij aby nagrać notatkę głosową"}
+          ? t("notes.voiceRecorder.recording")
+          : t("notes.voiceRecorder.idle")}
       </p>
 
       {liveText && (

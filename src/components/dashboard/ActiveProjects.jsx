@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -10,25 +11,27 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const TYPE_LABELS = {
-  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
-  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
-  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
-};
-
-const statusConfig = {
-  planning:    { label: "Planowanie", style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
-  in_progress: { label: "W trakcie",  style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
-  on_hold:     { label: "Wstrzymany", style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
-  completed:   { label: "Ukończony",  style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
-};
-
 export default function ActiveProjects({ projects, documents, isLoading, onProjectUpdate }) {
+  const { t } = useTranslation();
+
+  const TYPE_LABELS = {
+    kitchen: t("common.projectTypes.kitchen"), bathroom: t("common.projectTypes.bathroom"), living_room: t("common.projectTypes.living_room"),
+    bedroom: t("common.projectTypes.bedroom"), outdoor: t("common.projectTypes.outdoor"), whole_house: t("common.projectTypes.whole_house"),
+    basement: t("common.projectTypes.basement"), attic: t("common.projectTypes.attic"), other: t("common.projectTypes.other")
+  };
+
+  const statusConfig = {
+    planning:    { label: t("common.projectStatus.planning"),    style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
+    in_progress: { label: t("common.projectStatus.in_progress"), style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
+    on_hold:     { label: t("common.projectStatus.on_hold"),     style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
+    completed:   { label: t("common.projectStatus.completed"),   style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
+  };
+
   if (isLoading) {
     return (
       <div className="apple-blur rounded-2xl p-8 apple-shadow">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xl font-semibold" style={{ color: "var(--k-text)" }}>Projekty</h2>
+          <h2 className="text-xl font-semibold" style={{ color: "var(--k-text)" }}>{t("nav.projects")}</h2>
         </div>
         <div className="space-y-6">
           {Array(3).fill(0).map((_, i) => (
@@ -46,7 +49,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
   return (
     <div className="apple-blur rounded-2xl p-6 md:p-8 apple-shadow">
       <div className="flex justify-between items-center mb-6 md:mb-8">
-        <h2 className="text-xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>Projekty</h2>
+        <h2 className="text-xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>{t("nav.projects")}</h2>
         <Link to={createPageUrl("Projects")}>
           <Button variant="ghost" size="sm" style={{ color: "var(--k-text-muted)" }}>
             <ArrowUpRight className="w-4 h-4" />
@@ -59,12 +62,12 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
           <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: "var(--k-accent-light)" }}>
             <Plus className="w-6 h-6" style={{ color: "var(--k-accent)" }} />
           </div>
-          <h3 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>Brak aktywnych projektów</h3>
+          <h3 className="font-medium mb-2" style={{ color: "var(--k-text)" }}>{t("dashboard.empty.noActiveProjects")}</h3>
           <p className="text-sm mb-6" style={{ color: "var(--k-text-muted)" }}>
-            Twoja przestrzeń czeka. Stwórz pierwszy projekt i zacznij porządkować remont.
+            {t("dashboard.empty.noActiveProjectsDesc")}
           </p>
           <Link to={createPageUrl("Projects")}>
-            <Button className="btn-primary">Utwórz projekt</Button>
+            <Button className="btn-primary">{t("common.createProject")}</Button>
           </Link>
         </div>
       ) : (
@@ -116,7 +119,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                           style={{ width: `${project.progress_percentage || 0}%`, backgroundColor: "var(--k-accent)" }}
                         />
                       </div>
-                      <p className="text-xs mt-1" style={{ color: "var(--k-text-subtle)" }}>{project.progress_percentage || 0}% ukończono</p>
+                      <p className="text-xs mt-1" style={{ color: "var(--k-text-subtle)" }}>{t("projects.card.percentComplete", { pct: project.progress_percentage || 0 })}</p>
                     </div>
                   </Link>
                 );
@@ -163,7 +166,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                       <div className="mb-4">
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>
-                            {project.current_phase?.replace(/_/g, ' ') || 'Planowanie'}
+                            {project.current_phase?.replace(/_/g, ' ') || t("common.projectStatus.planning")}
                           </span>
                           <span className="text-xs font-medium" style={{ color: "var(--k-text)" }}>
                             {project.progress_percentage || 0}%
@@ -181,7 +184,7 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
                         <div>
                           <div className="flex justify-between items-center mb-1">
                             <span className="text-xs" style={{ color: "var(--k-text-muted)" }}>
-                              Budżet: {actualCost.toLocaleString('pl-PL')} zł / {project.budget.toLocaleString('pl-PL')} zł
+                              {t("projects.card.budgetLine", { cost: actualCost.toLocaleString('pl-PL'), budget: project.budget.toLocaleString('pl-PL') })}
                             </span>
                             <span className="text-xs font-medium" style={{ color: budgetUsage > 100 ? "var(--k-err-color)" : "var(--k-text)" }}>
                               {budgetUsage.toFixed(0)}%

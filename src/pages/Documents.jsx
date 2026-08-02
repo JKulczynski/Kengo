@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Document } from "@/api/entities";
 import { Project } from "@/api/entities";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +56,7 @@ const categoryColors = {
 };
 
 export default function DocumentsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -114,13 +116,13 @@ export default function DocumentsPage() {
       setProjects(projectsData);
     } catch (error) {
       console.error("Error loading documents:", error);
-      setError("Nie udało się załadować dokumentów.");
+      setError(t("documents.errorLoad"));
     }
     setIsLoading(false);
   };
 
   const getProjectName = (projectId) => {
-    return projects.find(p => p.id === projectId)?.name || 'Bez projektu';
+    return projects.find(p => p.id === projectId)?.name || t("documents.noProjectFallback");
   };
 
   const clearFilters = () => {
@@ -197,7 +199,7 @@ export default function DocumentsPage() {
             >
               <Upload className="w-16 h-16" style={{ color: "var(--k-accent)" }} />
               <p className="text-xl font-semibold" style={{ color: "var(--k-accent-dark)" }}>
-                Upuść pliki, aby dodać dokumenty
+                {t("documents.dropOverlay")}
               </p>
             </div>
           </div>
@@ -207,16 +209,16 @@ export default function DocumentsPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
             <div>
               <h1 className="text-4xl font-semibold tracking-tight" style={{ color: "var(--k-text)" }}>
-                Wszystkie dokumenty
+                {t("documents.header.title")}
               </h1>
               <p className="text-lg font-normal mt-2" style={{ color: "var(--k-text-muted)" }}>
-                Przeglądaj i zarządzaj dokumentami remontowymi
+                {t("documents.header.subtitle")}
               </p>
             </div>
             <Link to={createPageUrl("Upload")}>
               <Button className="btn-primary rounded-lg text-sm font-medium">
                 <Upload className="w-4 h-4 mr-2" />
-                Dodaj dokument
+                {t("common.addDocument")}
               </Button>
             </Link>
           </div>
@@ -227,7 +229,7 @@ export default function DocumentsPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  placeholder="Szukaj dokumentów..."
+                  placeholder={t("documents.filters.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -236,44 +238,44 @@ export default function DocumentsPage() {
 
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Wszystkie typy" />
+                  <SelectValue placeholder={t("documents.filters.allTypes")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Wszystkie typy</SelectItem>
-                  <SelectItem value="invoice">Faktura</SelectItem>
-                  <SelectItem value="receipt">Paragon</SelectItem>
-                  <SelectItem value="contract">Umowa</SelectItem>
-                  <SelectItem value="permit">Pozwolenie</SelectItem>
-                  <SelectItem value="warranty">Gwarancja</SelectItem>
-                  <SelectItem value="photo">Zdjęcie</SelectItem>
-                  <SelectItem value="other">Inne</SelectItem>
+                  <SelectItem value="all">{t("documents.filters.allTypes")}</SelectItem>
+                  <SelectItem value="invoice">{t("common.documentTypes.invoice")}</SelectItem>
+                  <SelectItem value="receipt">{t("common.documentTypes.receipt")}</SelectItem>
+                  <SelectItem value="contract">{t("common.documentTypes.contract")}</SelectItem>
+                  <SelectItem value="permit">{t("common.documentTypes.permit")}</SelectItem>
+                  <SelectItem value="warranty">{t("common.documentTypes.warranty")}</SelectItem>
+                  <SelectItem value="photo">{t("common.documentTypes.photo")}</SelectItem>
+                  <SelectItem value="other">{t("common.documentTypes.other")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Wszystkie kategorie" />
+                  <SelectValue placeholder={t("documents.filters.allCategories")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Wszystkie kategorie</SelectItem>
-                  <SelectItem value="materials">Materiały</SelectItem>
-                  <SelectItem value="labor">Robocizna</SelectItem>
-                  <SelectItem value="permits">Pozwolenia</SelectItem>
-                  <SelectItem value="appliances">Sprzęt AGD</SelectItem>
-                  <SelectItem value="fixtures">Armatura</SelectItem>
-                  <SelectItem value="tools">Narzędzia</SelectItem>
-                  <SelectItem value="utilities">Media</SelectItem>
-                  <SelectItem value="insurance">Ubezpieczenie</SelectItem>
-                  <SelectItem value="other">Inne</SelectItem>
+                  <SelectItem value="all">{t("documents.filters.allCategories")}</SelectItem>
+                  <SelectItem value="materials">{t("common.categories.materials")}</SelectItem>
+                  <SelectItem value="labor">{t("common.categories.labor")}</SelectItem>
+                  <SelectItem value="permits">{t("common.categories.permits")}</SelectItem>
+                  <SelectItem value="appliances">{t("common.categories.appliances")}</SelectItem>
+                  <SelectItem value="fixtures">{t("common.categories.fixtures")}</SelectItem>
+                  <SelectItem value="tools">{t("common.categories.tools")}</SelectItem>
+                  <SelectItem value="utilities">{t("common.categories.utilities")}</SelectItem>
+                  <SelectItem value="insurance">{t("common.categories.insurance")}</SelectItem>
+                  <SelectItem value="other">{t("common.categories.other")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={projectFilter} onValueChange={setProjectFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Wszystkie projekty" />
+                  <SelectValue placeholder={t("documents.filters.allProjects")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Wszystkie projekty</SelectItem>
+                  <SelectItem value="all">{t("documents.filters.allProjects")}</SelectItem>
                   {projects.map(project => (
                     <SelectItem key={project.id} value={project.id}>
                       {project.name}
@@ -282,13 +284,13 @@ export default function DocumentsPage() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="flex justify-between items-center">
               <p className="text-sm" style={{ color: "var(--k-text-muted)" }}>
-                {filteredDocuments.length} z {documents.length} dokumentów
+                {t("documents.filters.resultsCount", { filtered: filteredDocuments.length, total: documents.length })}
               </p>
               <Button variant="outline" onClick={clearFilters} size="sm">
-                Wyczyść filtry
+                {t("common.clearFilters")}
               </Button>
             </div>
           </div>
@@ -297,7 +299,7 @@ export default function DocumentsPage() {
             <div className="mb-8 p-4 rounded-xl flex items-center justify-between" style={{ backgroundColor: "var(--k-err-bg)", border: "1px solid var(--k-border-md)" }}>
               <p className="text-sm" style={{ color: "var(--k-err-color)" }}>{error}</p>
               <Button size="sm" variant="outline" onClick={loadData} className="ml-4 text-sm">
-                Spróbuj ponownie
+                {t("common.tryAgain")}
               </Button>
             </div>
           )}
@@ -348,13 +350,13 @@ export default function DocumentsPage() {
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             {doc.vendor && (
                               <div>
-                                <span className="block text-xs" style={{ color: "var(--k-text-muted)" }}>Dostawca</span>
+                                <span className="block text-xs" style={{ color: "var(--k-text-muted)" }}>{t("documents.fields.vendor")}</span>
                                 <span className="font-medium" style={{ color: "var(--k-text)" }}>{doc.vendor}</span>
                               </div>
                             )}
                             {doc.amount && (
                               <div>
-                                <span className="block text-xs" style={{ color: "var(--k-text-muted)" }}>Kwota</span>
+                                <span className="block text-xs" style={{ color: "var(--k-text-muted)" }}>{t("documents.fields.amount")}</span>
                                 <span className="font-medium text-green-600">
                                   {doc.amount.toLocaleString('pl-PL')} zł
                                 </span>
@@ -362,14 +364,14 @@ export default function DocumentsPage() {
                             )}
                             {doc.date && (
                               <div>
-                                <span className="block text-xs" style={{ color: "var(--k-text-muted)" }}>Data</span>
+                                <span className="block text-xs" style={{ color: "var(--k-text-muted)" }}>{t("documents.fields.date")}</span>
                                 <span className="font-medium" style={{ color: "var(--k-text)" }}>
                                   {format(new Date(doc.date), 'MMM d, yyyy')}
                                 </span>
                               </div>
                             )}
                             <div>
-                              <span className="block text-xs" style={{ color: "var(--k-text-muted)" }}>Dodano</span>
+                              <span className="block text-xs" style={{ color: "var(--k-text-muted)" }}>{t("documents.fields.added")}</span>
                               <span className="font-medium" style={{ color: "var(--k-text)" }}>
                                 {format(new Date(doc.created_date), 'MMM d, yyyy')}
                               </span>
@@ -392,7 +394,7 @@ export default function DocumentsPage() {
                           className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         >
                           <ExternalLink className="w-4 h-4" />
-                          Otwórz
+                          {t("documents.open")}
                         </a>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -402,7 +404,7 @@ export default function DocumentsPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="apple-blur">
                             <DropdownMenuItem onClick={() => setDocumentToDelete(doc)} className="text-red-500">
-                              <Trash2 className="w-4 h-4 mr-2" /> Delete
+                              <Trash2 className="w-4 h-4 mr-2" /> {t("documents.delete")}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -418,23 +420,23 @@ export default function DocumentsPage() {
                 <FileText className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-medium mb-2" style={{ color: "var(--k-text)" }}>
-                {documents.length === 0 ? "Brak dokumentów" : "Brak wyników"}
+                {documents.length === 0 ? t("documents.empty.titleNone") : t("documents.empty.titleNoResults")}
               </h3>
               <p className="mb-6 max-w-md mx-auto" style={{ color: "var(--k-text-muted)" }}>
                 {documents.length === 0
-                  ? "Kengo pomoże Ci je przeanalizować i posegregować — wystarczy, że wrzucisz pierwszą fakturę."
-                  : "Brak wyników dla wybranych filtrów. Wyczyść filtry."}
+                  ? t("documents.empty.descNone")
+                  : t("documents.empty.descNoResults")}
               </p>
               {documents.length === 0 ? (
                 <Link to={createPageUrl("Upload")}>
                   <Button className="btn-primary">
                     <Upload className="w-4 h-4 mr-2" />
-                    Dodaj dokument
+                    {t("common.addDocument")}
                   </Button>
                 </Link>
               ) : (
                 <Button variant="outline" onClick={clearFilters}>
-                  Wyczyść filtry
+                  {t("common.clearFilters")}
                 </Button>
               )}
             </div>

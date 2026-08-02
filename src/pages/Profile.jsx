@@ -1,15 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { User } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
-import { Edit, Save, LogOut, Check } from 'lucide-react';
+import { Edit, Save, LogOut, Check, Languages } from 'lucide-react';
 import { toast } from 'sonner';
+import { setLanguage } from '@/i18n';
 
 export default function ProfilePage() {
+  const { t, i18n } = useTranslation();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -38,10 +41,10 @@ export default function ProfilePage() {
       await User.updateMyUserData({ full_name: fullName });
       setUser(prev => ({ ...prev, full_name: fullName }));
       setIsEditing(false);
-      toast.success("Profil zaktualizowany");
+      toast.success(t("profile.toastUpdated"));
     } catch (error) {
       console.error("Failed to update user:", error);
-      toast.error("Nie udało się zaktualizować profilu.");
+      toast.error(t("profile.toastUpdateError"));
     } finally {
       setIsSaving(false);
     }
@@ -79,16 +82,16 @@ export default function ProfilePage() {
   }
   
   if (!user) {
-     return <div className="text-center p-12">Nie udało się załadować profilu.</div>
+     return <div className="text-center p-12">{t("profile.errorLoad")}</div>
   }
 
   return (
     <div className="min-h-full bg-gray-50">
       <div className="max-w-2xl mx-auto px-6 py-12">
         <header className="mb-12">
-          <h1 className="text-4xl font-semibold text-black tracking-tight">Profil</h1>
+          <h1 className="text-4xl font-semibold text-black tracking-tight">{t("profile.header.title")}</h1>
           <p className="text-lg text-gray-500 mt-2">
-            Zarządzaj swoimi danymi osobowymi.
+            {t("profile.header.subtitle")}
           </p>
         </header>
 
@@ -107,7 +110,7 @@ export default function ProfilePage() {
 
               <div className="flex-1 w-full">
                 <div className="mb-4">
-                  <Label htmlFor="fullName" className="text-sm text-gray-500">Imię i nazwisko</Label>
+                  <Label htmlFor="fullName" className="text-sm text-gray-500">{t("profile.fields.fullName")}</Label>
                   {isEditing ? (
                     <Input
                       id="fullName"
@@ -117,11 +120,11 @@ export default function ProfilePage() {
                       autoFocus
                     />
                   ) : (
-                    <p className="text-xl font-medium text-black mt-1">{user.full_name || 'Nie ustawiono'}</p>
+                    <p className="text-xl font-medium text-black mt-1">{user.full_name || t("common.notSet")}</p>
                   )}
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-500">E-mail</Label>
+                  <Label className="text-sm text-gray-500">{t("profile.fields.email")}</Label>
                   <p className="text-base text-gray-600 mt-1">{user.email}</p>
                 </div>
               </div>
@@ -130,25 +133,54 @@ export default function ProfilePage() {
             <div className="flex justify-end mt-8">
               {isEditing ? (
                 <div className="flex gap-2">
-                  <Button type="button" variant="ghost" onClick={() => setIsEditing(false)} disabled={isSaving}>Anuluj</Button>
+                  <Button type="button" variant="ghost" onClick={() => setIsEditing(false)} disabled={isSaving}>{t("common.cancel")}</Button>
                   <Button type="submit" disabled={isSaving}>
                     {isSaving ? <Save className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    Zapisz
+                    {t("common.save")}
                   </Button>
                 </div>
               ) : (
                 <Button type="button" onClick={() => setIsEditing(true)}>
-                  <Edit className="w-4 h-4 mr-2" /> Edytuj profil
+                  <Edit className="w-4 h-4 mr-2" /> {t("profile.editProfile")}
                 </Button>
               )}
             </div>
           </form>
         </motion.div>
-        
+
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            className="apple-blur rounded-2xl p-8 apple-shadow mt-8"
+        >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Languages className="w-4 h-4 text-gray-500" />
+                <div>
+                  <p className="font-medium text-black text-sm">{t("profile.language.title")}</p>
+                  <p className="text-xs text-gray-500">{t("profile.language.subtitle")}</p>
+                </div>
+              </div>
+              <div className="flex rounded-lg overflow-hidden border border-gray-200">
+                {["pl", "en"].map((lng) => (
+                  <button
+                    key={lng}
+                    type="button"
+                    onClick={() => setLanguage(lng)}
+                    className={`px-3 py-1.5 text-xs font-semibold uppercase ${i18n.language === lng ? 'bg-black text-white' : 'text-gray-500'}`}
+                  >
+                    {lng}
+                  </button>
+                ))}
+              </div>
+            </div>
+        </motion.div>
+
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
             className="mt-8"
         >
             <Button
@@ -157,7 +189,7 @@ export default function ProfilePage() {
                 className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20"
             >
                 <LogOut className="w-4 h-4 mr-2" />
-                Wyloguj się
+                {t("profile.logout")}
             </Button>
         </motion.div>
       </div>

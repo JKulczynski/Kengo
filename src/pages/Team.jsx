@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ProjectMember } from '@/api/entities';
 import { Project } from '@/api/entities';
 import { User } from '@/api/entities';
@@ -61,6 +62,7 @@ const statusColors = {
 };
 
 export default function TeamPage() {
+  const { t } = useTranslation();
   const [currentUser, setCurrentUser] = useState(null);
   const [projects, setProjects] = useState([]);
   const [members, setMembers] = useState([]);
@@ -120,7 +122,7 @@ export default function TeamPage() {
   });
 
   const getProjectName = (projectId) => {
-    return projects.find(p => p.id === projectId)?.name || 'Unknown Project';
+    return projects.find(p => p.id === projectId)?.name || t("team.unknownProject");
   };
 
   const canManageMember = (member) => {
@@ -142,11 +144,11 @@ export default function TeamPage() {
   const sendInvitation = async () => {
     if (!inviteEmail.trim()) return;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail)) {
-      toast.error("Podaj prawidłowy adres email.");
+      toast.error(t("team.toasts.emailInvalid"));
       return;
     }
     if (inviteEmail === currentUser?.email) {
-      toast.error("Nie możesz zaprosić samego siebie.");
+      toast.error(t("team.toasts.cantInviteSelf"));
       return;
     }
 
@@ -174,14 +176,16 @@ export default function TeamPage() {
       setInviteProject('');
 
       if (added === 0) {
-        toast.warning("Ta osoba jest już we wszystkich wybranych projektach.");
+        toast.warning(t("team.toasts.alreadyInAll"));
+      } else if (added === 1) {
+        toast.success(t("team.toasts.addedOne", { email: inviteEmail }));
       } else {
-        toast.success(`Dodano ${inviteEmail} do ${added === 1 ? '1 projektu' : `${added} projektów`}.`);
+        toast.success(t("team.toasts.addedOther", { email: inviteEmail, count: added }));
       }
       await loadData();
     } catch (error) {
       console.error("Error inviting member:", error);
-      toast.error("Nie udało się dodać osoby.");
+      toast.error(t("team.toasts.addError"));
     }
     setIsInviting(false);
   };
@@ -189,11 +193,11 @@ export default function TeamPage() {
   const removeMember = async (memberId) => {
     try {
       await ProjectMember.delete(memberId);
-      toast.success("Członek zespołu został usunięty.");
+      toast.success(t("team.toasts.removed"));
       await loadData();
     } catch (error) {
       console.error("Error removing member:", error);
-      toast.error("Błąd usuwania członka zespołu.");
+      toast.error(t("team.toasts.removeError"));
     }
   };
 
@@ -229,9 +233,9 @@ export default function TeamPage() {
 
   const getRoleDisplayName = (role) => {
     const names = {
-      owner: 'Właściciel',
-      editor: 'Edytor',
-      viewer: 'Przeglądający'
+      owner: t("team.roles.owner"),
+      editor: t("team.roles.editor"),
+      viewer: t("team.roles.viewer")
     };
     return names[role] || role;
   };
@@ -257,10 +261,10 @@ export default function TeamPage() {
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl font-semibold text-black tracking-tight mb-3">
-            Zarządzanie zespołem
+            {t("team.header.title")}
           </h1>
           <p className="text-lg text-gray-500">
-            Zarządzaj członkami zespołu i współpracuj nad projektami remontowymi
+            {t("team.header.subtitle")}
           </p>
         </div>
 
@@ -268,11 +272,11 @@ export default function TeamPage() {
           <TabsList className="apple-blur">
             <TabsTrigger value="members" className="flex items-center gap-2 text-black">
               <Users className="w-4 h-4" />
-              Członkowie ({members.length})
+              {t("team.tabs.members", { count: members.length })}
             </TabsTrigger>
             <TabsTrigger value="invite" className="flex items-center gap-2 text-black">
               <UserPlus className="w-4 h-4" />
-              Zaproś
+              {t("team.tabs.invite")}
             </TabsTrigger>
           </TabsList>
 
@@ -284,19 +288,19 @@ export default function TeamPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
-                      placeholder="Szukaj po e-mailu..."
+                      placeholder={t("team.filters.searchPlaceholder")}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10"
                     />
                   </div>
-                  
+
                   <Select value={selectedProject} onValueChange={setSelectedProject}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Wszystkie projekty" />
+                      <SelectValue placeholder={t("team.filters.allProjects")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Wszystkie projekty</SelectItem>
+                      <SelectItem value="all">{t("team.filters.allProjects")}</SelectItem>
                       {projects.map(project => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.name}
@@ -307,20 +311,20 @@ export default function TeamPage() {
 
                   <Select value={roleFilter} onValueChange={setRoleFilter}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Wszystkie role" />
+                      <SelectValue placeholder={t("team.filters.allRoles")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Wszystkie role</SelectItem>
-                      <SelectItem value="owner">Właściciel</SelectItem>
-                      <SelectItem value="editor">Edytor</SelectItem>
-                      <SelectItem value="viewer">Przeglądający</SelectItem>
+                      <SelectItem value="all">{t("team.filters.allRoles")}</SelectItem>
+                      <SelectItem value="owner">{t("team.roles.owner")}</SelectItem>
+                      <SelectItem value="editor">{t("team.roles.editor")}</SelectItem>
+                      <SelectItem value="viewer">{t("team.roles.viewer")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="flex justify-between items-center mt-4">
                   <p className="text-sm text-gray-500">
-                    {filteredMembers.length} z {members.length} członków
+                    {t("team.filters.resultsCount", { filtered: filteredMembers.length, total: members.length })}
                   </p>
                   <Button
                     variant="outline"
@@ -331,7 +335,7 @@ export default function TeamPage() {
                       setRoleFilter('all');
                     }}
                   >
-                    Wyczyść filtry
+                    {t("common.clearFilters")}
                   </Button>
                 </div>
               </CardContent>
@@ -363,13 +367,13 @@ export default function TeamPage() {
                             
                             <div>
                               <h3 className="font-semibold text-black">
-                                {member.user_email === currentUser?.email ? 'Ty' : member.user_email}
+                                {member.user_email === currentUser?.email ? t("common.you") : member.user_email}
                               </h3>
                               <p className="text-sm text-gray-500">
                                 {getProjectName(member.project_id)}
                               </p>
                               <p className="text-xs text-gray-400">
-                                Zaproszony przez {member.invited_by}
+                                {t("team.invitedBy", { name: member.invited_by })}
                               </p>
                             </div>
                           </div>
@@ -381,8 +385,8 @@ export default function TeamPage() {
                             </Badge>
                             
                             <Badge className={statusColors[member.status]}>
-                              {member.status === 'active' ? 'Aktywny' :
-                               member.status === 'pending' ? 'Oczekuje' : 'Nieaktywny'}
+                              {member.status === 'active' ? t("team.status.active") :
+                               member.status === 'pending' ? t("team.status.pending") : t("team.status.inactive")}
                             </Badge>
                             
                             {canManageMember(member) && member.user_email !== currentUser?.email && (
@@ -394,19 +398,18 @@ export default function TeamPage() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="apple-blur">
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Usuń członka zespołu</AlertDialogTitle>
+                                    <AlertDialogTitle>{t("team.deleteDialog.title")}</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Czy na pewno chcesz usunąć {member.user_email} z projektu {getProjectName(member.project_id)}?
-                                      Osoba ta straci dostęp do wszystkich dokumentów projektu.
+                                      {t("team.deleteDialog.description", { email: member.user_email, project: getProjectName(member.project_id) })}
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Anuluj</AlertDialogCancel>
+                                    <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() => removeMember(member.id)}
                                       className="bg-red-500 hover:bg-red-600"
                                     >
-                                      Usuń
+                                      {t("team.deleteDialog.confirm")}
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -424,12 +427,12 @@ export default function TeamPage() {
                 <CardContent className="text-center py-12">
                   <Users className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                   <h3 className="text-lg font-medium text-black mb-2">
-                    Brak członków zespołu
+                    {t("team.empty.title")}
                   </h3>
                   <p className="text-gray-500">
                     {members.length === 0
-                      ? "Zaproś członków zespołu, aby zacząć współpracę"
-                      : "Brak wyników dla wybranych filtrów. Wyczyść filtry."
+                      ? t("team.empty.descNone")
+                      : t("team.empty.descNoResults")
                     }
                   </p>
                 </CardContent>
@@ -442,29 +445,29 @@ export default function TeamPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserPlus className="w-5 h-5" />
-                  Zaproś nowego członka zespołu
+                  {t("team.inviteForm.cardTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label htmlFor="invite-email">Adres e-mail</Label>
+                  <Label htmlFor="invite-email">{t("team.inviteForm.emailLabel")}</Label>
                   <Input
                     id="invite-email"
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder="kolega@przyklad.pl"
+                    placeholder={t("team.inviteForm.emailPlaceholder")}
                   />
                 </div>
 
                 <div>
-                  <Label>Projekt <span className="text-gray-400 font-normal">(opcjonalnie)</span></Label>
+                  <Label>{t("team.inviteForm.projectLabel")} <span className="text-gray-400 font-normal">{t("team.inviteForm.optional")}</span></Label>
                   <Select value={inviteProject} onValueChange={setInviteProject}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Wszystkie projekty" />
+                      <SelectValue placeholder={t("team.filters.allProjects")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Wszystkie projekty</SelectItem>
+                      <SelectItem value="all">{t("team.filters.allProjects")}</SelectItem>
                       {projects.map(project => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.name}
@@ -475,14 +478,14 @@ export default function TeamPage() {
                 </div>
 
                 <div>
-                  <Label>Rola</Label>
+                  <Label>{t("team.inviteForm.roleLabel")}</Label>
                   <Select value={inviteRole} onValueChange={setInviteRole}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="editor">Edytor – może edytować projekty i dokumenty</SelectItem>
-                      <SelectItem value="viewer">Przeglądający – może tylko przeglądać</SelectItem>
+                      <SelectItem value="editor">{t("team.inviteForm.roleEditor")}</SelectItem>
+                      <SelectItem value="viewer">{t("team.inviteForm.roleViewer")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -493,11 +496,11 @@ export default function TeamPage() {
                   className="btn-primary w-full"
                 >
                   {isInviting ? (
-                    <>Wysyłam zaproszenie...</>
+                    <>{t("team.inviteForm.sending")}</>
                   ) : (
                     <>
                       <Mail className="w-4 h-4 mr-2" />
-                      Wyślij zaproszenie
+                      {t("team.inviteForm.send")}
                     </>
                   )}
                 </Button>

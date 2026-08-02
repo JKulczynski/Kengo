@@ -1,8 +1,9 @@
 import React from 'react';
-import { 
-    Upload, 
-    Camera, 
-    FileText, 
+import { useTranslation } from 'react-i18next';
+import {
+    Upload,
+    Camera,
+    FileText,
     Image
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 
 export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActive }) {
+  const { t } = useTranslation();
   const [showCameraDialog, setShowCameraDialog] = React.useState(false);
   const videoRef = React.useRef(null);
   const streamRef = React.useRef(null);
@@ -91,10 +93,10 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
             <Upload className="w-8 h-8 text-white dark:text-black" />
           </div>
           <h2 className="text-2xl font-semibold text-black dark:text-white mb-3 tracking-tight">
-            Wgraj dokumenty
+            {t("upload.zone.title")}
           </h2>
           <p className="text-gray-500 dark:text-gray-400 text-base">
-            AI automatycznie wyodrębni i posegreguje Twoje dokumenty remontowe
+            {t("upload.zone.subtitle")}
           </p>
         </div>
 
@@ -110,13 +112,13 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
                   <FileText className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                 </div>
                 <h3 className="font-medium text-black dark:text-white mb-2">
-                  Przeglądaj pliki
+                  {t("upload.zone.browseTitle")}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Wgraj pliki PDF, zdjęcia lub dokumenty
+                  {t("upload.zone.browseDesc")}
                 </p>
                 <Button variant="outline" className="border-gray-200 dark:border-gray-700 text-sm">
-                  Wybierz pliki
+                  {t("upload.zone.browseButton")}
                 </Button>
               </div>
             </div>
@@ -145,13 +147,13 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
                   <Camera className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                 </div>
                 <h3 className="font-medium text-black dark:text-white mb-2">
-                  Zrób zdjęcie
+                  {t("upload.zone.cameraTitle")}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Zeskanuj dokument aparatem
+                  {t("upload.zone.cameraDesc")}
                 </p>
                 <Button variant="outline" className="border-gray-200 dark:border-gray-700 text-sm">
-                  Otwórz aparat
+                  {t("upload.zone.cameraButton")}
                 </Button>
               </div>
             </div>
@@ -165,7 +167,7 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 font-medium">
               <Camera className="w-5 h-5" />
-              Skanuj dokument
+              {t("upload.zone.dialogTitle")}
             </DialogTitle>
           </DialogHeader>
           
@@ -181,7 +183,7 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
               <div className="absolute inset-0 flex items-center justify-center text-white">
                 <div className="flex items-center gap-3">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                  <span className="text-sm">Uruchamiam kamerę...</span>
+                  <span className="text-sm">{t("upload.zone.startingCamera")}</span>
                 </div>
               </div>
             )}
@@ -193,14 +195,14 @@ export default function FileUploadZone({ onFileSelect, onCameraCapture, dragActi
               onClick={() => setShowCameraDialog(false)}
               className="border-gray-200 dark:border-gray-700"
             >
-              Anuluj
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={capturePhoto}
               disabled={!isCameraReady}
               className="btn-primary"
             >
-              Zrób zdjęcie
+              {t("upload.zone.takePhoto")}
             </Button>
           </div>
         </DialogContent>

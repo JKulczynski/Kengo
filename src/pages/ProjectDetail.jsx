@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Project } from '@/api/entities';
 import { Document } from '@/api/entities';
 import { ProjectMember } from '@/api/entities';
@@ -33,17 +34,10 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { useDateLocale } from '@/lib/dateLocale';
 import { toast } from 'sonner';
 import ProjectForm from '@/components/projects/ProjectForm';
 import DeleteConfirmationDialog from '@/components/projects/DeleteConfirmationDialog';
-
-const statusConfig = {
-  planning:    { label: "Planowanie", style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
-  in_progress: { label: "W trakcie",  style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
-  completed:   { label: "Ukończony",  style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
-  on_hold:     { label: "Wstrzymany", style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
-};
 
 const typeIcons = {
   invoice: Receipt,
@@ -54,24 +48,6 @@ const typeIcons = {
   other: FileText
 };
 
-const TYPE_LABELS = {
-  kitchen: 'Kuchnia', bathroom: 'Łazienka', living_room: 'Salon',
-  bedroom: 'Sypialnia', outdoor: 'Ogród/Zewnątrz', whole_house: 'Cały dom',
-  basement: 'Piwnica', attic: 'Strych', other: 'Inne'
-};
-
-const categoryLabels = {
-  materials:  "Materiały",
-  labor:      "Robocizna",
-  permits:    "Pozwolenia",
-  appliances: "Sprzęt AGD",
-  fixtures:   "Armatura",
-  tools:      "Narzędzia",
-  utilities:  "Media",
-  insurance:  "Ubezpieczenie",
-  other:      "Inne",
-};
-
 const roleIcons = {
   owner: Crown,
   editor: Edit,
@@ -79,8 +55,35 @@ const roleIcons = {
 };
 
 export default function ProjectDetailPage() {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const { projectId } = useParams();
   const navigate = useNavigate();
+
+  const statusConfig = {
+    planning:    { label: t("common.projectStatus.planning"),    style: { backgroundColor: "var(--k-icon-bg)",  color: "var(--k-icon-color)" } },
+    in_progress: { label: t("common.projectStatus.in_progress"), style: { backgroundColor: "var(--k-warn-bg)",  color: "var(--k-warn-color)" } },
+    completed:   { label: t("common.projectStatus.completed"),   style: { backgroundColor: "var(--k-ok-bg)",    color: "var(--k-ok-color)" } },
+    on_hold:     { label: t("common.projectStatus.on_hold"),     style: { backgroundColor: "var(--k-err-bg)",   color: "var(--k-err-color)" } },
+  };
+
+  const TYPE_LABELS = {
+    kitchen: t("common.projectTypes.kitchen"), bathroom: t("common.projectTypes.bathroom"), living_room: t("common.projectTypes.living_room"),
+    bedroom: t("common.projectTypes.bedroom"), outdoor: t("common.projectTypes.outdoor"), whole_house: t("common.projectTypes.whole_house"),
+    basement: t("common.projectTypes.basement"), attic: t("common.projectTypes.attic"), other: t("common.projectTypes.other")
+  };
+
+  const categoryLabels = {
+    materials:  t("common.categories.materials"),
+    labor:      t("common.categories.labor"),
+    permits:    t("common.categories.permits"),
+    appliances: t("common.categories.appliances"),
+    fixtures:   t("common.categories.fixtures"),
+    tools:      t("common.categories.tools"),
+    utilities:  t("common.categories.utilities"),
+    insurance:  t("common.categories.insurance"),
+    other:      t("common.categories.other"),
+  };
   const [project, setProject] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -141,7 +144,7 @@ export default function ProjectDetailPage() {
       setNewTaskText("");
       await loadProjectData();
     } catch (e) {
-      toast.error("Nie udało się dodać zadania.");
+      toast.error(t("projectDetail.toastTaskAddError"));
     }
     setAddingTask(false);
   };
@@ -151,7 +154,7 @@ export default function ProjectDetailPage() {
       await Note.update(task.id, { done: !task.done });
       setTasks(prev => prev.map(t => t.id === task.id ? { ...t, done: !t.done } : t));
     } catch (e) {
-      toast.error("Nie udało się zaktualizować zadania.");
+      toast.error(t("projectDetail.toastTaskUpdateError"));
     }
   };
 
@@ -160,17 +163,17 @@ export default function ProjectDetailPage() {
       await Note.delete(taskId);
       setTasks(prev => prev.filter(t => t.id !== taskId));
     } catch (e) {
-      toast.error("Nie udało się usunąć zadania.");
+      toast.error(t("projectDetail.toastTaskDeleteError"));
     }
   };
 
   const handleInviteMember = async () => {
     if (!inviteEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail)) {
-      toast.error("Podaj prawidłowy adres email.");
+      toast.error(t("projectDetail.toastEmailInvalid"));
       return;
     }
     if (inviteEmail === currentUser?.email) {
-      toast.error("Nie możesz zaprosić samego siebie.");
+      toast.error(t("projectDetail.toastCantInviteSelf"));
       return;
     }
     setInviting(true);
@@ -184,9 +187,9 @@ export default function ProjectDetailPage() {
       setInviteEmail("");
       await loadProjectData();
       trackProductEvent('czlonek_zaproszony', { rola: inviteRole });
-      toast.success(`Zaproszono ${inviteEmail}`);
+      toast.success(t("projectDetail.toastInvited", { email: inviteEmail }));
     } catch (e) {
-      toast.error("Nie udało się dodać osoby.");
+      toast.error(t("projectDetail.toastMemberAddError"));
     }
     setInviting(false);
   };
@@ -195,9 +198,9 @@ export default function ProjectDetailPage() {
     try {
       await ProjectMember.delete(memberId);
       setMembers(prev => prev.filter(m => m.id !== memberId));
-      toast.success(`Usunięto ${memberEmail}`);
+      toast.success(t("projectDetail.toastRemoved", { email: memberEmail }));
     } catch (e) {
-      toast.error("Nie udało się usunąć osoby.");
+      toast.error(t("projectDetail.toastMemberRemoveError"));
     }
   };
 
@@ -212,19 +215,19 @@ export default function ProjectDetailPage() {
       await Project.update(projectId, clean);
       setShowEditForm(false);
       await loadProjectData();
-      toast.success('Projekt zaktualizowany');
+      toast.success(t("projectDetail.toastUpdated"));
     } catch (error) {
-      toast.error(`Błąd: ${error.message}`);
+      toast.error(t("projectDetail.toastError", { message: error.message }));
     }
   };
 
   const handleDeleteConfirm = async () => {
     try {
       await Project.delete(projectId);
-      toast.success('Projekt usunięty');
+      toast.success(t("projectDetail.toastDeleted"));
       navigate(createPageUrl('Projects'));
     } catch (error) {
-      toast.error('Coś poszło nie tak. Spróbuj ponownie.');
+      toast.error(t("projectDetail.toastGenericError"));
     }
   };
 
@@ -246,10 +249,10 @@ export default function ProjectDetailPage() {
     return (
       <div className="min-h-full bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-medium text-black">Projekt nie znaleziony</h2>
+          <h2 className="text-xl font-medium text-black">{t("projectDetail.notFound")}</h2>
           <Link to={createPageUrl('Projects')}>
             <Button className="mt-4 btn-primary">
-              Wróć do projektów
+              {t("projectDetail.backToProjects")}
             </Button>
           </Link>
         </div>
@@ -300,9 +303,9 @@ export default function ProjectDetailPage() {
                   <Calendar className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Data rozpoczęcia</p>
+                  <p className="text-xs text-gray-500">{t("projectDetail.startDate")}</p>
                   <p className="font-medium text-black">
-                    {project.start_date ? format(new Date(project.start_date), 'dd.MM.yyyy') : 'Nie ustawiono'}
+                    {project.start_date ? format(new Date(project.start_date), 'dd.MM.yyyy') : t("common.notSet")}
                   </p>
                 </div>
               </div>
@@ -316,7 +319,7 @@ export default function ProjectDetailPage() {
                   <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Budżet</p>
+                  <p className="text-xs text-gray-500">{t("projectDetail.budget")}</p>
                   <p className="font-medium text-black">
                     {actualCost.toLocaleString('pl-PL')} zł / {(project.budget || 0).toLocaleString('pl-PL')} zł
                   </p>
@@ -332,9 +335,9 @@ export default function ProjectDetailPage() {
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Zespół</p>
+                  <p className="text-xs text-gray-500">{t("projectDetail.team")}</p>
                   <p className="font-medium text-black">
-                    {(() => { const n = members.length + 1; return n === 1 ? '1 osoba' : n < 5 ? `${n} osoby` : `${n} osób`; })()}
+                    {(() => { const n = members.length + 1; return n === 1 ? t("projectDetail.teamCountOne") : n < 5 ? t("projectDetail.teamCountFew", { count: n }) : t("projectDetail.teamCountMany", { count: n }); })()}
                   </p>
                 </div>
               </div>
@@ -348,7 +351,7 @@ export default function ProjectDetailPage() {
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Dokumenty</p>
+                  <p className="text-xs text-gray-500">{t("projectDetail.documents")}</p>
                   <p className="font-medium text-black">{documents.length}</p>
                 </div>
               </div>
@@ -361,7 +364,7 @@ export default function ProjectDetailPage() {
           <Card className="apple-blur apple-shadow mb-8">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium text-black">Realizacja budżetu</h3>
+                <h3 className="font-medium text-black">{t("projectDetail.budgetRealization")}</h3>
                 <span className={`text-sm font-medium ${budgetUsage > 100 ? 'text-red-500' : 'text-black'}`}>
                   {budgetUsage.toFixed(1)}%
                 </span>
@@ -382,21 +385,21 @@ export default function ProjectDetailPage() {
         {/* Tabs */}
         <Tabs defaultValue="finanse" className="space-y-6">
           <TabsList className="apple-blur">
-            <TabsTrigger value="finanse" className="text-black data-[state=active]:text-black">Finanse</TabsTrigger>
-            <TabsTrigger value="harmonogram" className="text-black data-[state=active]:text-black">Harmonogram</TabsTrigger>
-            <TabsTrigger value="galeria" className="text-black data-[state=active]:text-black">Galeria i Pliki</TabsTrigger>
-            <TabsTrigger value="team" className="text-black data-[state=active]:text-black">Zespół ({members.length + 1})</TabsTrigger>
+            <TabsTrigger value="finanse" className="text-black data-[state=active]:text-black">{t("projectDetail.tabs.finances")}</TabsTrigger>
+            <TabsTrigger value="harmonogram" className="text-black data-[state=active]:text-black">{t("projectDetail.tabs.schedule")}</TabsTrigger>
+            <TabsTrigger value="galeria" className="text-black data-[state=active]:text-black">{t("projectDetail.tabs.gallery")}</TabsTrigger>
+            <TabsTrigger value="team" className="text-black data-[state=active]:text-black">{t("projectDetail.tabs.team", { count: members.length + 1 })}</TabsTrigger>
           </TabsList>
 
           {/* === FINANSE === */}
           <TabsContent value="finanse">
             <Card className="apple-blur apple-shadow">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-black">Wydatki projektu</CardTitle>
+                <CardTitle className="text-black">{t("projectDetail.finances.title")}</CardTitle>
                 <Link to={`${createPageUrl("Upload")}?project_id=${projectId}`}>
                   <Button size="sm" className="btn-primary">
                     <Plus className="w-4 h-4 mr-1" />
-                    Dodaj dokument
+                    {t("common.addDocument")}
                   </Button>
                 </Link>
               </CardHeader>
@@ -404,10 +407,10 @@ export default function ProjectDetailPage() {
                 {documents.length === 0 ? (
                   <div className="text-center py-12">
                     <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="font-medium text-black mb-2">Brak dokumentów</h3>
-                    <p className="text-gray-500 mb-4">Dodaj pierwszy dokument do projektu</p>
+                    <h3 className="font-medium text-black mb-2">{t("projectDetail.finances.noDocuments")}</h3>
+                    <p className="text-gray-500 mb-4">{t("projectDetail.finances.addFirstDocument")}</p>
                     <Link to={`${createPageUrl("Upload")}?project_id=${projectId}`}>
-                      <Button className="btn-primary">Dodaj dokument</Button>
+                      <Button className="btn-primary">{t("common.addDocument")}</Button>
                     </Link>
                   </div>
                 ) : (() => {
@@ -468,7 +471,7 @@ export default function ProjectDetailPage() {
                       })}
                       {/* Grand total */}
                       <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                        <span className="font-semibold text-black">Suma wydatków</span>
+                        <span className="font-semibold text-black">{t("projectDetail.finances.total")}</span>
                         <span className="font-bold text-lg" style={{ color: grandTotal > (project.budget || 0) && project.budget > 0 ? "var(--k-err-color)" : "var(--k-accent-dark)" }}>
                           {grandTotal.toLocaleString('pl-PL')} zł
                         </span>
@@ -484,13 +487,13 @@ export default function ProjectDetailPage() {
           <TabsContent value="harmonogram">
             <Card className="apple-blur apple-shadow">
               <CardHeader>
-                <CardTitle className="text-black">Harmonogram zadań</CardTitle>
+                <CardTitle className="text-black">{t("projectDetail.schedule.title")}</CardTitle>
               </CardHeader>
               <CardContent>
                 {tasks.length === 0 && (
                   <div className="text-center py-8 mb-4">
                     <CheckSquare className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">Brak zadań. Dodaj pierwsze zadanie.</p>
+                    <p className="text-gray-500 text-sm">{t("projectDetail.schedule.empty")}</p>
                   </div>
                 )}
                 {tasks.length > 0 && (
@@ -510,7 +513,7 @@ export default function ProjectDetailPage() {
                           </span>
                           {task.created_date && (
                             <span className="text-xs text-gray-400 flex-shrink-0">
-                              {format(new Date(task.created_date), 'd MMM', { locale: pl })}
+                              {format(new Date(task.created_date), 'd MMM', { locale: dateLocale })}
                             </span>
                           )}
                           <button
@@ -527,7 +530,7 @@ export default function ProjectDetailPage() {
                 {/* Add task */}
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Dodaj zadanie..."
+                    placeholder={t("projectDetail.schedule.addPlaceholder")}
                     value={newTaskText}
                     onChange={e => setNewTaskText(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleAddTask()}
@@ -552,11 +555,11 @@ export default function ProjectDetailPage() {
                   <>
                     <Card className="apple-blur apple-shadow">
                       <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-black">Zdjęcia ({photos.length})</CardTitle>
+                        <CardTitle className="text-black">{t("projectDetail.gallery.photosTitle", { count: photos.length })}</CardTitle>
                         <Link to={`${createPageUrl("Upload")}?project_id=${projectId}`}>
                           <Button size="sm" variant="outline">
                             <Plus className="w-4 h-4 mr-1" />
-                            Dodaj zdjęcie
+                            {t("projectDetail.gallery.addPhoto")}
                           </Button>
                         </Link>
                       </CardHeader>
@@ -564,7 +567,7 @@ export default function ProjectDetailPage() {
                         {photos.length === 0 ? (
                           <div className="text-center py-8">
                             <Image className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                            <p className="text-gray-500 text-sm">Brak zdjęć w tym projekcie</p>
+                            <p className="text-gray-500 text-sm">{t("projectDetail.gallery.noPhotos")}</p>
                           </div>
                         ) : (
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -590,11 +593,11 @@ export default function ProjectDetailPage() {
 
                     <Card className="apple-blur apple-shadow">
                       <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-black">Pliki ({files.length})</CardTitle>
+                        <CardTitle className="text-black">{t("projectDetail.gallery.filesTitle", { count: files.length })}</CardTitle>
                         <Link to={`${createPageUrl("Upload")}?project_id=${projectId}`}>
                           <Button size="sm" variant="outline">
                             <Plus className="w-4 h-4 mr-1" />
-                            Dodaj plik
+                            {t("projectDetail.gallery.addFile")}
                           </Button>
                         </Link>
                       </CardHeader>
@@ -602,7 +605,7 @@ export default function ProjectDetailPage() {
                         {files.length === 0 ? (
                           <div className="text-center py-8">
                             <File className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                            <p className="text-gray-500 text-sm">Brak plików w tym projekcie</p>
+                            <p className="text-gray-500 text-sm">{t("projectDetail.gallery.noFiles")}</p>
                           </div>
                         ) : (
                           <div className="space-y-2">
@@ -642,7 +645,7 @@ export default function ProjectDetailPage() {
             <div className="space-y-4">
               <Card className="apple-blur apple-shadow">
                 <CardHeader>
-                  <CardTitle className="text-black">Członkowie zespołu</CardTitle>
+                  <CardTitle className="text-black">{t("projectDetail.team_section.title")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -654,12 +657,12 @@ export default function ProjectDetailPage() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-black truncate">
                           {!project.created_by || project.created_by === currentUser?.email
-                            ? `Ty (${currentUser?.email || ''})`
+                            ? t("projectDetail.team_section.youWithEmail", { email: currentUser?.email || '' })
                             : project.created_by}
                         </h4>
-                        <p className="text-sm text-gray-500">Właściciel projektu</p>
+                        <p className="text-sm text-gray-500">{t("projectDetail.team_section.projectOwner")}</p>
                       </div>
-                      <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0 flex-shrink-0">Właściciel</Badge>
+                      <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0 flex-shrink-0">{t("projectDetail.team_section.ownerBadge")}</Badge>
                     </div>
 
                     {/* Members */}
@@ -672,12 +675,12 @@ export default function ProjectDetailPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <h4 className="font-medium text-black truncate">
-                              {member.user_email === currentUser?.email ? `Ty (${member.user_email})` : member.user_email}
+                              {member.user_email === currentUser?.email ? t("projectDetail.team_section.youWithEmail", { email: member.user_email }) : member.user_email}
                             </h4>
-                            <p className="text-sm text-gray-500">Zaproszony przez {member.invited_by}</p>
+                            <p className="text-sm text-gray-500">{t("projectDetail.team_section.invitedBy", { name: member.invited_by })}</p>
                           </div>
                           <Badge style={{ backgroundColor: "var(--k-icon-bg)", color: "var(--k-icon-color)" }} className="border-0 flex-shrink-0">
-                            {member.role === 'editor' ? 'Edytor' : member.role === 'viewer' ? 'Obserwator' : member.role}
+                            {member.role === 'editor' ? t("projectDetail.team_section.roleEditor") : member.role === 'viewer' ? t("projectDetail.team_section.roleViewer") : member.role}
                           </Badge>
                           <button
                             onClick={() => handleRemoveMember(member.id, member.user_email)}
@@ -695,13 +698,13 @@ export default function ProjectDetailPage() {
               {/* Invite form */}
               <Card className="apple-blur apple-shadow">
                 <CardHeader>
-                  <CardTitle className="text-black text-base">Zaproś osobę</CardTitle>
+                  <CardTitle className="text-black text-base">{t("projectDetail.team_section.inviteTitle")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex gap-2 flex-wrap">
                     <Input
                       type="text"
-                      placeholder="adres@email.com"
+                      placeholder={t("projectDetail.team_section.invitePlaceholder")}
                       value={inviteEmail}
                       onChange={e => setInviteEmail(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleInviteMember()}
@@ -713,15 +716,15 @@ export default function ProjectDetailPage() {
                       className="px-3 py-2 rounded-lg border text-sm"
                       style={{ borderColor: "var(--k-border-md)", backgroundColor: "var(--k-bg)", color: "var(--k-text)" }}
                     >
-                      <option value="editor">Edytor</option>
-                      <option value="viewer">Obserwator</option>
+                      <option value="editor">{t("projectDetail.team_section.roleEditor")}</option>
+                      <option value="viewer">{t("projectDetail.team_section.roleViewer")}</option>
                     </select>
                     <Button onClick={handleInviteMember} disabled={inviting || !inviteEmail.trim()} className="btn-primary">
                       <Plus className="w-4 h-4 mr-1" />
-                      Zaproś
+                      {t("projectDetail.team_section.invite")}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">Edytor może edytować projekt. Obserwator tylko przegląda.</p>
+                  <p className="text-xs text-gray-400 mt-2">{t("projectDetail.team_section.inviteHelp")}</p>
                 </CardContent>
               </Card>
             </div>

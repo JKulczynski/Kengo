@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Hammer, Eye, EyeOff } from "lucide-react";
+import { useTranslation, Trans } from "react-i18next";
 import { api } from "@/api/apiClient";
 
 export default function Login({ onLogin }) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState("login"); // "login" | "register"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,12 +15,12 @@ export default function Login({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
 
   const validate = () => {
-    if (mode === "register" && !fullName.trim()) return "Podaj imię i nazwisko.";
-    if (mode === "register" && !/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s\-']+$/.test(fullName.trim())) return "Imię i nazwisko może zawierać tylko litery.";
-    if (!email.trim()) return "Podaj adres email.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Podaj prawidłowy adres email.";
-    if (!password) return "Podaj hasło.";
-    if (password.length < 6) return "Hasło musi mieć co najmniej 6 znaków.";
+    if (mode === "register" && !fullName.trim()) return t("login.validation.fullNameRequired");
+    if (mode === "register" && !/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s\-']+$/.test(fullName.trim())) return t("login.validation.fullNameLettersOnly");
+    if (!email.trim()) return t("login.validation.emailRequired");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return t("login.validation.emailInvalid");
+    if (!password) return t("login.validation.passwordRequired");
+    if (password.length < 6) return t("login.validation.passwordTooShort");
     return null;
   };
 
@@ -35,18 +37,18 @@ export default function Login({ onLogin }) {
       } else {
         const data = await api.auth.register(email, password, fullName);
         if (data.user?.identities?.length === 0) {
-          setError("Konto z tym adresem email już istnieje.");
+          setError(t("login.errors.accountExists"));
           return;
         }
         setRegistered(true);
       }
     } catch (err) {
       const msg = err.message || "";
-      if (msg.includes("Invalid login credentials")) setError("Nieprawidłowy email lub hasło.");
-      else if (msg.includes("Email not confirmed")) setError("Potwierdź adres email przed logowaniem.");
-      else if (msg.includes("User already registered")) setError("Konto z tym emailem już istnieje.");
-      else if (msg.includes("Password should be")) setError("Hasło musi mieć co najmniej 6 znaków.");
-      else setError("Wystąpił błąd. Spróbuj ponownie.");
+      if (msg.includes("Invalid login credentials")) setError(t("login.errors.invalidCredentials"));
+      else if (msg.includes("Email not confirmed")) setError(t("login.errors.emailNotConfirmed"));
+      else if (msg.includes("User already registered")) setError(t("login.errors.userAlreadyRegistered"));
+      else if (msg.includes("Password should be")) setError(t("login.errors.passwordTooShort"));
+      else setError(t("login.errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -86,7 +88,7 @@ export default function Login({ onLogin }) {
               Kengo
             </h1>
             <p className="text-xs" style={{ color: "var(--k-text-subtle)" }}>
-              Asystent remontu
+              {t("layout.tagline")}
             </p>
           </div>
         </div>
@@ -94,18 +96,17 @@ export default function Login({ onLogin }) {
         {registered ? (
           <div className="text-center">
             <p className="font-semibold mb-2" style={{ color: "var(--k-text)" }}>
-              Sprawdź skrzynkę
+              {t("login.registered.title")}
             </p>
             <p className="text-sm" style={{ color: "var(--k-text-subtle)" }}>
-              Wysłaliśmy link potwierdzający na <strong>{email}</strong>. Po
-              kliknięciu możesz się zalogować.
+              <Trans i18nKey="login.registered.text" values={{ email }} components={{ strong: <strong /> }} />
             </p>
             <button
               className="mt-6 text-sm font-semibold"
               style={{ color: "var(--k-accent-dark)" }}
               onClick={() => { setMode("login"); setRegistered(false); }}
             >
-              Przejdź do logowania
+              {t("login.registered.goToLogin")}
             </button>
           </div>
         ) : (
@@ -114,7 +115,7 @@ export default function Login({ onLogin }) {
               className="text-xl font-semibold mb-6"
               style={{ color: "var(--k-text)", letterSpacing: "-0.02em" }}
             >
-              {mode === "login" ? "Zaloguj się" : "Utwórz konto"}
+              {mode === "login" ? t("login.heading.login") : t("login.heading.register")}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -124,13 +125,13 @@ export default function Login({ onLogin }) {
                     className="block text-xs font-medium mb-1.5"
                     style={{ color: "var(--k-text-muted)" }}
                   >
-                    Imię i nazwisko
+                    {t("login.fields.fullName")}
                   </label>
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Jan Kowalski"
+                    placeholder={t("login.fields.fullNamePlaceholder")}
                     className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
                     style={{
                       backgroundColor: "var(--k-bg)",
@@ -146,13 +147,13 @@ export default function Login({ onLogin }) {
                   className="block text-xs font-medium mb-1.5"
                   style={{ color: "var(--k-text-muted)" }}
                 >
-                  Email
+                  {t("login.fields.email")}
                 </label>
                 <input
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jan@example.com"
+                  placeholder={t("login.fields.emailPlaceholder")}
                   className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
                   style={{
                     backgroundColor: "var(--k-bg)",
@@ -167,7 +168,7 @@ export default function Login({ onLogin }) {
                   className="block text-xs font-medium mb-1.5"
                   style={{ color: "var(--k-text-muted)" }}
                 >
-                  Hasło
+                  {t("login.fields.password")}
                 </label>
                 <div className="relative">
                   <input
@@ -211,10 +212,10 @@ export default function Login({ onLogin }) {
                 }}
               >
                 {loading
-                  ? "..."
+                  ? t("login.submit.loading")
                   : mode === "login"
-                  ? "Zaloguj"
-                  : "Utwórz konto"}
+                  ? t("login.submit.login")
+                  : t("login.submit.register")}
               </button>
             </form>
 
@@ -222,7 +223,7 @@ export default function Login({ onLogin }) {
               className="text-center text-xs mt-6"
               style={{ color: "var(--k-text-subtle)" }}
             >
-              {mode === "login" ? "Nie masz konta?" : "Masz już konto?"}{" "}
+              {mode === "login" ? t("login.footer.noAccount") : t("login.footer.hasAccount")}{" "}
               <button
                 className="font-semibold"
                 style={{ color: "var(--k-accent-dark)" }}
@@ -230,7 +231,7 @@ export default function Login({ onLogin }) {
                   setMode(mode === "login" ? "register" : "login")
                 }
               >
-                {mode === "login" ? "Zarejestruj się" : "Zaloguj się"}
+                {mode === "login" ? t("login.footer.register") : t("login.footer.login")}
               </button>
             </p>
           </>
