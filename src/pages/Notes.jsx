@@ -106,7 +106,7 @@ export default function Notes() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full bg-gray-50">
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Header */}
         <div className="flex items-start justify-between mb-8 md:mb-12 gap-4">

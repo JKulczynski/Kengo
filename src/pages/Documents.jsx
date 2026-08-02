@@ -179,7 +179,7 @@ export default function DocumentsPage() {
   return (
     <>
       <div
-        className="relative min-h-screen"
+        className="relative min-h-full"
         style={{ backgroundColor: "var(--k-bg)" }}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}

@@ -18,7 +18,7 @@ const Notes        = React.lazy(() => import('./Notes'));
 // Minimalistyczny loader — pasuje do japońskiego designu
 function PageLoader() {
   return (
-    <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: 'var(--k-bg)' }}>
+    <div className="flex items-center justify-center min-h-full" style={{ backgroundColor: 'var(--k-bg)' }}>
       <div className="flex flex-col items-center gap-4">
         <div className="w-8 h-8 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--k-border-strong)', borderTopColor: 'var(--k-accent)' }} />
         <p className="text-sm" style={{ color: 'var(--k-text-subtle)' }}>Ładuję...</p>

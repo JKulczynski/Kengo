@@ -228,7 +228,7 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-full bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
           <Skeleton className="h-8 w-64 mb-8" />
           <div className="grid gap-6">
@@ -242,7 +242,7 @@ export default function ProjectDetailPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-full bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-medium text-black">Projekt nie znaleziony</h2>
           <Link to={createPageUrl('Projects')}>
@@ -256,7 +256,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

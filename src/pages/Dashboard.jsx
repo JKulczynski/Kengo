@@ -127,7 +127,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
+    <div className="min-h-full" style={{ backgroundColor: "var(--k-bg)" }}>
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
 
         {error && (

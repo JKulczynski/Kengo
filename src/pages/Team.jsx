@@ -238,7 +238,7 @@ export default function TeamPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-full bg-gray-50">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <Skeleton className="h-10 w-48 mb-8" />
           <div className="grid gap-6">
@@ -252,7 +252,7 @@ export default function TeamPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="mb-12">

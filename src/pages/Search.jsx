@@ -99,7 +99,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full bg-gray-50">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-semibold text-black tracking-tight">Szukaj</h1>

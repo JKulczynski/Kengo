@@ -160,7 +160,7 @@ export default function ProjectsPage() {
     const budgetUsage = selectedProject.budget > 0 ? (actualCost / selectedProject.budget) * 100 : 0;
 
     return (
-      <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
+      <div className="min-h-full" style={{ backgroundColor: "var(--k-bg)" }}>
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
@@ -488,7 +488,7 @@ export default function ProjectsPage() {
 
   // Default view - project list
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "var(--k-bg)" }}>
+    <div className="min-h-full" style={{ backgroundColor: "var(--k-bg)" }}>
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4">
