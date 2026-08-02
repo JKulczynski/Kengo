@@ -550,6 +550,26 @@ export default function Layout({ children }) {
                       ))}
                     </div>
                   </div>
+                  {/* Jezyk */}
+                  <div className="px-3 py-2">
+                    <p className="text-xs mb-2 font-medium" style={{ color: "var(--k-text-subtle)" }}>{t("layout.language.label")}</p>
+                    <div className="flex rounded-lg overflow-hidden border w-fit" style={{ borderColor: "var(--k-border-md)" }}>
+                      {["pl", "en"].map((lng) => (
+                        <button
+                          key={lng}
+                          onClick={() => setLanguage(lng)}
+                          className="px-4 py-1.5 text-xs font-semibold uppercase"
+                          style={
+                            i18n.language === lng
+                              ? { backgroundColor: "var(--k-accent)", color: "var(--k-accent-text)" }
+                              : { color: "var(--k-text-muted)" }
+                          }
+                        >
+                          {lng}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Profil na dole drawera */}
