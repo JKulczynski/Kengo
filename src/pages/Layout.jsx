@@ -413,7 +413,7 @@ export default function Layout({ children }) {
         </Sidebar>
 
         {/* Główna treść */}
-        <main className="flex-1 flex flex-col" style={{ backgroundColor: "var(--k-bg)" }}>
+        <main className="flex-1 flex flex-col min-w-0" style={{ backgroundColor: "var(--k-bg)" }}>
           {/* Topbar mobilny — slim */}
           <header
             className="apple-blur border-b px-4 py-2.5 md:hidden flex-shrink-0"
@@ -557,7 +557,7 @@ export default function Layout({ children }) {
           )}
 
           {/* Treść — height:0 + flex-1 wymusza obliczalną wysokość (trick dla flex chat UI) */}
-          <div className="flex-1 flex flex-col overflow-auto pb-20 md:pb-0" style={{ height: 0 }}>
+          <div className="flex-1 flex flex-col overflow-auto min-w-0 pb-20 md:pb-0" style={{ height: 0 }}>
             {children}
           </div>
         </main>

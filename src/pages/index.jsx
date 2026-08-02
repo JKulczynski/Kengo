@@ -32,7 +32,7 @@ function PagesContent() {
 
   return (
     <Layout>
-      <div key={location.pathname} className="page-transition flex-1">
+      <div key={location.pathname} className="page-transition flex-1 min-w-0">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/"              element={<Dashboard />} />
