@@ -154,13 +154,13 @@ export default function Dashboard() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link to={createPageUrl("Projects")}>
-                  <Button className="btn-primary rounded-lg px-6 py-3 text-sm font-medium">
+                  <Button className="btn-primary h-auto rounded-lg px-6 py-3 text-sm font-medium">
                     <Plus className="w-4 h-4 mr-2" />
                     Stwórz pierwszy projekt
                   </Button>
                 </Link>
                 <Link to={createPageUrl("Upload")}>
-                  <Button variant="outline" className="rounded-lg px-6 py-3 text-sm font-medium" style={{ color: "var(--k-text)", borderColor: "var(--k-border-md)" }}>
+                  <Button variant="outline" className="h-auto rounded-lg px-6 py-3 text-sm font-medium" style={{ color: "var(--k-text)", borderColor: "var(--k-border-md)" }}>
                     <Camera className="w-4 h-4 mr-2" />
                     Dodaj dokument
                   </Button>
@@ -239,13 +239,13 @@ export default function Dashboard() {
             {/* Quick Actions */}
             <div className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-12">
               <Link to={createPageUrl("Upload")} className="w-full sm:w-auto">
-                <Button className="btn-primary w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-medium">
+                <Button className="btn-primary h-auto w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-medium">
                   <Camera className="w-4 h-4 mr-2" />
                   Skanuj dokument
                 </Button>
               </Link>
               <Link to={createPageUrl("Projects")} className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-medium" style={{ color: "var(--k-text)", borderColor: "var(--k-border-md)" }}>
+                <Button variant="outline" className="h-auto w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-medium" style={{ color: "var(--k-text)", borderColor: "var(--k-border-md)" }}>
                   <Plus className="w-4 h-4 mr-2" />
                   Nowy projekt
                 </Button>
