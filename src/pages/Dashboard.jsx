@@ -436,8 +436,8 @@ export default function Dashboard() {
             })()}
 
             {/* Main Content */}
-            <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
-              <div className="lg:col-span-2">
+            <div className="grid lg:grid-cols-3 gap-6 md:gap-8 min-w-0">
+              <div className="lg:col-span-2 min-w-0">
                 <ActiveProjects
                   projects={projects.filter(p => p.status !== 'completed')}
                   documents={documents}
@@ -446,7 +446,7 @@ export default function Dashboard() {
                 />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <RecentDocuments
                   documents={documents.slice(0, 10)}
                   isLoading={isLoading}
