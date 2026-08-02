@@ -148,8 +148,8 @@ export default function ProjectDetailPage() {
 
   const handleToggleTask = async (task) => {
     try {
-      await Note.update(task.id, { title: task.title === 'done' ? '' : 'done' });
-      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, title: t.title === 'done' ? '' : 'done' } : t));
+      await Note.update(task.id, { done: !task.done });
+      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, done: !t.done } : t));
     } catch (e) {
       toast.error("Nie udało się zaktualizować zadania.");
     }
@@ -496,7 +496,7 @@ export default function ProjectDetailPage() {
                 {tasks.length > 0 && (
                   <div className="space-y-2 mb-4">
                     {tasks.map(task => {
-                      const done = task.title === 'done';
+                      const done = task.done;
                       return (
                         <div key={task.id} className="flex items-center gap-3 p-3 rounded-lg bg-white border group">
                           <button onClick={() => handleToggleTask(task)} className="flex-shrink-0">
