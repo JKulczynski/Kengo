@@ -70,7 +70,13 @@ export default function ActiveProjects({ projects, documents, isLoading, onProje
       ) : (
         <>
           {/* Mobile carousel (md:hidden) */}
-          <div className="md:hidden -mx-2">
+          <div className="md:hidden -mx-2 relative">
+            {projects.length > 1 && (
+              <div
+                className="absolute right-0 top-0 bottom-3 w-10 pointer-events-none z-10"
+                style={{ background: "linear-gradient(to right, transparent, var(--k-bg-card) 85%)" }}
+              />
+            )}
             <div className="flex gap-3 overflow-x-auto px-2 pb-3 snap-x snap-mandatory scrollbar-hide">
               {projects.map((project) => {
                 const projectDocs = documents ? documents.filter(d => d.project_id === project.id) : [];

@@ -306,7 +306,7 @@ export default function Dashboard() {
                   <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                     Budżet projektów
                   </h2>
-                  <ResponsiveContainer width="100%" height={160}>
+                  <ResponsiveContainer width="100%" height={160} debounce={1}>
                     <BarChart data={chartData} barGap={4} barCategoryGap="30%">
                       <XAxis
                         dataKey="name"
@@ -397,7 +397,7 @@ export default function Dashboard() {
                       <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                         Wydatki wg kategorii
                       </h2>
-                      <ResponsiveContainer width="100%" height={200}>
+                      <ResponsiveContainer width="100%" height={200} debounce={1}>
                         <PieChart>
                           <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
                             {categoryData.map((_, i) => <Cell key={i} fill="var(--k-accent)" fillOpacity={PIE_OPACITIES[i] ?? 0.1} />)}
@@ -417,7 +417,7 @@ export default function Dashboard() {
                       <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--k-text)", letterSpacing: "-0.01em" }}>
                         Wydatki miesięczne
                       </h2>
-                      <ResponsiveContainer width="100%" height={200}>
+                      <ResponsiveContainer width="100%" height={200} debounce={1}>
                         <BarChart data={monthlyData} barCategoryGap="40%">
                           <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--k-text-muted)", fontFamily: "inherit" }} axisLine={false} tickLine={false} />
                           <YAxis hide />
