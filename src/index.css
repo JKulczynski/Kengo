@@ -251,6 +251,11 @@ input:-webkit-autofill:focus {
 /* ------------------------------------------------------------
    shadcn/ui — mapowanie tokenów na zmienne komponentów
    ------------------------------------------------------------ */
+html, body, #root {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 @layer base {
   :root {
     /* Shikkui White #F7F6F2 ≈ hsl(48, 18%, 96%) */
