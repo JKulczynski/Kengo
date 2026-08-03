@@ -144,9 +144,9 @@ const api = {
 
   integrations: {
     Core: {
-      InvokeLLM: async ({ prompt, file_urls, response_json_schema }) => {
+      InvokeLLM: async ({ prompt, file_urls, response_json_schema, language }) => {
         const { data, error } = await supabase.functions.invoke("invoke-llm", {
-          body: { prompt, file_urls, response_json_schema },
+          body: { prompt, file_urls, response_json_schema, language },
         });
         if (error) throw error;
         return data;

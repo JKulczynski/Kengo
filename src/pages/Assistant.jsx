@@ -102,7 +102,7 @@ function MessageBubble({ message }) {
 }
 
 export default function AssistantPage() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const quickActions = [
         { label: t("assistant.quickActions.myProjects.label"), prompt: t("assistant.quickActions.myProjects.prompt") },
@@ -157,7 +157,8 @@ export default function AssistantPage() {
                 .join('\n\n');
 
             const response = await InvokeLLM({
-                prompt: `${systemContext}\n\n${t("assistant.systemPrompt.historyLabel")}\n${conversationHistory}\n\n${t("assistant.systemPrompt.finalInstruction")}`
+                prompt: `${systemContext}\n\n${t("assistant.systemPrompt.historyLabel")}\n${conversationHistory}\n\n${t("assistant.systemPrompt.finalInstruction")}`,
+                language: i18n.language
             });
             setMessages(prev => [...prev, { role: 'assistant', content: response }]);
             trackProductEvent('asystent_uzyty');

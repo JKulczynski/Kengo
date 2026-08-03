@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { prompt, file_urls, response_json_schema } = await req.json();
+    const { prompt, file_urls, response_json_schema, language } = await req.json();
 
     const client = new Anthropic({
       apiKey: Deno.env.get("ANTHROPIC_API_KEY"),
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
 
     const systemPrompt = response_json_schema
       ? "Respond ONLY with valid JSON matching the schema. No markdown, no explanation. All text values (notes, titles, descriptions) must be in Polish."
-      : "You are Kengo, a helpful renovation assistant. Respond in Polish. Do not use emojis.";
+      : `You are Kengo, a helpful renovation assistant. Respond in ${language === "en" ? "English" : "Polish"}. Do not use emojis.`;
 
     const message = await client.messages.create({
       model: "claude-opus-4-7",
