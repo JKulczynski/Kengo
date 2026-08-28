@@ -27,3 +27,5 @@ dist-ssr
 *.sw?
 
 .env
+# Supabase CLI local cache - contains live DB connection info, never commit
+supabase/.temp/
